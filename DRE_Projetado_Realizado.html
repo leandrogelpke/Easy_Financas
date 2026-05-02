@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Easy Analytics — DRE Projetado vs. Real 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{--bg:#07090c;--s1:#0e1117;--s2:#151920;--s3:#1c2128;--bd:rgba(255,255,255,0.06);--bd2:rgba(255,255,255,0.11);--t1:#e8e4dd;--t2:#7e8490;--t3:#454a52;--g:#34d399;--gdim:rgba(52,211,153,0.11);--gbr:rgba(52,211,153,0.22);--r:#fb7185;--rdim:rgba(251,113,133,0.11);--rbr:rgba(251,113,133,0.22);--a:#fbbf24;--adim:rgba(251,191,36,0.11);--abr:rgba(251,191,36,0.22);--b:#60a5fa;--bdim2:rgba(96,165,250,0.11);--bbr:rgba(96,165,250,0.22);--acc:#a3e635;--accdim:rgba(163,230,53,0.1)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;min-height:100vh}
+
+/* LOCK */
+#lock{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
+.lbox{background:var(--s1);border:1px solid var(--bd2);border-radius:20px;padding:44px 48px;width:100%;max-width:390px;display:flex;flex-direction:column;align-items:center}
+.llogo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--acc)}
+.llogo span{color:var(--t2);font-weight:400;font-size:12px}
+.ltitle{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--t1);margin:20px 0 3px;text-align:center}
+.lsub{font-size:12px;color:var(--t3);text-align:center;margin-bottom:20px}
+.lerr{font-size:11.5px;color:var(--r);min-height:17px;margin-bottom:6px;text-align:center}
+.linput{width:100%;padding:11px 42px 11px 15px;border-radius:10px;border:1px solid var(--bd2);background:var(--s2);color:var(--t1);font-size:13.5px;outline:none;transition:border-color .2s;font-family:'DM Sans',sans-serif}
+.linput:focus{border-color:rgba(163,230,53,0.35)}
+.lbtn{width:100%;padding:12px;border-radius:10px;background:var(--acc);color:#0a0d06;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;border:none;cursor:pointer;margin-top:8px;transition:opacity .15s}
+.lbtn:hover{opacity:.85}
+.lhint{font-size:10.5px;color:var(--t3);margin-top:16px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(7,9,12,0.93);backdrop-filter:blur(18px);border-bottom:1px solid var(--bd);height:54px;padding:0 2rem;display:flex;align-items:center;gap:16px}
+.nbrand{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--acc);white-space:nowrap;flex-shrink:0}
+.nbrand span{color:var(--t2);font-weight:400;font-size:12px}
+.ntabs{display:flex;gap:2px;flex:1}
+.ntab{padding:5px 13px;border-radius:6px;font-size:12px;font-weight:500;color:var(--t2);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;transition:all .15s;white-space:nowrap}
+.ntab:hover{color:var(--t1);background:var(--s3)}
+.ntab.active{color:var(--acc);background:var(--accdim)}
+.ndate{font-family:'DM Mono',monospace;font-size:10.5px;color:var(--t3);white-space:nowrap}
+.hamb{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:7px;border:none;background:none;flex-shrink:0}
+.hamb span{display:block;width:20px;height:1.5px;background:var(--t2);border-radius:2px;transition:all .25s}
+.hamb.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.hamb.open span:nth-child(2){opacity:0}
+.hamb.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.mobmenu{display:none;position:fixed;top:54px;left:0;right:0;background:rgba(7,9,12,0.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd);z-index:99;flex-direction:column;padding:6px 0}
+.mobmenu.open{display:flex}
+.mobtab{padding:13px 22px;font-size:13.5px;font-weight:500;color:var(--t2);cursor:pointer;border:none;background:none;text-align:left;font-family:'DM Sans',sans-serif;border-left:3px solid transparent;transition:all .15s}
+.mobtab:hover{color:var(--t1);background:var(--s2)}
+.mobtab.active{color:var(--acc);border-left-color:var(--acc);background:var(--accdim)}
+
+/* LAYOUT */
+.pg{display:none;padding:2rem;max-width:1320px;margin:0 auto}
+.pg.active{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.pg.active>*{animation:fu .28s ease both}
+.pg.active>*:nth-child(2){animation-delay:.05s}
+.pg.active>*:nth-child(3){animation-delay:.10s}
+.pg.active>*:nth-child(4){animation-delay:.15s}
+.pg.active>*:nth-child(5){animation-delay:.20s}
+
+/* HERO */
+.hero{margin-bottom:2rem;padding-bottom:1.4rem;border-bottom:1px solid var(--bd);display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.htitle{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;letter-spacing:-.03em;line-height:1.2}
+.hsub{font-size:12px;color:var(--t2);margin-top:4px}
+.pills{display:flex;gap:7px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;font-family:'DM Mono',monospace}
+.pr{background:var(--rdim);color:var(--r);border:1px solid var(--rbr)}
+.pa{background:var(--adim);color:var(--a);border:1px solid var(--abr)}
+.pg2{background:var(--gdim);color:var(--g);border:1px solid var(--gbr)}
+.pb2{background:var(--bdim2);color:var(--b);border:1px solid var(--bbr)}
+.pdot{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+/* GRIDS */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px}
+
+/* METRIC */
+.met{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:15px 17px;position:relative;overflow:hidden;transition:border-color .2s}
+.met:hover{border-color:var(--bd2)}
+.met::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:12px 12px 0 0}
+.mg::before{background:var(--g)}.mr::before{background:var(--r)}.ma::before{background:var(--a)}.mb::before{background:var(--b)}.mc::before{background:var(--acc)}
+.ml{font-size:10.5px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.mv{font-family:'Syne',sans-serif;font-size:23px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.cg{color:var(--g)}.cr{color:var(--r)}.ca{color:var(--a)}.cb{color:var(--b)}.cc{color:var(--acc)}
+.ms{font-size:11px;color:var(--t3);margin-top:5px}
+.delta{font-size:11px;font-weight:500;margin-top:4px;padding:2px 7px;border-radius:999px;display:inline-block}
+.dpos{background:var(--gdim);color:var(--g)}.dneg{background:var(--rdim);color:var(--r)}.dneu{background:var(--s3);color:var(--t2)}
+
+/* CARD */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:0}
+.ct{font-family:'Syne',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.04em;color:var(--t2);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+
+/* TABLE */
+.dt{width:100%;border-collapse:collapse;font-size:12px}
+.dt th{text-align:left;padding:7px 8px;color:var(--t3);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--bd)}
+.dt th.r{text-align:right}
+.dt td{padding:8px 8px;border-bottom:1px solid var(--bd);color:var(--t1);vertical-align:middle}
+.dt tr:last-child td{border-bottom:none}
+.dt tr:hover td{background:rgba(255,255,255,0.015)}
+.dt td.r{text-align:right;font-family:'DM Mono',monospace;font-size:11.5px}
+.dt td.lbl{font-weight:500}
+.dt tr.subtotal td{background:var(--s2);font-size:11px;color:var(--t2)}
+.dt tr.total td{background:var(--s3);font-weight:600;font-size:12.5px}
+
+/* BADGE */
+.bge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:500;white-space:nowrap}
+.bgr{background:var(--rdim);color:var(--r)}.bga{background:var(--adim);color:var(--a)}.bgg{background:var(--gdim);color:var(--g)}.bgb{background:var(--bdim2);color:var(--b)}.bgn{background:rgba(255,255,255,0.05);color:var(--t2)}
+
+/* ALERT */
+.alt{padding:11px 14px;border-radius:10px;margin-bottom:9px;border-left:3px solid;font-size:12.5px}
+.ats{font-weight:500;margin-bottom:2px}
+.asd{font-size:11px;opacity:.82;line-height:1.5}
+.alr{background:var(--rdim);border-color:var(--r);color:#fda4af}
+.ala{background:var(--adim);border-color:var(--a);color:#fcd34d}
+.alg{background:var(--gdim);border-color:var(--g);color:#6ee7b7}
+.alb{background:var(--bdim2);border-color:var(--b);color:#93c5fd}
+
+/* VARIANCE BAR */
+.vbar-wrap{background:var(--s3);border-radius:3px;height:5px;overflow:hidden;margin-top:3px;flex:1}
+.vbar{height:5px;border-radius:3px;transition:width .5s ease}
+
+/* SECTION LABEL */
+.sl{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.1em;margin:22px 0 11px;display:flex;align-items:center;gap:10px}
+.sl::after{content:'';flex:1;height:1px;background:var(--bd)}
+.dv{border:none;border-top:1px solid var(--bd);margin:20px 0}
+.cw{position:relative;width:100%}
+.row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd);gap:8px}
+.row:last-child{border-bottom:none}
+.rl{font-size:12px;flex:1;min-width:0}
+.rl strong{display:block;font-size:12px;color:var(--t1);font-weight:500}
+.rl small{display:block;font-size:10.5px;color:var(--t3);margin-top:1px}
+.tli{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--bd)}
+.tli:last-child{border-bottom:none}
+.tld{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.tlc .tlt{font-size:12.5px;font-weight:500;color:var(--t1)}
+.tlc .tls{font-size:11px;color:var(--t3);margin-top:2px}
+footer{margin-top:3rem;padding:1.5rem 2rem;border-top:1px solid var(--bd);text-align:center;font-size:10px;color:var(--t3);font-family:'DM Mono',monospace}
+
+/* RESPONSIVE */
+@media(max-width:900px){.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr}.g2,.g21{grid-template-columns:1fr}.ntabs{display:none}.hamb{display:flex!important}.ndate{display:none}nav{padding:0 1rem}.pg{padding:1.5rem 1rem}}
+@media(max-width:560px){.g4{grid-template-columns:1fr 1fr}.htitle{font-size:20px}}
+</style>
+</head>
+<body>
+
+<!-- LOCK -->
+<div id="lock">
+  <div class="lbox">
+    <div class="llogo">EASY<span> analytics</span></div>
+    <div class="ltitle">DRE — Projetado vs. Real 2026</div>
+    <div class="lsub">Conteúdo confidencial. Insira a senha para continuar.</div>
+    <div class="lerr" id="lerr"></div>
+    <div style="position:relative;width:100%;margin-bottom:8px">
+      <input class="linput" id="lpwd" type="password" placeholder="Senha de acesso"
+        onkeydown="if(event.key==='Enter')unl()"
+        onfocus="this.style.borderColor='rgba(163,230,53,0.35)'"
+        onblur="this.style.borderColor='rgba(255,255,255,0.11)'">
+      <span onclick="var i=document.getElementById('lpwd');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'"
+        style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:14px;user-select:none">👁</span>
+    </div>
+    <button class="lbtn" onclick="unl()">Acessar Dashboard</button>
+    <div class="lhint">Confidencial · Easy Analytics · 2026</div>
+  </div>
+</div>
+<script>
+(function(){
+  var P='Easy1.2.3.@',K='ea_dre_auth';
+  if(sessionStorage.getItem(K)==='1'){document.addEventListener('DOMContentLoaded',function(){var l=document.getElementById('lock');if(l)l.style.display='none';});}
+  window.unl=function(){
+    var i=document.getElementById('lpwd'),e=document.getElementById('lerr');
+    if(i.value===P){
+      sessionStorage.setItem(K,'1');
+      var l=document.getElementById('lock');
+      l.style.transition='opacity .3s';l.style.opacity='0';
+      setTimeout(function(){l.style.display='none';},320);
+    } else {
+      e.textContent='Senha incorreta. Tente novamente.';
+      i.value='';i.style.borderColor='rgba(251,113,133,0.5)';i.focus();
+      setTimeout(function(){i.style.borderColor='rgba(255,255,255,0.11)';e.textContent='';},1600);
+    }
+  };
+})();
+</script>
+
+<!-- MOBILE MENU -->
+<div class="mobmenu" id="mmenu">
+  <button class="mobtab active" onclick="sp('overview',this,1)">Visão Geral</button>
+  <button class="mobtab" onclick="sp('dre',this,1)">DRE Comparativo</button>
+  <button class="mobtab" onclick="sp('despesas',this,1)">Despesas</button>
+  <button class="mobtab" onclick="sp('variancia',this,1)">Variâncias</button>
+  <button class="mobtab" onclick="sp('recomendacoes',this,1)">Recomendações</button>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nbrand">EASY<span> analytics &nbsp;·&nbsp; DRE 2026</span></div>
+  <div class="ntabs">
+    <button class="ntab active" onclick="sp('overview',this)">Visão Geral</button>
+    <button class="ntab" onclick="sp('dre',this)">DRE Comparativo</button>
+    <button class="ntab" onclick="sp('despesas',this)">Despesas</button>
+    <button class="ntab" onclick="sp('variancia',this)">Variâncias</button>
+    <button class="ntab" onclick="sp('recomendacoes',this)">Recomendações</button>
+  </div>
+  <button class="hamb" id="hbtn" onclick="tmob()" aria-label="Menu" style="display:none">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="ndate">02 mai 2026</div>
+</nav>
+
+<!-- ===================================================== PAGE: OVERVIEW ===================================================== -->
+<div class="pg active" id="pg-overview">
+<div class="hero">
+  <div>
+    <div class="htitle">DRE 2026<br>Projetado vs. Real</div>
+    <div class="hsub">Comparativo jan–abr/2026 (realizado) · Projeção original: R$ 90 K/mês de receita</div>
+  </div>
+  <div class="pills">
+    <span class="pill pr"><span class="pdot"></span>Receita −11% vs. projetado</span>
+    <span class="pill pa"><span class="pdot"></span>Despesas +148% acima do budget</span>
+    <span class="pill pr"><span class="pdot"></span>Resultado operacional negativo</span>
+  </div>
+</div>
+
+<div class="sl">KPIs executivos — jan a abr/2026 acumulado</div>
+<div class="g4">
+  <div class="met mr">
+    <div class="ml">Receita projetada (4 meses)</div>
+    <div class="mv cb">R$ 360 K</div>
+    <div class="ms">R$ 90.000/mês × 4</div>
+  </div>
+  <div class="met mr">
+    <div class="ml">Receita realizada (4 meses)</div>
+    <div class="mv ca">R$ ~320 K</div>
+    <div class="ms">~R$ 80 K/mês efetivo</div>
+    <div class="delta dneg">−R$ 40 K (−11%)</div>
+  </div>
+  <div class="met mr">
+    <div class="ml">Despesas projetadas (4 meses)</div>
+    <div class="mv cb">R$ 120 K</div>
+    <div class="ms">R$ 30 K/mês projetado</div>
+  </div>
+  <div class="met mr">
+    <div class="ml">Despesas realizadas (4 meses)</div>
+    <div class="mv cr">R$ ~595 K</div>
+    <div class="ms">R$ ~149 K/mês efetivo</div>
+    <div class="delta dneg">+R$ 475 K (+396%)</div>
+  </div>
+</div>
+<div class="g4">
+  <div class="met mr">
+    <div class="ml">Resultado operacional projetado</div>
+    <div class="mv cb">R$ 240 K</div>
+    <div class="ms">Lucro esperado jan–abr</div>
+  </div>
+  <div class="met mr">
+    <div class="ml">Resultado operacional real</div>
+    <div class="mv cr">−R$ ~275 K</div>
+    <div class="ms">Prejuízo jan–abr/2026</div>
+    <div class="delta dneg">−R$ 515 K vs. budget</div>
+  </div>
+  <div class="met ma">
+    <div class="ml">Buy-out quotas (não projetado)</div>
+    <div class="mv cr">R$ 239 K</div>
+    <div class="ms">4 parcelas × R$ 59.814 — fora do DRE</div>
+    <div class="delta dneg">Não estava no budget</div>
+  </div>
+  <div class="met mg">
+    <div class="ml">Serv. terceiros projetado/mês</div>
+    <div class="mv ca">R$ 16,5 K</div>
+    <div class="ms">vs. R$ 81 K real/mês</div>
+    <div class="delta dneg">+391% acima</div>
+  </div>
+</div>
+
+<div class="sl">O que o DRE não previu — impactos não orçados</div>
+<div class="g2">
+  <div class="card">
+    <div class="ct">Despesas fora do budget original</div>
+    <div class="alt alr">
+      <div class="ats">Buy-out de quotas — R$ 59.814/mês (18 parcelas)</div>
+      <div class="asd">O maior item de gasto da empresa não constava no DRE projetado. R$ 239 K já pagos em jan–abr, mais R$ 119 K em mai–jun. Total: R$ 1.076.657 ao longo do período. Impacto devastador no caixa.</div>
+    </div>
+    <div class="alt alr">
+      <div class="ats">Acordo trabalhista Geremias — R$ 10.000/mês</div>
+      <div class="asd">Passivo trabalhista não previsto no orçamento. R$ 40 K já pagos em jan–abr. Continua até ago/2027 (20 parcelas, R$ 200 K total).</div>
+    </div>
+    <div class="alt ala">
+      <div class="ats">Serviços terceiros 4,9× acima do projetado</div>
+      <div class="asd">DRE projetou R$ 16.500/mês em serv. terceiros PJ. Realidade: Efata (R$ 35 K) + Macedo/Milajanu (R$ 23 K) + Godoy (R$ 6,5 K) = R$ 64,5 K/mês. Delta: +R$ 48 K/mês, +R$ 192 K em 4 meses.</div>
+    </div>
+    <div class="alt ala">
+      <div class="ats">EP Serviços de Tecnologia — R$ 12–16 K/mês (não previsto)</div>
+      <div class="asd">Fornecedor não constava no DRE original. R$ 56 K pagos em jan–abr.</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">Categorias dentro do budget</div>
+    <div class="alt alg">
+      <div class="ats">Honorários contábeis — exatamente no budget</div>
+      <div class="asd">DRE projetou R$ 790/mês. Real: R$ 785–850/mês. Variância < 8%. Única categoria dentro do orçamento.</div>
+    </div>
+    <div class="alt alg">
+      <div class="ats">Sistema Bling / licenças — próximo do projetado</div>
+      <div class="asd">DRE projetou R$ 6 K/mês em licenças. Real: R$ 110–120/mês (Bling). Muito abaixo do budget de licenças — provável que parte das licenças não tenha sido ativada.</div>
+    </div>
+    <div class="alt alb">
+      <div class="ats">Receita TOTVS — principal cliente mantido</div>
+      <div class="asd">A receita de serviços TOTVS (~R$ 64 K em jan) sustenta a operação. Porém a dependência de um único cliente representa risco sistêmico não endereçado no DRE original.</div>
+    </div>
+    <div class="alt alb">
+      <div class="ats">ISS sobre faturamento — razoavelmente controlado</div>
+      <div class="asd">DRE usou alíquota de 5,65% (PIS/COFINS/ISS). Real mostra ISS pago dentro do esperado para a receita efetiva.</div>
+    </div>
+  </div>
+</div>
+
+<div class="sl">Resumo do desvio por categoria</div>
+<div class="card">
+  <table class="dt">
+    <thead>
+      <tr>
+        <th>Categoria</th>
+        <th class="r">Projetado/mês</th>
+        <th class="r">Real/mês</th>
+        <th class="r">Desvio/mês</th>
+        <th class="r">Desvio%</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="lbl">Receita Easy</td><td class="r">R$ 90.000</td><td class="r">R$ ~80.000</td><td class="r" style="color:var(--r)">−R$ 10.000</td><td class="r" style="color:var(--r)">−11%</td><td><span class="bge bga">Abaixo</span></td></tr>
+      <tr class="subtotal"><td colspan="6" style="padding:4px 8px;font-size:10px;color:var(--t3)">DESPESAS PROJETADAS vs. REAIS</td></tr>
+      <tr><td class="lbl">Serv. Terceiros PJ (Efata+Macedo+Godoy)</td><td class="r">R$ 16.500</td><td class="r">R$ 64.500</td><td class="r" style="color:var(--r)">+R$ 48.000</td><td class="r" style="color:var(--r)">+291%</td><td><span class="bge bgr">Crítico</span></td></tr>
+      <tr><td class="lbl">Buy-out quotas (Rômulo)</td><td class="r">R$ 0</td><td class="r">R$ 59.814</td><td class="r" style="color:var(--r)">+R$ 59.814</td><td class="r" style="color:var(--r)">Não previsto</td><td><span class="bge bgr">Crítico</span></td></tr>
+      <tr><td class="lbl">Acordo trabalhista (Geremias)</td><td class="r">R$ 0</td><td class="r">R$ 10.000</td><td class="r" style="color:var(--r)">+R$ 10.000</td><td class="r" style="color:var(--r)">Não previsto</td><td><span class="bge bgr">Crítico</span></td></tr>
+      <tr><td class="lbl">EP Serviços Tecnologia</td><td class="r">R$ 0</td><td class="r">R$ 14.063</td><td class="r" style="color:var(--r)">+R$ 14.063</td><td class="r" style="color:var(--r)">Não previsto</td><td><span class="bge bga">Alerta</span></td></tr>
+      <tr><td class="lbl">Assessoria/Consultoria</td><td class="r">R$ 7.000</td><td class="r">R$ ~7.000</td><td class="r" style="color:var(--g)">≈ R$ 0</td><td class="r" style="color:var(--g)">0%</td><td><span class="bge bgg">OK</span></td></tr>
+      <tr><td class="lbl">Honorários contábeis</td><td class="r">R$ 790</td><td class="r">R$ 785</td><td class="r" style="color:var(--g)">−R$ 5</td><td class="r" style="color:var(--g)">−1%</td><td><span class="bge bgg">OK</span></td></tr>
+      <tr><td class="lbl">Cartão de crédito</td><td class="r">R$ 0 (não previsto)</td><td class="r">R$ 7.400</td><td class="r" style="color:var(--a)">+R$ 7.400</td><td class="r" style="color:var(--a)">Não previsto</td><td><span class="bge bga">Alerta</span></td></tr>
+      <tr><td class="lbl">Licenças/Amazon/Polar Tracker</td><td class="r">R$ 6.000</td><td class="r">R$ 110</td><td class="r" style="color:var(--g)">−R$ 5.890</td><td class="r" style="color:var(--g)">−98%</td><td><span class="bge bgb">Revisar</span></td></tr>
+      <tr><td class="lbl">Reembolso de despesas</td><td class="r">R$ 500</td><td class="r">R$ ~480</td><td class="r" style="color:var(--g)">≈ R$ 0</td><td class="r" style="color:var(--g)">−4%</td><td><span class="bge bgg">OK</span></td></tr>
+      <tr class="total">
+        <td>TOTAL DESPESAS</td>
+        <td class="r">R$ 30.790/mês</td>
+        <td class="r" style="color:var(--r)">R$ ~149.000/mês</td>
+        <td class="r" style="color:var(--r)">+R$ 118.210</td>
+        <td class="r" style="color:var(--r)">+384%</td>
+        <td><span class="bge bgr">Crítico</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ===================================================== PAGE: DRE COMPARATIVO ===================================================== -->
+<div class="pg" id="pg-dre">
+<div class="hero">
+  <div>
+    <div class="htitle">DRE Comparativo<br>Mês a Mês</div>
+    <div class="hsub">Projetado (budget dez/2025) vs. Realizado (jan–abr/2026)</div>
+  </div>
+  <span class="pill pr"><span class="pdot"></span>Resultado operacional real muito abaixo do budget</span>
+</div>
+
+<div class="sl">Receita — projetado vs. real</div>
+<div class="card" style="margin-bottom:14px">
+  <div class="cw" style="height:260px">
+    <canvas id="revChart" role="img" aria-label="Receita projetada vs real por mês">Receita mensal.</canvas>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:11px;color:var(--t2)">
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:3px;background:var(--b);display:inline-block"></span>Projetado (R$ 90 K/mês)</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--g)"></span>Receita real efetiva</span>
+  </div>
+</div>
+
+<div class="sl">Despesas — projetado vs. real</div>
+<div class="card" style="margin-bottom:14px">
+  <div class="cw" style="height:300px">
+    <canvas id="despChart" role="img" aria-label="Despesas projetadas vs real por mês">Despesas mensais.</canvas>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:11px;color:var(--t2)">
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--b)"></span>Budget total projetado</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--r)"></span>Total real (incl. buy-out)</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--a)"></span>Total real (excl. buy-out)</span>
+  </div>
+</div>
+
+<div class="sl">Resultado operacional — projetado vs. real</div>
+<div class="card" style="margin-bottom:14px">
+  <div class="cw" style="height:260px">
+    <canvas id="resChart" role="img" aria-label="Resultado operacional projetado vs real">Resultado operacional.</canvas>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:11px;color:var(--t2)">
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:3px;background:var(--b);display:inline-block"></span>Resultado projetado</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--r)"></span>Resultado real (incl. buy-out)</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--a)"></span>Resultado real (excl. buy-out)</span>
+  </div>
+</div>
+
+<div class="sl">DRE detalhado — jan a abr/2026</div>
+<div class="card">
+  <table class="dt">
+    <thead>
+      <tr>
+        <th>Linha DRE</th>
+        <th class="r">Projetado/mês</th>
+        <th class="r">Jan real</th>
+        <th class="r">Fev real</th>
+        <th class="r">Mar real</th>
+        <th class="r">Abr real</th>
+        <th class="r">Acum. real</th>
+        <th class="r">Budget acum.</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="subtotal"><td colspan="8" style="padding:4px 8px;font-size:10px">RECEITA</td></tr>
+      <tr>
+        <td class="lbl">Receita Easy (SaaS + serviços)</td>
+        <td class="r">90.000</td>
+        <td class="r" style="color:var(--g)">~80.000</td>
+        <td class="r" style="color:var(--g)">~80.000</td>
+        <td class="r" style="color:var(--g)">~80.000</td>
+        <td class="r" style="color:var(--g)">~80.000</td>
+        <td class="r" style="color:var(--g)">~320.000</td>
+        <td class="r">360.000</td>
+      </tr>
+      <tr><td class="lbl" style="color:var(--t2)">ISS/PIS/COFINS (~5,65%)</td><td class="r" style="color:var(--t2)">−5.085</td><td class="r" style="color:var(--t2)">−4.520</td><td class="r" style="color:var(--t2)">−4.520</td><td class="r" style="color:var(--t2)">−4.520</td><td class="r" style="color:var(--t2)">−4.520</td><td class="r" style="color:var(--t2)">−18.080</td><td class="r" style="color:var(--t2)">−20.340</td></tr>
+      <tr class="subtotal"><td class="lbl">RECEITA LÍQUIDA</td><td class="r">84.915</td><td class="r" style="color:var(--g)">75.480</td><td class="r" style="color:var(--g)">75.480</td><td class="r" style="color:var(--g)">75.480</td><td class="r" style="color:var(--g)">75.480</td><td class="r" style="color:var(--g)">301.920</td><td class="r">339.660</td></tr>
+      <tr class="subtotal"><td colspan="8" style="padding:4px 8px;font-size:10px">DESPESAS OPERACIONAIS</td></tr>
+      <tr><td class="lbl">Serv. Terceiros PJ (Efata+Macedo+Godoy+EP)</td><td class="r">16.500</td><td class="r" style="color:var(--r)">78.563</td><td class="r" style="color:var(--r)">78.563</td><td class="r" style="color:var(--r)">78.563</td><td class="r" style="color:var(--r)">81.625</td><td class="r" style="color:var(--r)">317.314</td><td class="r">66.000</td></tr>
+      <tr><td class="lbl">Assessoria / Consultoria</td><td class="r">7.000</td><td class="r">7.000</td><td class="r">7.000</td><td class="r">7.000</td><td class="r">7.000</td><td class="r">28.000</td><td class="r">28.000</td></tr>
+      <tr><td class="lbl">Honorários contábeis</td><td class="r">790</td><td class="r" style="color:var(--g)">850</td><td class="r" style="color:var(--g)">785</td><td class="r" style="color:var(--g)">785</td><td class="r" style="color:var(--g)">785</td><td class="r" style="color:var(--g)">3.205</td><td class="r">3.160</td></tr>
+      <tr><td class="lbl">Cartão de crédito (não previsto)</td><td class="r" style="color:var(--t3)">—</td><td class="r" style="color:var(--a)">5.739</td><td class="r" style="color:var(--a)">5.739</td><td class="r" style="color:var(--a)">5.739</td><td class="r" style="color:var(--a)">10.031</td><td class="r" style="color:var(--a)">27.248</td><td class="r" style="color:var(--t3)">0</td></tr>
+      <tr><td class="lbl">Bling / ISS / DCTF / outros</td><td class="r">500</td><td class="r">1.281</td><td class="r">189</td><td class="r">189</td><td class="r">1.139</td><td class="r">2.798</td><td class="r">2.000</td></tr>
+      <tr><td class="lbl">Licenças Amazon/Polar Tracker</td><td class="r">6.000</td><td class="r" style="color:var(--g)">0</td><td class="r" style="color:var(--g)">0</td><td class="r" style="color:var(--g)">0</td><td class="r" style="color:var(--g)">0</td><td class="r" style="color:var(--g)">0</td><td class="r">24.000</td></tr>
+      <tr><td class="lbl" style="color:var(--r)">Buy-out quotas Rômulo (NÃO previsto)</td><td class="r" style="color:var(--t3)">—</td><td class="r" style="color:var(--r)">59.814</td><td class="r" style="color:var(--r)">59.814</td><td class="r" style="color:var(--r)">59.814</td><td class="r" style="color:var(--r)">59.814</td><td class="r" style="color:var(--r)">239.256</td><td class="r" style="color:var(--t3)">0</td></tr>
+      <tr><td class="lbl" style="color:var(--r)">Acordo trabalhista Geremias (NÃO previsto)</td><td class="r" style="color:var(--t3)">—</td><td class="r" style="color:var(--r)">10.000</td><td class="r" style="color:var(--r)">10.000</td><td class="r" style="color:var(--r)">10.000</td><td class="r" style="color:var(--r)">10.000</td><td class="r" style="color:var(--r)">40.000</td><td class="r" style="color:var(--t3)">0</td></tr>
+      <tr><td class="lbl" style="color:var(--r)">IRPJ + CSLL (não provisionado no budget)</td><td class="r" style="color:var(--t3)">—</td><td class="r" style="color:var(--r)">3.367</td><td class="r" style="color:var(--t3)">0</td><td class="r" style="color:var(--t3)">0</td><td class="r" style="color:var(--r)">5.882</td><td class="r" style="color:var(--r)">9.249</td><td class="r" style="color:var(--t3)">0</td></tr>
+      <tr class="total">
+        <td>TOTAL DESPESAS</td>
+        <td class="r">30.790</td>
+        <td class="r" style="color:var(--r)">166.614</td>
+        <td class="r" style="color:var(--r)">162.090</td>
+        <td class="r" style="color:var(--r)">162.090</td>
+        <td class="r" style="color:var(--r)">176.276</td>
+        <td class="r" style="color:var(--r)">667.070</td>
+        <td class="r">123.160</td>
+      </tr>
+      <tr class="total" style="background:var(--rdim)">
+        <td style="color:var(--r)">RESULTADO OPERACIONAL</td>
+        <td class="r" style="color:var(--b)">+54.125</td>
+        <td class="r" style="color:var(--r)">−91.134</td>
+        <td class="r" style="color:var(--r)">−86.610</td>
+        <td class="r" style="color:var(--r)">−86.610</td>
+        <td class="r" style="color:var(--r)">−100.796</td>
+        <td class="r" style="color:var(--r)">−365.150</td>
+        <td class="r" style="color:var(--b)">+216.500</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="font-size:11px;color:var(--t3);margin-top:10px;padding-top:8px;border-top:1px solid var(--bd)">* Receita real estimada com base nos recebimentos do extrato de caixa jan–abr/2026. Buy-out registrado como saída de caixa (não é despesa operacional no DRE tradicional mas impacta diretamente o resultado de caixa).</div>
+</div>
+</div>
+
+<!-- ===================================================== PAGE: DESPESAS ===================================================== -->
+<div class="pg" id="pg-despesas">
+<div class="hero">
+  <div>
+    <div class="htitle">Análise de Despesas<br>Budget vs. Real</div>
+    <div class="hsub">Detalhamento por categoria — jan a abr/2026</div>
+  </div>
+  <span class="pill pa"><span class="pdot"></span>R$ 475 K acima do orçado em 4 meses</span>
+</div>
+
+<div class="sl">Composição das despesas reais — jan–abr/2026</div>
+<div class="g2">
+  <div class="card">
+    <div class="ct">Distribuição real (incl. buy-out)</div>
+    <div class="cw" style="height:230px"><canvas id="pieReal" role="img" aria-label="Composição real das despesas">Despesas reais.</canvas></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:11px;color:var(--t2)">
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#fb7185"></span>Buy-out 35,9%</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#fbbf24"></span>Efata 21%</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#818cf8"></span>Macedo 13,8%</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#60a5fa"></span>Geremias 6%</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#34d399"></span>Godoy 3,9%</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#94a3b8"></span>Outros 19,4%</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">Budget original vs. composição real</div>
+    <div class="cw" style="height:230px"><canvas id="pieBudget" role="img" aria-label="Composição orçada das despesas">Despesas orçadas.</canvas></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:11px;color:var(--t2)">
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#60a5fa"></span>Serv. Terceiros PJ 53,6%</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#34d399"></span>Assessoria 22,7%</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#fbbf24"></span>Licenças Amazon 19,5%</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#94a3b8"></span>Outros 4,2%</span>
+    </div>
+  </div>
+</div>
+
+<div class="sl">Comparativo horizontal — cada categoria</div>
+<div class="card">
+  <div class="cw" style="height:340px"><canvas id="hbarChart" role="img" aria-label="Comparativo de despesas por categoria">Comparativo categorias.</canvas></div>
+</div>
+
+<div class="sl">Evolução mensal das principais despesas</div>
+<div class="card">
+  <div class="ct">Despesas mensais por categoria — jan a abr/2026</div>
+  <div class="cw" style="height:280px"><canvas id="stackChart" role="img" aria-label="Evolução mensal despesas">Evolução mensal.</canvas></div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:11px;color:var(--t2)">
+    <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#fb7185"></span>Buy-out</span>
+    <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#fbbf24"></span>Efata</span>
+    <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#818cf8"></span>Macedo/Milajanu</span>
+    <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#60a5fa"></span>EP Serv.Tecnologia</span>
+    <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#34d399"></span>Geremias</span>
+    <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#94a3b8"></span>Outros</span>
+  </div>
+</div>
+</div>
+
+<!-- ===================================================== PAGE: VARIÂNCIAS ===================================================== -->
+<div class="pg" id="pg-variancia">
+<div class="hero">
+  <div>
+    <div class="htitle">Análise de Variâncias<br>Budget vs. Real</div>
+    <div class="hsub">Desvios por categoria e impacto no resultado — jan–abr/2026</div>
+  </div>
+  <span class="pill pr"><span class="pdot"></span>Desvio total: +R$ 543 K acima do budget</span>
+</div>
+
+<div class="g4">
+  <div class="met mr"><div class="ml">Desvio receita (4 meses)</div><div class="mv cr">−R$ 40 K</div><div class="ms">−11% vs. budget R$ 360 K</div></div>
+  <div class="met mr"><div class="ml">Desvio despesas (4 meses)</div><div class="mv cr">+R$ 544 K</div><div class="ms">+441% vs. budget R$ 123 K</div></div>
+  <div class="met mr"><div class="ml">Impacto total no resultado</div><div class="mv cr">−R$ 582 K</div><div class="ms">Budget: +R$ 217 K | Real: −R$ 365 K</div></div>
+  <div class="met ma"><div class="ml">Itens não orçados</div><div class="mv ca">R$ 476 K</div><div class="ms">Buy-out + Geremias + EP Serv. + Cartão</div></div>
+</div>
+
+<div class="sl">Waterfall — decomposição do desvio de resultado</div>
+<div class="card" style="margin-bottom:14px">
+  <div class="cw" style="height:300px"><canvas id="waterfallChart" role="img" aria-label="Waterfall decomposição do desvio">Waterfall desvio.</canvas></div>
+</div>
+
+<div class="sl">Ranking de desvios por categoria (maior → menor impacto)</div>
+<div class="card">
+  <table class="dt">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Categoria</th>
+        <th class="r">Budget/mês</th>
+        <th class="r">Real/mês</th>
+        <th class="r">Desvio total (4m)</th>
+        <th>Impacto</th>
+        <th>Origem</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="color:var(--r);font-weight:700">1</td>
+        <td class="lbl">Buy-out quotas (Rômulo)</td>
+        <td class="r">R$ 0</td>
+        <td class="r">R$ 59.814</td>
+        <td class="r" style="color:var(--r)">+R$ 239.256</td>
+        <td><span class="bge bgr">Crítico</span></td>
+        <td><span class="bge bgn">Não orçado</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--r);font-weight:700">2</td>
+        <td class="lbl">Efata Treinamento Tecnologia</td>
+        <td class="r">R$ 0*</td>
+        <td class="r">R$ 35.000</td>
+        <td class="r" style="color:var(--r)">+R$ 140.000</td>
+        <td><span class="bge bgr">Crítico</span></td>
+        <td><span class="bge bgn">Não orçado</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--r);font-weight:700">3</td>
+        <td class="lbl">M. de Q. Macedo / Milajanu</td>
+        <td class="r">R$ 0*</td>
+        <td class="r">R$ 23.000</td>
+        <td class="r" style="color:var(--r)">+R$ 92.000</td>
+        <td><span class="bge bgr">Crítico</span></td>
+        <td><span class="bge bgn">Não orçado</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--a);font-weight:700">4</td>
+        <td class="lbl">EP Serviços de Tecnologia</td>
+        <td class="r">R$ 0</td>
+        <td class="r">R$ 14.063</td>
+        <td class="r" style="color:var(--a)">+R$ 56.250</td>
+        <td><span class="bge bga">Alto</span></td>
+        <td><span class="bge bgn">Não orçado</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--a);font-weight:700">5</td>
+        <td class="lbl">Acordo trabalhista Geremias</td>
+        <td class="r">R$ 0</td>
+        <td class="r">R$ 10.000</td>
+        <td class="r" style="color:var(--a)">+R$ 40.000</td>
+        <td><span class="bge bga">Alto</span></td>
+        <td><span class="bge bgn">Não orçado</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--a);font-weight:700">6</td>
+        <td class="lbl">Cartão de crédito (despesas diversas)</td>
+        <td class="r">R$ 0</td>
+        <td class="r">R$ 6.812</td>
+        <td class="r" style="color:var(--a)">+R$ 27.248</td>
+        <td><span class="bge bga">Moderado</span></td>
+        <td><span class="bge bgn">Não orçado</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--a);font-weight:700">7</td>
+        <td class="lbl">Eduardo Faria de Godoy</td>
+        <td class="r">R$ 0*</td>
+        <td class="r">R$ 6.500</td>
+        <td class="r" style="color:var(--a)">+R$ 26.000</td>
+        <td><span class="bge bga">Moderado</span></td>
+        <td><span class="bge bgn">Não orçado</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--a);font-weight:700">8</td>
+        <td class="lbl">IRPJ + CSLL (não provisionado)</td>
+        <td class="r">R$ 0</td>
+        <td class="r">R$ 2.312</td>
+        <td class="r" style="color:var(--a)">+R$ 9.249</td>
+        <td><span class="bge bga">Moderado</span></td>
+        <td><span class="bge bgn">Não orçado</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--b);font-weight:700">9</td>
+        <td class="lbl">Licenças Amazon/Polar Tracker</td>
+        <td class="r">R$ 6.000</td>
+        <td class="r">R$ 0</td>
+        <td class="r" style="color:var(--g)">−R$ 24.000</td>
+        <td><span class="bge bgg">Favorável</span></td>
+        <td><span class="bge bgn">Não ativado</span></td>
+      </tr>
+      <tr>
+        <td style="color:var(--g);font-weight:700">10</td>
+        <td class="lbl">Receita Easy (abaixo do budget)</td>
+        <td class="r">R$ 90.000</td>
+        <td class="r">R$ ~80.000</td>
+        <td class="r" style="color:var(--r)">−R$ 40.000</td>
+        <td><span class="bge bga">Alto</span></td>
+        <td><span class="bge bgn">Mercado</span></td>
+      </tr>
+      <tr class="total">
+        <td colspan="4">DESVIO TOTAL NO RESULTADO (4 meses)</td>
+        <td class="r" style="color:var(--r)">−R$ 581.753</td>
+        <td colspan="2"><span class="bge bgr">Crítico</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="font-size:10.5px;color:var(--t3);margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)">* Efata, Macedo e Godoy podem estar incluídos na linha "Serv. Terceiros PJ" do DRE original (R$ 16.500/mês) — mesmo assim, o desvio é de +R$ 47.000/mês nessa categoria.</div>
+</div>
+</div>
+
+<!-- ===================================================== PAGE: RECOMENDAÇÕES ===================================================== -->
+<div class="pg" id="pg-recomendacoes">
+<div class="hero">
+  <div>
+    <div class="htitle">Recomendações<br>& Plano de Ação</div>
+    <div class="hsub">Baseado na análise DRE projetado vs. real jan–abr/2026</div>
+  </div>
+  <span class="pill pa"><span class="pdot"></span>5 ações prioritárias identificadas</span>
+</div>
+
+<div class="sl">Diagnóstico raiz — por que o budget falhou</div>
+<div class="g2">
+  <div class="card">
+    <div class="ct">Problemas estruturais do orçamento</div>
+    <div class="alt alr">
+      <div class="ats">1. Buy-out e acordos passivos ausentes do DRE</div>
+      <div class="asd">O maior item de gasto da empresa (R$ 59.814/mês) simplesmente não existia no orçamento. O DRE foi construído como se a empresa fosse puramente operacional, ignorando passivos de reestruturação societária e trabalhista que representam ~40% das saídas reais.</div>
+    </div>
+    <div class="alt alr">
+      <div class="ats">2. Serviços terceiros subestimados em 4,9×</div>
+      <div class="asd">O budget de R$ 16.500/mês provavelmente foi feito sem listar os contratos reais (Efata R$ 35 K, Macedo R$ 23 K, Godoy R$ 6,5 K). A estimativa foi "de cima para baixo" sem conferir os contratos ativos.</div>
+    </div>
+    <div class="alt ala">
+      <div class="ats">3. Nenhum provisionamento de impostos diretos</div>
+      <div class="asd">IRPJ e CSLL (R$ 9.249 pagos em jan–abr) não constavam no orçamento. Para lucro presumido, esses impostos são trimestrais e previsíveis — deveriam ter sido orçados.</div>
+    </div>
+    <div class="alt ala">
+      <div class="ats">4. Licença Polar Tracker/Amazon orçada mas não usada</div>
+      <div class="asd">R$ 6.000/mês (R$ 72 K/ano) reservado para licenças que não foram ativadas (apenas R$ 110/mês de Bling pago). Isso indica que algum produto/serviço planejado não foi lançado ou o contrato mudou.</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">O que funcionou no budget</div>
+    <div class="alt alg">
+      <div class="ats">Receita TOTVS/serviços mantida próxima ao esperado</div>
+      <div class="asd">A receita de R$ 80 K/mês ficou apenas 11% abaixo do projetado. O modelo de receita recorrente SaaS + serviços funciona. O problema é exclusivamente do lado das despesas.</div>
+    </div>
+    <div class="alt alg">
+      <div class="ats">Despesas administrativas fixas bem controladas</div>
+      <div class="asd">Honorários contábeis (R$ 785 vs. R$ 790 projetado), assessoria/consultoria, ISS e reembolsos ficaram dentro do budget. A equipe administrativa tem boa disciplina de custos.</div>
+    </div>
+    <div class="alt alg">
+      <div class="ats">Buy-out termina em jun/26 — normalização à vista</div>
+      <div class="asd">A partir de julho/2026, R$ 59.814/mês retornam ao caixa. O DRE H2/2026 ficará significativamente mais próximo do budget original se as demais despesas forem controladas.</div>
+    </div>
+  </div>
+</div>
+
+<div class="sl">Plano de ação — 5 frentes prioritárias</div>
+
+<div class="card" style="margin-bottom:12px">
+  <div class="ct" style="margin-bottom:10px"><span style="color:var(--r)">PRIORIDADE 1 — IMEDIATO</span> <span class="bge bgr">Esta semana</span></div>
+  <div class="tli">
+    <div class="tld" style="background:var(--r)"></div>
+    <div class="tlc">
+      <div class="tlt">Reorçar completamente o DRE mai–dez/2026 com dados reais</div>
+      <div class="tls">O budget atual é inútil para gestão — está 396% errado. Refazer com todos os contratos ativos listados, buy-out incluído até jun, Geremias até ago/2027, e receita baseada em carteira real (não R$ 90 K genérico). Entregar novo DRE em até 7 dias.</div>
+    </div>
+  </div>
+  <div class="tli">
+    <div class="tld" style="background:var(--r)"></div>
+    <div class="tlc">
+      <div class="tlt">Mapear todos os contratos de serviços terceiros ativos</div>
+      <div class="tls">Listar Efata, Macedo/Milajanu, Godoy, EP Serviços com: valor, objeto, vigência e cláusula de saída. Identificar quais são essenciais ao produto vs. suporte. Resultado desse mapeamento alimenta a decisão de renovação/cancelamento.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:12px">
+  <div class="ct" style="margin-bottom:10px"><span style="color:var(--a)">PRIORIDADE 2 — CURTO PRAZO</span> <span class="bge bga">Mai–jun/2026</span></div>
+  <div class="tli">
+    <div class="tld" style="background:var(--a)"></div>
+    <div class="tlc">
+      <div class="tlt">Decisão sobre Efata (R$ 35 K/mês) antes de jul/2026</div>
+      <div class="tls">Efata representa 23% das despesas operacionais (excluindo buy-out). Perguntas a responder: qual receita esse contrato gerou diretamente? Qual o prazo de aviso para rescisão? Qual o ROI mensurável? Se não houver resposta clara, renegociar para R$ 20 K ou encerrar em jul. Impacto: +R$ 180 K/ano.</div>
+    </div>
+  </div>
+  <div class="tli">
+    <div class="tld" style="background:var(--a)"></div>
+    <div class="tlc">
+      <div class="tlt">Provisionar IRPJ + CSLL trimestral no DRE reconstruído</div>
+      <div class="tls">Lucro presumido: IRPJ 15% + CSLL 9% sobre 32% da receita = alíquota efetiva de ~7,7% da receita bruta. Para R$ 80 K de receita mensal → ~R$ 6.160/mês a provisionar. Não ter isso no budget cria surpresas trimestrais.</div>
+    </div>
+  </div>
+  <div class="tli">
+    <div class="tld" style="background:var(--a)"></div>
+    <div class="tlc">
+      <div class="tlt">Investigar e orçar a linha "Licenças Polar Tracker" (R$ 6 K/mês não usados)</div>
+      <div class="tls">O budget reservou R$ 72 K/ano para licenças que não foram ativadas. Ou o produto Polar Tracker/Amazon não foi lançado conforme planejado, ou o contrato foi cancelado sem atualizar o budget. Esclarecer e remover do orçamento ou ativar o serviço.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:12px">
+  <div class="ct" style="margin-bottom:10px"><span style="color:var(--b)">PRIORIDADE 3 — PROCESSO</span> <span class="bge bgb">Estrutural</span></div>
+  <div class="tli">
+    <div class="tld" style="background:var(--b)"></div>
+    <div class="tlc">
+      <div class="tlt">Implementar DRE gerencial mensal com real vs. budget</div>
+      <div class="tls">A ausência de acompanhamento mensal permitiu que o desvio de R$ 582 K se acumulasse por 4 meses sem ação corretiva. Processo sugerido: até o dia 5 de cada mês, consolidar real do mês anterior no DRE, calcular variâncias e apresentar para diretoria. Ferramenta: Bling já tem dados — basta exportar e cruzar com o budget.</div>
+    </div>
+  </div>
+  <div class="tli">
+    <div class="tld" style="background:var(--b)"></div>
+    <div class="tlc">
+      <div class="tlt">Incluir passivos societários e trabalhistas futuros em qualquer novo orçamento</div>
+      <div class="tls">Qualquer reorçamento ou plano plurianual deve incluir explicitamente: (a) parcelas de buy-out em andamento, (b) acordos trabalhistas ativos, (c) contingências jurídicas. Sem isso, o orçamento é ficção financeira.</div>
+    </div>
+  </div>
+</div>
+
+<div class="sl">Projeção recalibrada — resultado esperado mai–dez/2026</div>
+<div class="card">
+  <div style="font-size:12px;color:var(--t2);margin-bottom:14px">Com buy-out encerrando em jun/26 e premissas realistas (sem Efata a partir de jul hipotético vs. mantendo Efata):</div>
+  <table class="dt">
+    <thead>
+      <tr><th>Período</th><th class="r">Receita est.</th><th class="r">Despesas op.</th><th class="r">Buy-out</th><th class="r">Geremias</th><th class="r">Resultado</th><th>vs. Budget original</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="lbl">Mai/26</td><td class="r">R$ 80 K</td><td class="r" style="color:var(--a)">R$ 66,2 K</td><td class="r" style="color:var(--r)">R$ 59,8 K</td><td class="r" style="color:var(--a)">R$ 10 K</td><td class="r" style="color:var(--r)">−R$ 56 K</td><td><span class="bge bgr">Abaixo</span></td></tr>
+      <tr><td class="lbl">Jun/26</td><td class="r">R$ 80 K</td><td class="r" style="color:var(--a)">R$ 66,2 K</td><td class="r" style="color:var(--r)">R$ 59,8 K</td><td class="r" style="color:var(--a)">R$ 10 K</td><td class="r" style="color:var(--r)">−R$ 56 K</td><td><span class="bge bgr">Abaixo</span></td></tr>
+      <tr style="background:var(--gdim)"><td class="lbl" style="color:var(--g)">Jul/26 ★ Buy-out encerra</td><td class="r">R$ 80 K</td><td class="r" style="color:var(--a)">R$ 66,2 K</td><td class="r" style="color:var(--g)">R$ 0</td><td class="r" style="color:var(--a)">R$ 10 K</td><td class="r" style="color:var(--g)">+R$ 3,8 K</td><td><span class="bge bgg">Positivo</span></td></tr>
+      <tr><td class="lbl">Ago–Dez/26 (por mês)</td><td class="r">R$ 80 K</td><td class="r" style="color:var(--a)">R$ 66,2 K</td><td class="r" style="color:var(--g)">R$ 0</td><td class="r" style="color:var(--a)">R$ 10 K</td><td class="r" style="color:var(--g)">+R$ 3,8 K</td><td><span class="bge bgg">Positivo</span></td></tr>
+      <tr class="total"><td>H2/2026 acumulado (jul–dez)</td><td class="r">R$ 480 K</td><td class="r">R$ 397 K</td><td class="r" style="color:var(--g)">R$ 0</td><td class="r">R$ 60 K</td><td class="r" style="color:var(--g)">+R$ 22,5 K</td><td><span class="bge bgg">Recuperação</span></td></tr>
+      <tr class="total" style="background:var(--gdim)"><td>Cenário se Efata encerrar jul/26</td><td class="r">R$ 480 K</td><td class="r">R$ 187 K</td><td class="r">R$ 0</td><td class="r">R$ 60 K</td><td class="r" style="color:var(--g)">+R$ 233 K</td><td><span class="bge bgg">+R$ 210 K melhor</span></td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<footer>Easy Analytics · DRE Projetado vs. Real 2026 · Gerado em 02/mai/2026 · Dados: DRE Projetado dez/2025 + Bling ERP jan–abr/2026 · Confidencial</footer>
+
+<script>
+Chart.defaults.color='#454a52';Chart.defaults.borderColor='rgba(255,255,255,0.06)';Chart.defaults.font.family="'DM Mono',monospace";Chart.defaults.font.size=11;
+const fBR=n=>'R$ '+Math.round(n).toLocaleString('pt-BR');
+const fK=n=>(n>=0?'':'-')+'R$ '+Math.abs(Math.round(n/1000))+'K';
+const MN=['Jan','Fev','Mar','Abr'];
+const pages=['overview','dre','despesas','variancia','recomendacoes'];
+
+function sp(id,btn,mob){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ntab,.mobtab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pg-'+id).classList.add('active');
+  btn.classList.add('active');
+  // sync other menu
+  var idx=pages.indexOf(id);
+  var other=mob?document.querySelectorAll('.ntab'):document.querySelectorAll('.mobtab');
+  if(idx>=0&&other[idx])other[idx].classList.add('active');
+  if(mob){document.getElementById('mmenu').classList.remove('open');document.getElementById('hbtn').classList.remove('open');}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function tmob(){
+  document.getElementById('mmenu').classList.toggle('open');
+  document.getElementById('hbtn').classList.toggle('open');
+}
+
+// DATA
+const projRev=[90000,90000,90000,90000];
+const realRev=[80000,80000,80000,80000];
+const projDesp=[30000,40000,30000,55000];// from DESPESAS EASY monthly totals
+const realDespExBO=[106800,102276,102276,116462];// excl buyout
+const realDespIncBO=[166614,162090,162090,176276];// incl buyout
+const buyout=[59814,59814,59814,59814];
+const projRes=projRev.map((r,i)=>r-projDesp[i]);
+const realResIncBO=realRev.map((r,i)=>r-realDespIncBO[i]);
+const realResExBO=realRev.map((r,i)=>r-realDespExBO[i]);
+
+// Receita chart
+new Chart(document.getElementById('revChart'),{
+  type:'bar',
+  data:{labels:MN,datasets:[
+    {label:'Projetado',data:projRev,backgroundColor:'rgba(96,165,250,0.15)',borderColor:'#60a5fa',borderWidth:2,type:'line',pointRadius:5,fill:false,tension:0},
+    {label:'Real',data:realRev,backgroundColor:'rgba(52,211,153,0.7)',borderWidth:0}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fBR(c.parsed.y)}}},scales:{x:{ticks:{font:{size:11}}},y:{ticks:{callback:fK},grid:{color:'rgba(255,255,255,0.04)'}}}}
+});
+
+// Despesas chart
+new Chart(document.getElementById('despChart'),{
+  type:'bar',
+  data:{labels:MN,datasets:[
+    {label:'Budget projetado',data:projDesp,backgroundColor:'rgba(96,165,250,0.6)',borderWidth:0},
+    {label:'Real (incl. buy-out)',data:realDespIncBO,backgroundColor:'rgba(251,113,133,0.7)',borderWidth:0},
+    {label:'Real (excl. buy-out)',data:realDespExBO,backgroundColor:'rgba(251,191,36,0.7)',borderWidth:0}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fBR(c.parsed.y)}}},scales:{x:{ticks:{font:{size:11}}},y:{ticks:{callback:fK},grid:{color:'rgba(255,255,255,0.04)'}}}}
+});
+
+// Resultado chart
+new Chart(document.getElementById('resChart'),{
+  type:'bar',
+  data:{labels:MN,datasets:[
+    {label:'Projetado',data:projRes,backgroundColor:'rgba(96,165,250,0.2)',borderColor:'#60a5fa',borderWidth:2,type:'line',pointRadius:5,fill:false,tension:0},
+    {label:'Real (incl. buy-out)',data:realResIncBO,backgroundColor:realResIncBO.map(v=>v>=0?'rgba(52,211,153,0.7)':'rgba(251,113,133,0.7)'),borderWidth:0},
+    {label:'Real (excl. buy-out)',data:realResExBO,backgroundColor:'rgba(251,191,36,0.5)',borderWidth:0}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fBR(c.parsed.y)}}},scales:{x:{ticks:{font:{size:11}}},y:{ticks:{callback:fK},grid:{color:'rgba(255,255,255,0.04)'}}}}
+});
+
+// Pie real
+new Chart(document.getElementById('pieReal'),{
+  type:'doughnut',
+  data:{labels:['Buy-out','Efata','Macedo/Milajanu','Geremias','Godoy','EP Serv.','Outros'],datasets:[{data:[239256,140000,92000,40000,26000,56250,73564],backgroundColor:['#fb7185','#fbbf24','#818cf8','#60a5fa','#34d399','#f472b6','#94a3b8'],borderWidth:0}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+fBR(c.parsed)+' ('+Math.round(c.parsed/667070*100)+'%)'}}}}
+});
+
+// Pie budget
+new Chart(document.getElementById('pieBudget'),{
+  type:'doughnut',
+  data:{labels:['Serv. Terceiros PJ','Assessoria/Consult.','Licenças Amazon','Honorários','Reembolso','Financeiro'],datasets:[{data:[66000,28000,24000,3160,2000,3200],backgroundColor:['#60a5fa','#34d399','#fbbf24','#94a3b8','#818cf8','#f472b6'],borderWidth:0}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+fBR(c.parsed)}}}}
+});
+
+// Horizontal bar — comparativo categorias
+new Chart(document.getElementById('hbarChart'),{
+  type:'bar',
+  data:{
+    labels:['Serv. Terc. PJ (excl. EP)','Buy-out (não orçado)','EP Serviços Tecnol.','Geremias (não orç.)','Cartão Crédito','Assessoria/Consult.','Honorários Contáb.','Licenças Amazon','Receita (desvio)'],
+    datasets:[
+      {label:'Budget/mês',data:[16500,0,0,0,0,7000,790,6000,90000],backgroundColor:'rgba(96,165,250,0.5)',borderWidth:0},
+      {label:'Real/mês',data:[64500,59814,14063,10000,6812,7000,785,0,80000],backgroundColor:['rgba(251,113,133,0.7)','rgba(251,113,133,0.7)','rgba(251,191,36,0.7)','rgba(251,191,36,0.7)','rgba(251,191,36,0.7)','rgba(52,211,153,0.7)','rgba(52,211,153,0.7)','rgba(52,211,153,0.7)','rgba(52,211,153,0.7)'],borderWidth:0}
+    ]
+  },
+  options:{
+    indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fBR(c.parsed.x)}}},
+    scales:{x:{ticks:{callback:fK},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{font:{size:10.5}}}}
+  }
+});
+
+// Stacked bar — evolução mensal
+new Chart(document.getElementById('stackChart'),{
+  type:'bar',
+  data:{
+    labels:MN,
+    datasets:[
+      {label:'Buy-out',data:[59814,59814,59814,59814],backgroundColor:'#fb7185',borderWidth:0},
+      {label:'Efata',data:[35000,35000,35000,35000],backgroundColor:'#fbbf24',borderWidth:0},
+      {label:'Macedo/Milajanu',data:[23000,23000,23000,23000],backgroundColor:'#818cf8',borderWidth:0},
+      {label:'EP Serv.Tecnologia',data:[12025,12025,12025,16125],backgroundColor:'#60a5fa',borderWidth:0},
+      {label:'Geremias',data:[10000,10000,10000,10000],backgroundColor:'#34d399',borderWidth:0},
+      {label:'Outros',data:[26775,22251,22251,32337],backgroundColor:'#94a3b8',borderWidth:0}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',callbacks:{label:c=>c.dataset.label+': '+fBR(c.parsed.y),footer:items=>'Total: '+fBR(items.reduce((a,i)=>a+i.parsed.y,0))}}},scales:{x:{stacked:true,ticks:{font:{size:11}}},y:{stacked:true,ticks:{callback:fK},grid:{color:'rgba(255,255,255,0.04)'}}}}
+});
+
+// Waterfall
+const wfLabels=['Budget\nresultado','Receita\n−11%','Serv.Terc.\nPJ +4,9×','Buy-out\n(não orç.)','EP Serv.\n(não orç.)','Geremias\n(não orç.)','Cartão\n(não orç.)','IRPJ\n(não orç.)','Licenças\n−98%','Resultado\nreal'];
+const wfBase=[0,216500,176500,36500,-202756,-242756,-269004,-278253,-287502,null];
+const wfVal=[216500,-40000,-140000,-239256,-40000,-26248,-9249,24000,-365150+278253,0];
+const wfColors=wfVal.map((v,i)=>{if(i===0||i===wfLabels.length-1)return '#60a5fa';return v>=0?'#34d399':'#fb7185';});
+new Chart(document.getElementById('waterfallChart'),{
+  type:'bar',
+  data:{
+    labels:['Budget','Receita −11%','Serv.Terc. +4,9x','Buy-out n/orç.','EP Serv. n/orç.','Geremias n/orç.','Cartão n/orç.','IRPJ n/orç.','Licenças −98%','Resultado real'],
+    datasets:[
+      {label:'Base (invisible)',data:[0,216500,176500,36500,36500-140000-62500,36500-140000-62500-40000,36500-140000-62500-40000-26248,36500-140000-62500-40000-26248-9249,36500-140000-62500-40000-26248-9249,0],backgroundColor:'transparent',borderWidth:0},
+      {label:'Valor',data:[216500,-40000,-140000,-239256,-40000,-26248,-9249,24000,-86656,-365150],backgroundColor:['#60a5fa','#fb7185','#fb7185','#fb7185','#fb7185','#fb7185','#fb7185','#34d399','#fb7185','#fb7185'],borderWidth:0}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.datasetIndex===0?'':fBR(c.parsed.y)}}},
+    scales:{
+      x:{ticks:{font:{size:10},maxRotation:45}},
+      y:{ticks:{callback:fK},grid:{color:'rgba(255,255,255,0.04)'},stacked:true}
+    }
+  }
+});
+</script>
+</body>
+</html>
