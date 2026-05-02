@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Easy Analytics — Dashboard Executivo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{--bg:#0a0c0f;--surf:#111418;--surf2:#181c22;--bdr:rgba(255,255,255,0.07);--bdr2:rgba(255,255,255,0.12);--txt:#eeeae3;--txt2:#888c94;--txt3:#555960;--green:#4ade80;--gdim:rgba(74,222,128,0.12);--gbdr:rgba(74,222,128,0.25);--red:#f87171;--rdim:rgba(248,113,113,0.12);--rbdr:rgba(248,113,113,0.25);--amb:#fbbf24;--adim:rgba(251,191,36,0.12);--abdr:rgba(251,191,36,0.25);--blu:#60a5fa;--bdim:rgba(96,165,250,0.12);--bbdr:rgba(96,165,250,0.25);--acc:#c8f04a;--accdim:rgba(200,240,74,0.1)}
+#lock-screen{position:fixed;inset:0;background:#0a0c0f;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column}
+#lock-screen.hidden{display:none}
+.lock-box{background:#111418;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:40px 44px;width:100%;max-width:380px;display:flex;flex-direction:column;align-items:center;gap:0}
+.lock-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#c8f04a;margin-bottom:4px}
+.lock-logo span{color:#888c94;font-weight:400;font-size:13px}
+.lock-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:600;color:#eeeae3;margin:24px 0 4px;text-align:center}
+.lock-sub{font-size:12px;color:#555960;text-align:center;margin-bottom:24px}
+.lock-input-wrap{position:relative;width:100%;margin-bottom:10px}
+.lock-input{width:100%;padding:12px 44px 12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:#181c22;color:#eeeae3;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.lock-input:focus{border-color:rgba(200,240,74,0.4)}
+.lock-input.shake{animation:shake .35s ease}
+.lock-eye{position:absolute;right:13px;top:50%;transform:translateY(-50%);cursor:pointer;color:#555960;font-size:16px;user-select:none;line-height:1}
+.lock-btn{width:100%;padding:12px;border-radius:10px;background:#c8f04a;color:#0a0c0f;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;border:none;cursor:pointer;transition:opacity .15s;margin-top:4px}
+.lock-btn:hover{opacity:.88}
+.lock-btn:active{opacity:.75}
+.lock-error{font-size:12px;color:#f87171;min-height:18px;margin-bottom:2px;text-align:center}
+.lock-hint{font-size:11px;color:#555960;margin-top:16px;text-align:center}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;min-height:100vh}
+nav{position:sticky;top:0;z-index:100;background:rgba(10,12,15,0.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--bdr);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;gap:12px}
+.nav-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--acc);white-space:nowrap}
+.nav-brand span{color:var(--txt2);font-weight:400;font-size:12px}
+.nav-date{font-family:'DM Mono',monospace;font-size:11px;color:var(--txt3);white-space:nowrap}
+.nav-tabs{display:flex;gap:2px}
+.nav-tab{padding:6px 13px;border-radius:6px;font-size:12px;font-weight:500;color:var(--txt2);cursor:pointer;transition:all .15s;border:none;background:none;font-family:'DM Sans',sans-serif}
+.nav-tab:hover{color:var(--txt);background:var(--surf2)}
+.nav-tab.active{color:var(--acc);background:var(--accdim)}
+.page{display:none;padding:2rem;max-width:1280px;margin:0 auto}
+.page.active{display:block}
+.hero{margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--bdr);display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.hero-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;letter-spacing:-.03em;line-height:1.15}
+.hero-sub{font-size:12px;color:var(--txt2);margin-top:4px}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font-size:11px;font-weight:500;font-family:'DM Mono',monospace}
+.pill-r{background:var(--rdim);color:var(--red);border:1px solid var(--rbdr)}
+.pill-a{background:var(--adim);color:var(--amb);border:1px solid var(--abdr)}
+.pill-g{background:var(--gdim);color:var(--green);border:1px solid var(--gbdr)}
+.pill-b{background:var(--bdim);color:var(--blu);border:1px solid var(--bbdr)}
+.pill-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.metric{background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;transition:border-color .2s}
+.metric:hover{border-color:var(--bdr2)}
+.metric::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:12px 12px 0 0}
+.metric.mg::before{background:var(--green)}.metric.mr::before{background:var(--red)}.metric.ma::before{background:var(--amb)}.metric.mb::before{background:var(--blu)}.metric.mc::before{background:var(--acc)}
+.ml{font-size:11px;font-weight:500;color:var(--txt3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.mv{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.mv.cg{color:var(--green)}.mv.cr{color:var(--red)}.mv.ca{color:var(--amb)}.mv.cb{color:var(--blu)}.mv.cc{color:var(--acc)}
+.ms{font-size:11px;color:var(--txt3);margin-top:5px}
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:18px;margin-bottom:0}
+.ct{font-family:'Syne',sans-serif;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--txt2);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.dt{width:100%;border-collapse:collapse;font-size:12px}
+.dt th{text-align:left;padding:7px 9px;color:var(--txt3);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--bdr)}
+.dt td{padding:8px 9px;border-bottom:1px solid var(--bdr);color:var(--txt);vertical-align:middle}
+.dt tr:last-child td{border-bottom:none}
+.dt tr:hover td{background:rgba(255,255,255,0.02)}
+.dt td.r{text-align:right}.dt td.mn{font-family:'DM Mono',monospace;font-size:11px}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:500;white-space:nowrap}
+.bg-r{background:var(--rdim);color:var(--red)}.bg-a{background:var(--adim);color:var(--amb)}.bg-g{background:var(--gdim);color:var(--green)}.bg-b{background:var(--bdim);color:var(--blu)}.bg-n{background:rgba(255,255,255,0.06);color:var(--txt2)}
+.alert{padding:11px 14px;border-radius:10px;margin-bottom:9px;border-left:3px solid;font-size:12.5px}
+.at{font-weight:500;margin-bottom:2px}
+.as{font-size:11px;opacity:.8;line-height:1.5}
+.al-r{background:var(--rdim);border-color:var(--red);color:#fca5a5}
+.al-a{background:var(--adim);border-color:var(--amb);color:#fcd34d}
+.al-g{background:var(--gdim);border-color:var(--green);color:#86efac}
+.al-b{background:var(--bdim);border-color:var(--blu);color:#93c5fd}
+.pb{background:var(--surf2);border-radius:4px;height:7px;overflow:hidden;margin-top:4px}
+.pbi{height:7px;border-radius:4px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bdr);gap:8px}
+.row:last-child{border-bottom:none}
+.rl{font-size:12px;color:var(--txt);flex:1;min-width:0}
+.rl small{display:block;font-size:10.5px;color:var(--txt3);margin-top:1px}
+.sl{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em;margin:20px 0 10px;display:flex;align-items:center;gap:10px}
+.sl::after{content:'';flex:1;height:1px;background:var(--bdr)}
+.dv{border:none;border-top:1px solid var(--bdr);margin:20px 0}
+.cw{position:relative;width:100%}
+.tli{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--bdr)}
+.tli:last-child{border-bottom:none}
+.tld{width:7px;height:7px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.tlc{flex:1}
+.tlt{font-size:12.5px;font-weight:500;color:var(--txt)}
+.tls{font-size:11px;color:var(--txt3);margin-top:2px}
+select.cs{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--bdr2);background:var(--surf2);color:var(--txt);font-family:'DM Sans',sans-serif;outline:none}
+footer{margin-top:3rem;padding:1.5rem 2rem;border-top:1px solid var(--bdr);text-align:center;font-size:10.5px;color:var(--txt3);font-family:'DM Mono',monospace}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.page.active>*{animation:fadeUp .28s ease both}
+.page.active>*:nth-child(2){animation-delay:.05s}
+.page.active>*:nth-child(3){animation-delay:.10s}
+.page.active>*:nth-child(4){animation-delay:.15s}
+.page.active>*:nth-child(5){animation-delay:.20s}
+@media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}.nav-tabs{display:none}.hamburger{display:flex!important}nav{padding:0 1rem}.page{padding:1.5rem 1rem}.nav-date{display:none}}.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;border:none;background:none;z-index:200}.hamburger span{display:block;width:22px;height:2px;background:var(--txt2);border-radius:2px;transition:all .25s}.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.hamburger.open span:nth-child(2){opacity:0}.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.mob-menu{display:none;position:fixed;top:56px;left:0;right:0;background:rgba(10,12,15,0.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr);z-index:99;flex-direction:column;padding:8px 0}.mob-menu.open{display:flex}.mob-tab{padding:14px 24px;font-size:14px;font-weight:500;color:var(--txt2);cursor:pointer;border:none;background:none;text-align:left;font-family:"DM Sans",sans-serif;border-left:3px solid transparent;transition:all .15s}.mob-tab:hover{color:var(--txt);background:var(--surf2)}.mob-tab.active{color:var(--acc);border-left-color:var(--acc);background:var(--accdim)}
+@media(max-width:600px){.g4{grid-template-columns:1fr 1fr}.hero-title{font-size:20px}}
+</style>
+</head>
+<body>
+
+<div id="lock-screen" style="position:fixed;inset:0;background:#0a0c0f;z-index:9999;display:flex;align-items:center;justify-content:center">
+  <div style="background:#111418;border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:40px 44px;width:100%;max-width:380px;display:flex;flex-direction:column;align-items:center">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#c8f04a">EASY<span style="color:#888c94;font-weight:400;font-size:13px"> analytics</span></div>
+    <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:600;color:#eeeae3;margin:22px 0 4px;text-align:center">Dashboard Executivo</div>
+    <div style="font-size:12px;color:#555960;text-align:center;margin-bottom:22px">Conteudo confidencial. Insira a senha para continuar.</div>
+    <div id="lockErr" style="font-size:12px;color:#f87171;min-height:18px;margin-bottom:6px;text-align:center"></div>
+    <div style="position:relative;width:100%;margin-bottom:10px">
+      <input id="lockPwd" type="password" placeholder="Senha de acesso"
+        style="width:100%;padding:12px 44px 12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:#181c22;color:#eeeae3;font-size:14px;outline:none;box-sizing:border-box"
+        onkeydown="if(event.key==='Enter')unlock()"
+        onfocus="this.style.borderColor='rgba(200,240,74,0.4)'"
+        onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+      <span onclick="var i=document.getElementById('lockPwd');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'"
+        style="position:absolute;right:13px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:15px;user-select:none">👁</span>
+    </div>
+    <button onclick="unlock()"
+      style="width:100%;padding:12px;border-radius:10px;background:#c8f04a;color:#0a0c0f;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;border:none;cursor:pointer;margin-top:4px">
+      Acessar Dashboard
+    </button>
+    <div style="font-size:11px;color:#444;margin-top:18px;text-align:center">02 mai 2026 &middot; Confidencial</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var PWD="Easy1.2.3.@";
+  var KEY="ea_dash_auth";
+  if(sessionStorage.getItem(KEY)==="1"){
+    document.addEventListener("DOMContentLoaded",function(){
+      var ls=document.getElementById("lock-screen");
+      if(ls) ls.style.display="none";
+    });
+  }
+  window.unlock=function(){
+    var input=document.getElementById("lockPwd");
+    var err=document.getElementById("lockErr");
+    if(input.value===PWD){
+      sessionStorage.setItem(KEY,"1");
+      var ls=document.getElementById("lock-screen");
+      ls.style.transition="opacity .3s";
+      ls.style.opacity="0";
+      setTimeout(function(){ls.style.display="none";},320);
+      err.textContent="";
+    } else {
+      err.textContent="Senha incorreta. Tente novamente.";
+      input.value="";
+      input.style.borderColor="rgba(248,113,113,0.5)";
+      input.focus();
+      setTimeout(function(){input.style.borderColor="rgba(255,255,255,0.1)";},1400);
+    }
+  };
+})();
+</script>
+
+<div class="mob-menu" id="mobMenu">
+  <button class="mob-tab active" onclick="showPage('overview',this,true)">Visão Geral</button>
+  <button class="mob-tab" onclick="showPage('cashflow',this,true)">Caixa</button>
+  <button class="mob-tab" onclick="showPage('clients',this,true)">Clientes</button>
+  <button class="mob-tab" onclick="showPage('pipeline',this,true)">Pipeline</button>
+  <button class="mob-tab" onclick="showPage('projection',this,true)">Projeção</button>
+</div>
+
+<nav>
+  <div class="nav-brand">EASY<span> analytics &nbsp;·&nbsp; Dashboard Executivo</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('overview',this)">Visão Geral</button>
+    <button class="nav-tab" onclick="showPage('cashflow',this)">Caixa</button>
+    <button class="nav-tab" onclick="showPage('clients',this)">Clientes</button>
+    <button class="nav-tab" onclick="showPage('pipeline',this)">Pipeline</button>
+    <button class="nav-tab" onclick="showPage('projection',this)">Projeção</button>
+  </div>
+  <button class="hamburger" id="hambBtn" onclick="toggleMob()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-date">02 mai 2026</div>
+</nav>
+
+<!-- ===== OVERVIEW ===== -->
+<div class="page active" id="page-overview">
+<div class="hero">
+  <div><div class="hero-title">Diagnóstico Financeiro<br>& Comercial</div><div class="hero-sub">Período analisado: jan–abr/2026 · Projeção: mai–dez/2026 e 2027</div></div>
+  <div class="pills"><span class="pill pill-r"><span class="pill-dot"></span>Gap caixa −R$ 194 K</span><span class="pill pill-a"><span class="pill-dot"></span>6 clientes em churn</span><span class="pill pill-g"><span class="pill-dot"></span>Buy-out termina jun/26</span></div>
+</div>
+<div class="sl">KPIs executivos</div>
+<div class="g4">
+  <div class="metric mr"><div class="ml">A pagar (mai–jun)</div><div class="mv cr">R$ 297 K</div><div class="ms">23 lançamentos em aberto</div></div>
+  <div class="metric mg"><div class="ml">A receber confirmado</div><div class="mv cg">R$ 102 K</div><div class="ms">8 parcelas — jan a jun/26</div></div>
+  <div class="metric mr"><div class="ml">Gap líquido</div><div class="mv cr">−R$ 194 K</div><div class="ms">2,9× o recebível total</div></div>
+  <div class="metric ma"><div class="ml">Vencidos sem receber</div><div class="mv ca">R$ 35 K</div><div class="ms">Atacadão + TOTVS SA</div></div>
+</div>
+<div class="g4">
+  <div class="metric mg"><div class="ml">Clientes pagantes</div><div class="mv cg">27</div><div class="ms">40% da base histórica (68)</div></div>
+  <div class="metric mr"><div class="ml">Churn histórico</div><div class="mv cr">60%</div><div class="ms">41 de 68 clientes perdidos</div></div>
+  <div class="metric ma"><div class="ml">Risco churn imediato</div><div class="mv ca">6</div><div class="ms">Flag SIM — ação urgente</div></div>
+  <div class="metric mb"><div class="ml">Pipeline em proposta</div><div class="mv cb">7</div><div class="ms">Potencial R$ 33 K/mês recorrente</div></div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="ct">Highlights <span class="badge bg-g">positivos</span></div>
+    <div class="alert al-g"><div class="at">Buy-out Rômulo termina jun/26 — libera R$ 59.814/mês</div><div class="as">A partir de julho, a empresa terá ~R$ 60 K/mês a mais. Maior evento positivo do ano — transforma o resultado de negativo para positivo.</div></div>
+    <div class="alert al-g"><div class="at">13 clientes com 100% de recorrência de pagamento</div><div class="as">Núcleo sólido de pagadores fiéis (out/25–abr/26). Base ideal para upsell e expansão.</div></div>
+    <div class="alert al-g"><div class="at">Baianão + SESI valem R$ 21 K/mês SaaS se fecharem</div><div class="as">As duas maiores propostas sozinhas aumentam a receita recorrente em ~26%.</div></div>
+    <div class="alert al-b"><div class="at">Conta Polar funcionando como buffer de caixa</div><div class="as">Aportes regulares (R$ 100 K jan, R$ 155 K abr) sustentam a operação no curto prazo.</div></div>
+  </div>
+  <div class="card">
+    <div class="ct">Lowlights <span class="badge bg-r">riscos</span></div>
+    <div class="alert al-r"><div class="at">60% de churn histórico — sem estrutura de retenção</div><div class="as">41 de 68 clientes já cancelaram. Sem NPS, QBR ou programa de CS documentado.</div></div>
+    <div class="alert al-r"><div class="at">3 recebíveis vencidos — R$ 35 K de inadimplência</div><div class="as">Atacadão (3 parcelas: mar, abr, mai) + TOTVS SA (abr). Atacadão sugere inadimplência estrutural.</div></div>
+    <div class="alert al-r"><div class="at">Status jurídico do pagamento Rômulo (parc. 18/18)</div><div class="as">Parc. 17/18 paga com ressalva "verificar com advogado". Confirmar urgentemente antes de 25/jun.</div></div>
+    <div class="alert al-a"><div class="at">64% do pipeline parado ou perdido</div><div class="as">20 de 31 oportunidades sem avanço. Principal motivo: ESN TOTVS sem retorno.</div></div>
+  </div>
+</div>
+<div class="sl">Ações imediatas</div>
+<div class="g2">
+  <div class="card">
+    <div class="ct">Esta semana</div>
+    <div class="tli"><div class="tld" style="background:var(--red)"></div><div class="tlc"><div class="tlt">Confirmar status jurídico buy-out (18/18 vence 25/jun)</div><div class="tls">Contatar advogado Rodrigo (Toreta Salvador) — urgente</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--red)"></div><div class="tlc"><div class="tlt">Cobrança formal Atacadão — 3 parcelas vencidas</div><div class="tls">R$ 20.277 em aberto — boleto + contato Fabio Loss (27 99276-2744)</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--red)"></div><div class="tlc"><div class="tlt">Confirmar TOTVS SA — R$ 14.200 (vencido 16/abr)</div><div class="tls">RPS nº 1124 sem baixa confirmada</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--red)"></div><div class="tlc"><div class="tlt">Contato com 6 clientes flag churn = SIM</div><div class="tls">Editora do Brasil, Guaraves, JDK, Lab. Florais, Sky Cranes — mapear motivo</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--amb)"></div><div class="tlc"><div class="tlt">Investigar cartão crédito abril (R$ 10.031 vs R$ 5.739 usual)</div><div class="tls">Aumento de 75% — mapear composição</div></div></div>
+  </div>
+  <div class="card">
+    <div class="ct">Mai–Jun 2026</div>
+    <div class="tli"><div class="tld" style="background:var(--amb)"></div><div class="tlc"><div class="tlt">Follow-up prioritário: Baianão + SESI</div><div class="tls">R$ 21 K/mês SaaS se ambos fecharem — maior upside do pipeline</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--amb)"></div><div class="tlc"><div class="tlt">Avaliar continuidade Efata (R$ 35 K/mês)</div><div class="tls">Maior despesa op. pós-buy-out. Analisar ROI e cláusula de saída</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--amb)"></div><div class="tlc"><div class="tlt">Garantir aporte Polar para cobrir gap de mai (~R$ 145 K saídas)</div><div class="tls">Operação não é autossuficiente ainda</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--blu)"></div><div class="tlc"><div class="tlt">Reativar 10 oportunidades "paradas" no pipeline</div><div class="tls">Nova abordagem direta — não depender só do ESN</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--blu)"></div><div class="tlc"><div class="tlt">Estruturar CS básico — NPS + QBR top 10 contas</div><div class="tls">Sem retenção estruturada, o churn de 60% histórico continuará</div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- ===== CASHFLOW ===== -->
+<div class="page" id="page-cashflow">
+<div class="hero">
+  <div><div class="hero-title">Fluxo de Caixa<br>Jan–Abr 2026</div><div class="hero-sub">Histórico de entradas e saídas — Banco Itaú + Bradesco</div></div>
+  <span class="pill pill-r"><span class="pill-dot"></span>Operação dependente de aportes</span>
+</div>
+<div class="g4">
+  <div class="metric ma"><div class="ml">Saldo estimado hoje</div><div class="mv ca">~R$ 48 K</div><div class="ms">Itaú + Bradesco combinados</div></div>
+  <div class="metric mr"><div class="ml">A pagar mai–jun</div><div class="mv cr">R$ 297.549</div><div class="ms">23 lançamentos em aberto</div></div>
+  <div class="metric mg"><div class="ml">A receber mai–jun</div><div class="mv cg">R$ 102.780</div><div class="ms">8 parcelas confirmadas</div></div>
+  <div class="metric mr"><div class="ml">Gap líquido</div><div class="mv cr">−R$ 194.769</div><div class="ms">2,9× o recebível total</div></div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="ct">Maiores saídas recorrentes</div>
+    <table class="dt">
+      <thead><tr><th>Fornecedor</th><th>Tipo</th><th class="r">Valor/mês</th></tr></thead>
+      <tbody>
+        <tr><td>Rômulo Ferreira Lima</td><td><span class="badge bg-r">Buy-out</span></td><td class="r mn" style="color:var(--red)">R$ 59.814</td></tr>
+        <tr><td>Efata Treinamento Tecnologia</td><td><span class="badge bg-a">Serviços</span></td><td class="r mn" style="color:var(--amb)">R$ 35.000</td></tr>
+        <tr><td>M. de Q. Macedo / Milajanu</td><td><span class="badge bg-a">Serviços</span></td><td class="r mn" style="color:var(--amb)">R$ 23.000</td></tr>
+        <tr><td>Geremias Ferreira Lima</td><td><span class="badge bg-a">Acordo trabalhista</span></td><td class="r mn" style="color:var(--amb)">R$ 10.000</td></tr>
+        <tr><td>EP Serviços de Tecnologia</td><td><span class="badge bg-n">Serviços</span></td><td class="r mn">R$ 12–16 K</td></tr>
+        <tr><td>Eduardo Faria de Godoy</td><td><span class="badge bg-n">Serviços</span></td><td class="r mn">R$ 6.500</td></tr>
+        <tr><td>Cartão Crédito Bradesco</td><td><span class="badge bg-n">Despesas gerais</span></td><td class="r mn">R$ 5.739–10 K</td></tr>
+        <tr><td>TOTVS S.A. (parceria)</td><td><span class="badge bg-b">Parceria</span></td><td class="r mn" style="color:var(--blu)">R$ 11.871 (mai)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="ct">Distribuição saídas — mai/2026</div>
+    <div class="cw" style="height:210px"><canvas id="expChart" role="img" aria-label="Saídas maio 2026">Saídas.</canvas></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:11px;color:var(--txt3)">
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#f87171"></span>Buy-out 41%</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#fbbf24"></span>Efata 24%</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#818cf8"></span>Macedo 16%</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#60a5fa"></span>Geremias 7%</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#4ade80"></span>Godoy 4%</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#94a3b8"></span>Outros 8%</span>
+    </div>
+  </div>
+</div>
+<div class="sl">Contas a receber — situação detalhada</div>
+<div class="card">
+  <table class="dt">
+    <thead><tr><th>Cliente</th><th>Vencimento</th><th>Situação</th><th class="r">Saldo</th></tr></thead>
+    <tbody>
+      <tr><td>Atacadão Distribuidora — doc 165</td><td class="mn">20/mar/26</td><td><span class="badge bg-a">Parcial</span></td><td class="r mn" style="color:var(--amb)">R$ 6.578</td></tr>
+      <tr><td>Atacadão Distribuidora — doc 166</td><td class="mn">22/mar/26</td><td><span class="badge bg-r">Atrasada</span></td><td class="r mn" style="color:var(--red)">R$ 7.039</td></tr>
+      <tr><td>TOTVS SA — RPS 1124</td><td class="mn">16/abr/26</td><td><span class="badge bg-r">Atrasada</span></td><td class="r mn" style="color:var(--red)">R$ 14.200</td></tr>
+      <tr><td>Atacadão Distribuidora — doc 167</td><td class="mn">22/abr/26</td><td><span class="badge bg-r">Atrasada</span></td><td class="r mn" style="color:var(--red)">R$ 7.039</td></tr>
+      <tr><td>Sérgio C. Weiser Decoração</td><td class="mn">21/mai/26</td><td><span class="badge bg-b">Em aberto</span></td><td class="r mn">R$ 5.256</td></tr>
+      <tr><td>Atacadão Distribuidora — doc 168</td><td class="mn">22/mai/26</td><td><span class="badge bg-b">Em aberto</span></td><td class="r mn">R$ 7.039</td></tr>
+      <tr><td>Usina São Francisco S/A</td><td class="mn">29/mai/26</td><td><span class="badge bg-b">Em aberto</span></td><td class="r mn">R$ 5.631</td></tr>
+      <tr><td>TOTVS S.A. — Previsão faturamento</td><td class="mn">15/jun/26</td><td><span class="badge bg-g">Previsto</span></td><td class="r mn" style="color:var(--green)">R$ 50.000</td></tr>
+    </tbody>
+  </table>
+  <div style="display:flex;justify-content:space-between;padding:9px 9px 0;border-top:1px solid var(--bdr);margin-top:2px;font-size:12px">
+    <span style="color:var(--txt3)">Vencidos (risco real): <strong style="color:var(--red)">R$ 34.856</strong></span>
+    <span style="color:var(--txt3)">Total geral: <strong style="color:var(--txt)">R$ 102.780</strong></span>
+  </div>
+</div>
+<div class="sl">Contas a pagar — mai e jun/2026</div>
+<div class="g2">
+  <div class="card">
+    <div class="ct">Maio/2026</div>
+    <table class="dt">
+      <thead><tr><th>Fornecedor</th><th class="r">Venc.</th><th class="r">Valor</th></tr></thead>
+      <tbody>
+        <tr><td>TOTVS S.A. renovação</td><td class="r mn">07/mai</td><td class="r mn" style="color:var(--amb)">R$ 11.871</td></tr>
+        <tr><td>Plentech LTDA</td><td class="r mn">11/mai</td><td class="r mn">R$ 2.500</td></tr>
+        <tr><td>Cartão Crédito</td><td class="r mn">15/mai</td><td class="r mn">R$ 5.739</td></tr>
+        <tr><td>Geremias Lima (5/20)</td><td class="r mn">19/mai</td><td class="r mn" style="color:var(--amb)">R$ 10.000</td></tr>
+        <tr><td>Efata Treinamento</td><td class="r mn">20/mai</td><td class="r mn" style="color:var(--amb)">R$ 35.000</td></tr>
+        <tr><td>M. de Q. Macedo</td><td class="r mn">20/mai</td><td class="r mn" style="color:var(--amb)">R$ 23.000</td></tr>
+        <tr><td>Eduardo Faria de Godoy</td><td class="r mn">20/mai</td><td class="r mn">R$ 6.500</td></tr>
+        <tr><td><strong>Rômulo Lima (17/18)</strong></td><td class="r mn">25/mai</td><td class="r mn" style="color:var(--red)">R$ 59.814</td></tr>
+        <tr><td style="color:var(--txt3)">Outros (ISS, Bling, DCTF…)</td><td class="r mn">vários</td><td class="r mn">R$ 1.221</td></tr>
+      </tbody>
+    </table>
+    <div style="padding:8px 9px 0;border-top:1px solid var(--bdr);font-size:12px;text-align:right"><strong style="color:var(--red)">Total mai: R$ 155.645</strong></div>
+  </div>
+  <div class="card">
+    <div class="ct">Junho/2026</div>
+    <table class="dt">
+      <thead><tr><th>Fornecedor</th><th class="r">Venc.</th><th class="r">Valor</th></tr></thead>
+      <tbody>
+        <tr><td>Cartão Crédito</td><td class="r mn">15/jun</td><td class="r mn">R$ 5.739</td></tr>
+        <tr><td>Geremias Lima (6/20)</td><td class="r mn">18/jun</td><td class="r mn" style="color:var(--amb)">R$ 10.000</td></tr>
+        <tr><td>Efata Treinamento</td><td class="r mn">22/jun</td><td class="r mn" style="color:var(--amb)">R$ 35.000</td></tr>
+        <tr><td>M. de Q. Macedo</td><td class="r mn">22/jun</td><td class="r mn" style="color:var(--amb)">R$ 23.000</td></tr>
+        <tr><td>Eduardo Faria de Godoy</td><td class="r mn">22/jun</td><td class="r mn">R$ 6.500</td></tr>
+        <tr><td><strong>Rômulo Lima (18/18 — ÚLTIMA)</strong></td><td class="r mn">25/jun</td><td class="r mn" style="color:var(--red)">R$ 59.814</td></tr>
+        <tr><td style="color:var(--txt3)">Outros (ISS, Bling, DCTF…)</td><td class="r mn">vários</td><td class="r mn">R$ 1.251</td></tr>
+      </tbody>
+    </table>
+    <div style="padding:8px 9px 0;border-top:1px solid var(--bdr);font-size:12px;display:flex;justify-content:space-between"><span style="color:var(--green);font-size:11px">★ Última parcela buy-out</span><strong style="color:var(--red)">Total jun: R$ 141.304</strong></div>
+  </div>
+</div>
+</div>
+
+<!-- ===== CLIENTS ===== -->
+<div class="page" id="page-clients">
+<div class="hero">
+  <div><div class="hero-title">Base de Clientes<br>& Retenção</div><div class="hero-sub">27 clientes pagantes · 68 histórico total · out/25–abr/26</div></div>
+  <span class="pill pill-r"><span class="pill-dot"></span>60% churn histórico</span>
+</div>
+<div class="g4">
+  <div class="metric mb"><div class="ml">Base histórica total</div><div class="mv cb">68</div><div class="ms">Todos os já implantados</div></div>
+  <div class="metric mg"><div class="ml">Pagamento ativo</div><div class="mv cg">27 <small style="font-size:12px">(40%)</small></div><div class="ms">Pgt + uso ativo: 20</div></div>
+  <div class="metric mr"><div class="ml">Inativos (churned)</div><div class="mv cr">41 <small style="font-size:12px">(60%)</small></div><div class="ms">Sem CS estruturado</div></div>
+  <div class="metric ma"><div class="ml">Risco imediato</div><div class="mv ca">6</div><div class="ms">Flag churn = SIM</div></div>
+</div>
+<div class="sl">Funil de retenção</div>
+<div class="card" style="margin-bottom:14px">
+  <div style="display:flex;flex-direction:column;gap:13px;padding:4px 0">
+    <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--txt2)">Base histórica total</span><span style="font-family:'DM Mono',monospace;color:var(--blu)">68 (100%)</span></div><div class="pb"><div class="pbi" style="width:100%;background:var(--blu)"></div></div></div>
+    <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--txt2)">Pagamento ativo</span><span style="font-family:'DM Mono',monospace;color:var(--green)">27 (40%)</span></div><div class="pb"><div class="pbi" style="width:40%;background:var(--green)"></div></div></div>
+    <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--txt2)">Pgt ativo + uso ativo (saudáveis)</span><span style="font-family:'DM Mono',monospace;color:#4ade80">20 (29%)</span></div><div class="pb"><div class="pbi" style="width:29%;background:#22c55e"></div></div></div>
+    <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--txt2)">Uso ativo confirmado em abr/26</span><span style="font-family:'DM Mono',monospace;color:var(--amb)">15 (22%)</span></div><div class="pb"><div class="pbi" style="width:22%;background:var(--amb)"></div></div></div>
+    <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--txt2)">Pgt ativo + uso INATIVO (risco oculto)</span><span style="font-family:'DM Mono',monospace;color:var(--red)">7 (10%)</span></div><div class="pb"><div class="pbi" style="width:10%;background:var(--red)"></div></div></div>
+    <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--txt2)">Flag churn = SIM (perigo imediato)</span><span style="font-family:'DM Mono',monospace;color:#dc2626">6 (9%)</span></div><div class="pb"><div class="pbi" style="width:9%;background:#dc2626"></div></div></div>
+  </div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="ct">Recorrência de pagamento — out/25 a abr/26</div>
+    <div id="recList" style="font-size:12px"></div>
+  </div>
+  <div class="card">
+    <div class="ct">Clientes com risco de churn</div>
+    <div class="alert al-r" style="margin-bottom:10px"><div class="at">6 clientes flagged — ação imediata</div><div class="as">Pagam mas não usam. São os próximos a cancelar.</div></div>
+    <div class="row"><div class="rl"><strong>Editora do Brasil SA</strong><small>Contrato set/2021 · uso inativo · gaps desde dez/25</small></div><span class="badge bg-r">Churn SIM</span></div>
+    <div class="row"><div class="rl"><strong>Guaraves Guarabira Aves</strong><small>Contrato ago/2022 · uso inativo</small></div><span class="badge bg-r">Churn SIM</span></div>
+    <div class="row"><div class="rl"><strong>JDK Presentes Finos (Dryzum)</strong><small>Obs: "fase de cancelamento"</small></div><span class="badge bg-r">Churn SIM</span></div>
+    <div class="row"><div class="rl"><strong>Lab. Florais Joel Aleixo</strong><small>Parou de usar em fev/26</small></div><span class="badge bg-r">Churn SIM</span></div>
+    <div class="row"><div class="rl"><strong>Sky Cranes & Hoists</strong><small>Nunca ativou efetivamente</small></div><span class="badge bg-r">Churn SIM</span></div>
+    <div class="row"><div class="rl"><strong>Polar Store LTDA</strong><small>7 meses pago, sem uso — vínculo sócio?</small></div><span class="badge bg-a">Verificar</span></div>
+    <div class="row"><div class="rl"><strong>Dux Company SA</strong><small>CNPJ marcado "solicitou cancelamento"</small></div><span class="badge bg-a">Alerta</span></div>
+  </div>
+</div>
+<div class="sl">Uso em abril/2026</div>
+<div class="g3">
+  <div class="metric mg"><div class="ml">Uso ativo confirmado</div><div class="mv cg">15</div><div class="ms">56% dos 27 pagantes</div></div>
+  <div class="metric ma"><div class="ml">Uso "não" ou incerto</div><div class="mv ca">5</div><div class="ms">Dorel, Dux, Elshadai, Funpar, Sérgio W.</div></div>
+  <div class="metric mr"><div class="ml">Sem registro de uso</div><div class="mv cr">7</div><div class="ms">Coincide com churn flagged</div></div>
+</div>
+<div class="card">
+  <div class="ct">Uso em abr/26 — distribuição dos 27 clientes pagantes</div>
+  <div class="cw" style="height:260px"><canvas id="usageChart" role="img" aria-label="Uso abril 2026">Uso abr.</canvas></div>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:11px;color:var(--txt3)">
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:#4ade80"></span>Uso ativo confirmado (15)</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:#fbbf24"></span>Uso "não"/incerto (5)</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:#f87171"></span>Sem uso/inativo (7)</span>
+  </div>
+</div>
+</div>
+
+<!-- ===== PIPELINE ===== -->
+<div class="page" id="page-pipeline">
+<div class="hero">
+  <div><div class="hero-title">Pipeline Comercial<br>& Propostas</div><div class="hero-sub">31 oportunidades · 7 propostas ativas · mar–mai/2026</div></div>
+  <span class="pill pill-a"><span class="pill-dot"></span>29% taxa de avanço</span>
+</div>
+<div class="g4">
+  <div class="metric mb"><div class="ml">Proposta / apresentação</div><div class="mv cb">9</div><div class="ms">29% do pipeline total</div></div>
+  <div class="metric ma"><div class="ml">Parados / sem retorno</div><div class="mv ca">10</div><div class="ms">ESN TOTVS principal gargalo</div></div>
+  <div class="metric mr"><div class="ml">Perdidos</div><div class="mv cr">10</div><div class="ms">32% — concorrência + desistência</div></div>
+  <div class="metric mg"><div class="ml">Potencial SaaS/mês</div><div class="mv cg">R$ 33 K</div><div class="ms">Se todas as 7 propostas fecharem</div></div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="ct">Distribuição do pipeline</div>
+    <div class="cw" style="height:210px"><canvas id="pipeChart" role="img" aria-label="Pipeline status">Pipeline.</canvas></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:11px;color:var(--txt3)">
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#60a5fa"></span>Proposta (7)</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#4ade80"></span>Apresentação (2)</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#fbbf24"></span>Parado (10)</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#f87171"></span>Perdido (10)</span>
+      <span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:#64748b"></span>Não iniciado (2)</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">Principais motivos de perda</div>
+    <div class="tli"><div class="tld" style="background:var(--red)"></div><div class="tlc"><div class="tlt">ESN TOTVS sem retorno</div><div class="tls">Principal gargalo — dependência do canal TOTVS para avançar oportunidades</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--red)"></div><div class="tlc"><div class="tlt">Cliente desistiu / sem momento</div><div class="tls">Animale, Casa Lira, Editora FTD, Farias Brito, GTFoods, Posto Cruzeiro…</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--amb)"></div><div class="tlc"><div class="tlt">Concorrência de preço</div><div class="tls">Animale (vs. Sanquia), GTFoods (outra fornecedora)</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--amb)"></div><div class="tlc"><div class="tlt">Cliente com problemas financeiros</div><div class="tls">Melhoramentos Florestal, Quata Laticínios (empresa vendida)</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--blu)"></div><div class="tlc"><div class="tlt">Timing ruim / implantação em curso</div><div class="tls">Andra Materiais (implantando RD), Sunstar (problema Cloud TOTVS)</div></div></div>
+  </div>
+</div>
+<div class="sl">Propostas de implantação — 7 em negociação ativa</div>
+<div class="card">
+  <div style="font-size:12px;color:var(--txt3);margin-bottom:12px">Nenhuma fechada ainda. Potencial total: R$ 200.698 (adesão) + R$ 87.500 (implantação) + R$ 33.475/mês (SaaS recorrente).</div>
+  <table class="dt">
+    <thead><tr><th>Empresa</th><th>Perfil</th><th class="r">Adesão</th><th class="r">Implantação</th><th class="r">SaaS/mês</th><th class="r">Total único</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Baianão Móveis e Eletrodomésticos</strong></td><td><span class="badge bg-a">150–300M fat.</span></td><td class="r mn" style="color:var(--green)">R$ 24.870</td><td class="r mn">R$ 12.500</td><td class="r mn" style="color:var(--green)">R$ 18.639</td><td class="r mn" style="color:var(--green)">R$ 37.370</td></tr>
+      <tr><td><strong>SESI</strong></td><td><span class="badge bg-b">Instituição</span></td><td class="r mn" style="color:var(--green)">R$ 25.414</td><td class="r mn">R$ 12.500</td><td class="r mn" style="color:var(--green)">R$ 2.502</td><td class="r mn" style="color:var(--green)">R$ 37.914</td></tr>
+      <tr><td><strong>Hyundai</strong></td><td><span class="badge bg-n">Feiras/Souvenir</span></td><td class="r mn">R$ 25.414</td><td class="r mn">R$ 12.500</td><td class="r mn">R$ 950</td><td class="r mn">R$ 37.914</td></tr>
+      <tr><td><strong>Vetor Editora Psico-Pedagógica</strong></td><td><span class="badge bg-n">Editorial · 60–150M</span></td><td class="r mn">R$ 12.500</td><td class="r mn">R$ 12.500</td><td class="r mn">R$ 7.500</td><td class="r mn">R$ 25.000</td></tr>
+      <tr><td><strong>Pinacoteca</strong></td><td><span class="badge bg-n">Cultura</span></td><td class="r mn">R$ 10.000</td><td class="r mn">R$ 12.500</td><td class="r mn">R$ 2.504</td><td class="r mn">R$ 22.500</td></tr>
+      <tr><td><strong>Instituto Inhotim</strong></td><td><span class="badge bg-n">Cultura</span></td><td class="r mn">R$ 7.500</td><td class="r mn">R$ 12.500</td><td class="r mn">R$ 690</td><td class="r mn">R$ 20.000</td></tr>
+      <tr><td><strong>Nova Aliança</strong></td><td><span class="badge bg-n">Feiras</span></td><td class="r mn">R$ 7.500</td><td class="r mn">R$ 12.500</td><td class="r mn">R$ 690</td><td class="r mn">R$ 20.000</td></tr>
+    </tbody>
+  </table>
+  <div style="display:flex;justify-content:space-between;padding:9px 9px 0;border-top:1px solid var(--bdr);font-size:12px">
+    <span style="color:var(--txt3)">Fechar <strong style="color:var(--txt)">Baianão + SESI</strong>: receita recorrente sobe +R$ 21 K/mês (+26%)</span>
+    <span style="color:var(--green);font-weight:500">Total 7: R$ 33.475/mês SaaS</span>
+  </div>
+</div>
+</div>
+
+<!-- ===== PROJECTION ===== -->
+<div class="page" id="page-projection">
+<div class="hero">
+  <div><div class="hero-title">Projeção de Caixa<br>H2/2026 e 2027</div><div class="hero-sub">Modelo interativo — ajuste as premissas para simular cenários</div></div>
+  <span class="pill pill-g"><span class="pill-dot"></span>Buy-out termina jun/26</span>
+</div>
+<div class="sl">Premissas do modelo</div>
+<div class="card" style="margin-bottom:14px">
+  <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center">
+    <div><div style="font-size:11px;color:var(--txt3);margin-bottom:5px">Receita mensal</div><select class="cs" id="rSel" onchange="upd()"><option value="65000">R$ 65 K — conservador</option><option value="80000" selected>R$ 80 K — base</option><option value="100000">R$ 100 K — otimista</option><option value="120000">R$ 120 K — agressivo</option></select></div>
+    <div><div style="font-size:11px;color:var(--txt3);margin-bottom:5px">Recuperação Atacadão</div><select class="cs" id="aSel" onchange="upd()"><option value="0">Não recupera</option><option value="17428" selected>50% — R$ 17 K</option><option value="34856">100% — R$ 34 K</option></select></div>
+    <div><div style="font-size:11px;color:var(--txt3);margin-bottom:5px">Efata (2027)</div><select class="cs" id="eSel" onchange="upd()"><option value="12" selected>Mantém o ano todo</option><option value="3">Encerra mar/27</option><option value="6">Encerra jun/27</option><option value="9">Encerra set/27</option></select></div>
+    <div style="margin-left:auto;text-align:right"><div style="font-size:11px;color:var(--txt3)">Caixa estimado dez/27</div><div id="pFinal" style="font-family:'Syne',sans-serif;font-size:24px;font-weight:700;color:var(--green)">—</div></div>
+  </div>
+</div>
+<div class="g3" id="pMets" style="margin-bottom:14px"></div>
+<div class="card" style="margin-bottom:14px">
+  <div class="ct">Resultado mensal — H2/2026 + 2027</div>
+  <div class="cw" style="height:270px"><canvas id="pBar" role="img" aria-label="Resultado mensal projetado">Resultado mensal.</canvas></div>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:11px;color:var(--txt3)">
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#4ade80"></span>Resultado positivo</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#f87171"></span>Resultado negativo</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:14px;height:2px;border-top:2px dashed #f87171;display:inline-block"></span>Se buy-out continuasse</span>
+  </div>
+</div>
+<div class="card" style="margin-bottom:14px">
+  <div class="ct">Evolução do caixa acumulado</div>
+  <div class="cw" style="height:210px"><canvas id="pLine" role="img" aria-label="Caixa acumulado projetado">Caixa.</canvas></div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="ct">Cenários — caixa acumulado dez/27</div>
+    <div class="cw" style="height:180px"><canvas id="pScen" role="img" aria-label="Cenários dez 2027">Cenários.</canvas></div>
+  </div>
+  <div class="card">
+    <div class="ct">Marcos e pontos de inflexão</div>
+    <div class="alert al-g"><div class="at">Jun/26: última parcela buy-out (+R$ 59,8 K/mês permanente)</div><div class="as">Maior evento positivo do negócio em 2026. Quasi-dobra a margem operacional.</div></div>
+    <div class="alert al-a"><div class="at">Set/27: fim acordo trabalhista Geremias (+R$ 10 K/mês)</div><div class="as">R$ 120 K/ano liberados. Inclua no planejamento de longo prazo.</div></div>
+    <div class="alert al-r"><div class="at">Efata = diferença entre margem estreita e rentabilidade</div><div class="as">Encerrando em mar/27, o resultado anual praticamente triplica vs. manter.</div></div>
+    <div class="alert al-b"><div class="at">R$ 100 K+/mês é o ponto de ruptura</div><div class="as">Acima desse nível, a empresa acumula caixa e reduz dependência de aportes Polar.</div></div>
+  </div>
+</div>
+</div>
+
+<footer>Easy Analytics · Dashboard Executivo · 02/mai/2026 · Dados: Bling ERP + Planilhas internas · Confidencial</footer>
+
+<script>
+Chart.defaults.color='#555960';Chart.defaults.borderColor='rgba(255,255,255,0.07)';Chart.defaults.font.family="'DM Mono',monospace";Chart.defaults.font.size=11;
+const fBR=n=>'R$ '+Math.round(n).toLocaleString('pt-BR');
+const fK=n=>(n>=0?'':'-')+'R$ '+Math.abs(Math.round(n/1000))+'K';
+
+function showPage(id,btn,fromMob){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.mob-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  // sync the other menu
+  var tabs = fromMob ? document.querySelectorAll('.nav-tab') : document.querySelectorAll('.mob-tab');
+  var pages = ['overview','cashflow','clients','pipeline','projection'];
+  var idx = pages.indexOf(id);
+  if(idx>=0 && tabs[idx]) tabs[idx].classList.add('active');
+  if(fromMob) closeMob();
+  if(id==='projection') upd();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function toggleMob(){
+  var m=document.getElementById('mobMenu');
+  var h=document.getElementById('hambBtn');
+  m.classList.toggle('open');
+  h.classList.toggle('open');
+}
+function closeMob(){
+  document.getElementById('mobMenu').classList.remove('open');
+  document.getElementById('hambBtn').classList.remove('open');
+}
+
+// Expense pie
+new Chart(document.getElementById('expChart'),{type:'doughnut',data:{labels:['Buy-out','Efata','Macedo/Milajanu','Geremias','Godoy','Outros'],datasets:[{data:[59814,35000,23000,10000,6500,12024],backgroundColor:['#f87171','#fbbf24','#818cf8','#60a5fa','#4ade80','#94a3b8'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+fBR(c.parsed)+' ('+Math.round(c.parsed/146338*100)+'%)'}}}}});
+
+// Pipeline pie
+new Chart(document.getElementById('pipeChart'),{type:'doughnut',data:{labels:['Proposta','Apresentação','Parado','Perdido','Não iniciado'],datasets:[{data:[7,2,10,10,2],backgroundColor:['#60a5fa','#4ade80','#fbbf24','#f87171','#64748b'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+c.parsed}}}}});
+
+// Usage chart
+new Chart(document.getElementById('usageChart'),{type:'doughnut',data:{labels:['Uso ativo confirmado','Uso "não"/incerto','Sem uso/inativo'],datasets:[{data:[15,5,7],backgroundColor:['#4ade80','#fbbf24','#f87171'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:true,position:'right',labels:{boxWidth:12,padding:14,color:'#888c94'}},tooltip:{callbacks:{label:c=>c.label+': '+c.parsed+' ('+Math.round(c.parsed/27*100)+'%)'}}}}});
+
+// Recurrence list
+const recData=[
+  {n:'Cantu Importação',m:[1,1,1,1,1,1,1],s:'g'},
+  {n:'Decanter Vinhos Finos',m:[1,1,1,1,1,1,1],s:'g'},
+  {n:'Fueltech LTDA',m:[1,1,1,1,1,1,1],s:'g'},
+  {n:'Higimaster',m:[1,1,1,1,1,1,1],s:'g'},
+  {n:'HSR Shopping Lustres',m:[1,1,1,1,1,1,1],s:'g'},
+  {n:'Ind. Alim. Ralston',m:[1,1,1,1,1,1,1],s:'g'},
+  {n:'MIR (Ramsons)',m:[1,1,1,1,1,1,1],s:'g'},
+  {n:'Pia Sociedade SP',m:[1,1,1,1,1,1,1],s:'g'},
+  {n:'Tele Rio Eletro',m:[1,1,1,1,1,1,1],s:'g'},
+  {n:'Congregação SS Redentor',m:[1,1,1,1,1,1,1],s:'g'},
+  {n:'Polar Store',m:[1,1,1,1,1,1,0],s:'a'},
+  {n:'Dorel Comércio',m:[1,1,1,1,1,1,0],s:'a'},
+  {n:'Elshadai Alimentos',m:[1,1,1,1,1,1,0],s:'g'},
+  {n:'Editora Manole',m:[0,0,0,1,1,1,1],s:'g'},
+  {n:'Atacadão Autopecas',m:[0,0,0,1,1,1,1],s:'a'},
+  {n:'MASP',m:[1,2,1,0,2,0,1],s:'a'},
+  {n:'Lab. Florais Joel Aleixo',m:[1,1,1,1,1,0,0],s:'r'},
+  {n:'Guaraves Aves',m:[2,1,0,1,1,2,0],s:'r'},
+  {n:'Sky Cranes',m:[2,2,1,1,1,1,0],s:'r'},
+  {n:'JDK (Dryzum)',m:[1,1,1,1,2,1,0],s:'r'},
+  {n:'Dux Company',m:[1,1,1,0,1,2,0],s:'r'},
+  {n:'Editora do Brasil',m:[2,1,0,0,0,3,0],s:'r'},
+];
+const sc={'g':'#4ade80','a':'#fbbf24','r':'#f87171'};
+const dc={0:'#1e2633',1:'#4ade80',2:'#fbbf24',3:'#f87171'};
+const ml2=['out','nov','dez','jan','fev','mar','abr'];
+const rl=document.getElementById('recList');
+recData.forEach(c=>{
+  const d=document.createElement('div');
+  d.style.cssText='display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)';
+  d.innerHTML=`<div style="width:155px;flex-shrink:0;font-size:11.5px;color:${sc[c.s]};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.n}</div><div style="display:flex;gap:2px">${c.m.map((v,i)=>`<div title="${ml2[i]}: ${v>0?'Pago':'Sem registro'}" style="width:11px;height:11px;border-radius:2px;background:${dc[Math.min(v,3)]}"></div>`).join('')}</div>`;
+  rl.appendChild(d);
+});
+const leg=document.createElement('div');
+leg.style.cssText='display:flex;gap:10px;padding-top:8px;font-size:10.5px;color:#555960';
+leg.innerHTML='<span style="display:flex;align-items:center;gap:3px"><span style="width:9px;height:9px;border-radius:2px;background:#4ade80"></span>Pago</span><span style="display:flex;align-items:center;gap:3px"><span style="width:9px;height:9px;border-radius:2px;background:#fbbf24"></span>Duplo</span><span style="display:flex;align-items:center;gap:3px"><span style="width:9px;height:9px;border-radius:2px;background:#1e2633;border:1px solid rgba(255,255,255,0.1)"></span>Sem registro</span>';
+rl.appendChild(leg);
+
+// PROJECTION
+const MH2=['Jul/26','Ago/26','Set/26','Out/26','Nov/26','Dez/26'];
+const M27=['Jan/27','Fev/27','Mar/27','Abr/27','Mai/27','Jun/27','Jul/27','Ago/27','Set/27','Out/27','Nov/27','Dez/27'];
+const ALL=[...MH2,...M27];
+const OP=31244,EF=35000,GSTOP=8,BO=59814,S0=48000;
+let pB=null,pL=null,pS=null;
+
+function upd(){
+  const rev=+document.getElementById('rSel').value;
+  const atac=+document.getElementById('aSel').value;
+  const efStop=+document.getElementById('eSel').value;
+  const res=[],acums=[],resBO=[];
+  let ac=S0+atac;
+  MH2.forEach(()=>{const s=OP+EF,r=rev-s;res.push(r);resBO.push(r-BO);ac+=r;acums.push(ac);});
+  M27.forEach((_,i)=>{const g=i<GSTOP?10000:0,e=i<efStop?EF:0,s=OP+e+g,r=rev-s;res.push(r);resBO.push(r-BO);ac+=r;acums.push(ac);});
+  const tH2=res.slice(0,6).reduce((a,b)=>a+b,0);
+  const t27=res.slice(6).reduce((a,b)=>a+b,0);
+  const fin=acums[17];
+  document.getElementById('pFinal').textContent=fBR(fin);
+  document.getElementById('pFinal').style.color=fin>=0?'var(--green)':'var(--red)';
+  document.getElementById('pMets').innerHTML=`
+    <div class="metric ${tH2>=0?'mg':'mr'}"><div class="ml">Resultado acumulado H2/26</div><div class="mv ${tH2>=0?'cg':'cr'}">${fBR(tH2)}</div><div class="ms">vs. ${fBR(resBO.slice(0,6).reduce((a,b)=>a+b,0))} se buy-out continuasse</div></div>
+    <div class="metric ${t27>=0?'mg':'mr'}"><div class="ml">Resultado acumulado 2027</div><div class="mv ${t27>=0?'cg':'cr'}">${fBR(t27)}</div><div class="ms">Média mensal: ${fBR(t27/12)}</div></div>
+    <div class="metric ${fin>=0?'mc':'mr'}"><div class="ml">Caixa projetado dez/27</div><div class="mv ${fin>=0?'cc':'cr'}">${fBR(fin)}</div><div class="ms">Partindo de ~R$ 48 K hoje</div></div>
+  `;
+  const bc=res.map(r=>r>=0?'#4ade80':'#f87171');
+  if(pB)pB.destroy();
+  pB=new Chart(document.getElementById('pBar'),{type:'bar',data:{labels:ALL,datasets:[{label:'Resultado real',data:res,backgroundColor:bc,borderWidth:0,order:2},{label:'Se buy-out continuasse',data:resBO,type:'line',borderColor:'#f87171',borderDash:[5,4],borderWidth:2,pointStyle:'triangle',pointRadius:3,fill:false,tension:0,order:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fBR(c.parsed.y)}}},scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:10}}},y:{ticks:{callback:fK},grid:{color:'rgba(255,255,255,0.05)'}}}}});
+  const lc=acums.map(a=>a>=0?'#60a5fa':'#f87171');
+  if(pL)pL.destroy();
+  pL=new Chart(document.getElementById('pLine'),{type:'line',data:{labels:ALL,datasets:[{label:'Caixa acumulado',data:acums,borderColor:'#60a5fa',backgroundColor:'rgba(96,165,250,0.07)',fill:true,tension:0.3,pointRadius:3,pointBackgroundColor:lc,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Caixa: '+fBR(c.parsed.y)}}},scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:10}}},y:{ticks:{callback:fK},grid:{color:'rgba(255,255,255,0.05)'}}}}});
+  const sRevs=[65000,80000,100000,120000];
+  const sAc=sRevs.map(r=>{let a=S0+atac;MH2.forEach(()=>a+=r-OP-EF);M27.forEach((_,i)=>a+=r-OP-(i<GSTOP?10000:0)-(i<efStop?EF:0));return a;});
+  const sCl=sAc.map(a=>a>=0?'#4ade80':'#f87171');
+  if(pS)pS.destroy();
+  pS=new Chart(document.getElementById('pScen'),{type:'bar',data:{labels:['Conserv.','Base','Otimista','Agressivo'],datasets:[{data:sAc,backgroundColor:sCl,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Caixa dez/27: '+fBR(c.parsed.y)}}},scales:{x:{ticks:{font:{size:10}}},y:{ticks:{callback:fK},grid:{color:'rgba(255,255,255,0.05)'}}}}});
+}
+setTimeout(upd,100);
+</script>
+</body>
+</html>
