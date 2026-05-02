@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Easy Analytics — Dashboard Executivo</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+/* ── DESIGN SYSTEM FIXO — nunca muda ── */
+:root{
+  --bg:#f4f6f9;
+  --s1:#ffffff;
+  --s2:#f0f3f7;
+  --s3:#e4e9f0;
+  --bd:rgba(60,90,130,0.1);
+  --bd2:rgba(60,90,130,0.2);
+  --t1:#1a2436;
+  --t2:#4a5f7a;
+  --t3:#8a9db8;
+  --c-red:#c0392b;    --c-red-bg:rgba(192,57,43,0.08);    --c-red-br:rgba(192,57,43,0.18);
+  --c-amber:#b7650a;  --c-amber-bg:rgba(183,101,10,0.08);  --c-amber-br:rgba(183,101,10,0.18);
+  --c-green:#1e7e4f;  --c-green-bg:rgba(30,126,79,0.08);  --c-green-br:rgba(30,126,79,0.18);
+  --c-blue:#1a5fa8;   --c-blue-bg:rgba(26,95,168,0.08);   --c-blue-br:rgba(26,95,168,0.18);
+  --c-purple:#5b4ab0; --c-purple-bg:rgba(91,74,176,0.08); --c-purple-br:rgba(91,74,176,0.18);
+  --c-teal:#1a7a80;   --c-teal-bg:rgba(26,122,128,0.08);  --c-teal-br:rgba(26,122,128,0.18);
+  --c-slate:#3d5a80;  --c-slate-bg:rgba(61,90,128,0.08);  --c-slate-br:rgba(61,90,128,0.18);
+  --font-sans:'IBM Plex Sans',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --r-sm:6px; --r-md:10px; --r-lg:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t1);font-family:var(--font-sans);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* ── LOCK ── */
+#lock{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
+.lbox{background:var(--s1);border:1px solid var(--bd2);border-radius:var(--r-lg);padding:40px 44px;width:min(380px,90vw);display:flex;flex-direction:column;align-items:center;box-shadow:0 4px 24px rgba(60,90,130,0.1)}
+.lbrand{font-family:var(--font-mono);font-size:13px;font-weight:500;letter-spacing:.12em;color:var(--t3);text-transform:uppercase;margin-bottom:20px}
+.ltitle{font-family:var(--font-sans);font-size:16px;font-weight:600;color:var(--t1);margin-bottom:3px;text-align:center}
+.lsub{font-size:12px;color:var(--t3);text-align:center;margin-bottom:20px}
+.lerr{font-size:11px;color:var(--c-red);min-height:15px;margin-bottom:6px;text-align:center}
+.linput{width:100%;padding:10px 42px 10px 14px;border-radius:var(--r-md);border:1px solid var(--bd2);background:var(--s2);color:var(--t1);font-size:13px;outline:none;transition:border-color .2s;font-family:var(--font-sans)}
+.linput:focus{border-color:var(--c-blue)}
+.lbtn{width:100%;padding:11px;border-radius:var(--r-md);background:var(--c-blue);color:#ffffff;font-family:var(--font-sans);font-weight:500;font-size:13px;border:none;cursor:pointer;margin-top:8px;transition:opacity .15s;letter-spacing:.02em}
+.lbtn:hover{opacity:.85}
+.lhint{font-size:10px;color:var(--t3);margin-top:14px;font-family:var(--font-mono)}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:100;background:rgba(244,246,249,0.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd);height:50px;padding:0 1.5rem;display:flex;align-items:center;gap:12px}
+.nbrand{font-family:var(--font-mono);font-size:12px;font-weight:500;letter-spacing:.1em;color:var(--t2);text-transform:uppercase;white-space:nowrap;flex-shrink:0}
+.ndot{width:4px;height:4px;border-radius:50%;background:var(--c-blue);flex-shrink:0}
+.ntabs{display:flex;gap:1px;overflow-x:auto;scrollbar-width:none}
+.ntabs::-webkit-scrollbar{display:none}
+.ntab{padding:5px 12px;border-radius:var(--r-sm);font-size:12px;font-weight:400;color:var(--t3);cursor:pointer;border:none;background:none;font-family:var(--font-sans);transition:all .15s;white-space:nowrap;flex-shrink:0;letter-spacing:.01em}
+.ntab:hover{color:var(--t1)}
+.ntab.active{color:var(--t1);background:var(--s2)}
+.ndate{font-family:var(--font-mono);font-size:10px;color:var(--t3);white-space:nowrap;margin-left:auto}
+.hamb{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:7px;border:none;background:none;flex-shrink:0}
+.hamb span{display:block;width:18px;height:1.5px;background:var(--t2);border-radius:2px;transition:all .22s}
+.hamb.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg)}
+.hamb.open span:nth-child(2){opacity:0}
+.hamb.open span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg)}
+.mobmenu{display:none;position:fixed;top:50px;left:0;right:0;background:rgba(244,246,249,0.98);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd);z-index:99;flex-direction:column;padding:4px 0}
+.mobmenu.open{display:flex}
+.mobtab{padding:12px 20px;font-size:13px;color:var(--t2);cursor:pointer;border:none;background:none;text-align:left;font-family:var(--font-sans);border-left:2px solid transparent;transition:all .15s}
+.mobtab:hover{color:var(--t1)}
+.mobtab.active{color:var(--t1);border-left-color:var(--c-blue);background:var(--s1)}
+
+/* ── PAGES ── */
+.pg{display:none;padding:1.75rem 1.5rem;max-width:1360px;margin:0 auto}
+.pg.active{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.pg.active>*{animation:fu .22s ease both}
+.pg.active>*:nth-child(2){animation-delay:.04s}
+.pg.active>*:nth-child(3){animation-delay:.08s}
+.pg.active>*:nth-child(4){animation-delay:.12s}
+.pg.active>*:nth-child(5){animation-delay:.16s}
+
+/* ── HERO ── */
+.hero{margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1px solid var(--bd);display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
+.htitle{font-family:var(--font-sans);font-size:20px;font-weight:600;letter-spacing:-.02em;line-height:1.25;color:var(--t1)}
+.hsub{font-size:11.5px;color:var(--t3);margin-top:3px;font-family:var(--font-mono)}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:500;font-family:var(--font-mono);letter-spacing:.03em}
+.pr{background:var(--c-red-bg);color:var(--c-red);border:1px solid var(--c-red-br)}
+.pa{background:var(--c-amber-bg);color:var(--c-amber);border:1px solid var(--c-amber-br)}
+.pg2{background:var(--c-green-bg);color:var(--c-green);border:1px solid var(--c-green-br)}
+.pb2{background:var(--c-blue-bg);color:var(--c-blue);border:1px solid var(--c-blue-br)}
+.pdot{width:4px;height:4px;border-radius:50%;background:currentColor}
+
+/* ── SECTION LABEL ── */
+.sl{font-family:var(--font-mono);font-size:9px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.12em;margin:22px 0 10px;display:flex;align-items:center;gap:8px}
+.sl::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+/* ── GRIDS ── */
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px}
+
+/* ── METRIC CARD ── */
+.met{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-md);padding:14px 16px;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(60,90,130,0.06)}
+.met::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px}
+.met.red::after{background:var(--c-red-br)}
+.met.amber::after{background:var(--c-amber-br)}
+.met.green::after{background:var(--c-green-br)}
+.met.blue::after{background:var(--c-blue-br)}
+.met.purple::after{background:var(--c-purple-br)}
+.met.teal::after{background:var(--c-teal-br)}
+.ml{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;font-family:var(--font-mono)}
+.mv{font-family:var(--font-mono);font-size:20px;font-weight:500;letter-spacing:-.01em;line-height:1;color:var(--t1)}
+.mv.red{color:var(--c-red)}.mv.amber{color:var(--c-amber)}.mv.green{color:var(--c-green)}.mv.blue{color:var(--c-blue)}.mv.purple{color:var(--c-purple)}.mv.teal{color:var(--c-teal)}
+.ms{font-size:10.5px;color:var(--t3);margin-top:5px}
+.delta{font-size:10px;font-weight:500;margin-top:5px;padding:2px 7px;border-radius:999px;display:inline-block;font-family:var(--font-mono)}
+.d-neg{background:var(--c-red-bg);color:var(--c-red)}
+.d-pos{background:var(--c-green-bg);color:var(--c-green)}
+.d-neu{background:var(--c-slate-bg);color:var(--c-slate)}
+
+/* ── CARD ── */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-lg);padding:16px;margin-bottom:0;box-shadow:0 1px 3px rgba(60,90,130,0.06)}
+.ct{font-family:var(--font-mono);font-size:9.5px;font-weight:500;letter-spacing:.1em;color:var(--t3);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+
+/* ── TABLE ── */
+.dt{width:100%;border-collapse:collapse;font-size:12px}
+.dt th{text-align:left;padding:6px 8px;color:var(--t3);font-size:9.5px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--bd);font-family:var(--font-mono)}
+.dt th.r{text-align:right}
+.dt td{padding:7px 8px;border-bottom:1px solid var(--bd);color:var(--t1);vertical-align:middle}
+.dt tr:last-child td{border-bottom:none}
+.dt tr:hover td{background:rgba(60,90,130,0.04)}
+.dt td.r{text-align:right;font-family:var(--font-mono);font-size:11px}
+.dt td.lbl{font-weight:500}
+.dt tr.sub td{background:var(--s2);font-size:10px;color:var(--t3);font-weight:500;font-family:var(--font-mono);letter-spacing:.05em}
+.dt tr.tot td{background:var(--s3);font-weight:600;font-size:12px}
+
+/* ── BADGE ── */
+.bge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:var(--r-sm);font-size:10px;font-weight:500;white-space:nowrap;font-family:var(--font-mono)}
+.bgr{background:var(--c-red-bg);color:var(--c-red)}
+.bga{background:var(--c-amber-bg);color:var(--c-amber)}
+.bgg{background:var(--c-green-bg);color:var(--c-green)}
+.bgb{background:var(--c-blue-bg);color:var(--c-blue)}
+.bgp{background:var(--c-purple-bg);color:var(--c-purple)}
+.bgt{background:var(--c-teal-bg);color:var(--c-teal)}
+.bgn{background:var(--c-slate-bg);color:var(--c-slate)}
+
+/* ── ALERT ── */
+.alt{padding:10px 14px;border-radius:var(--r-md);margin-bottom:8px;border-left:2px solid;font-size:12px;line-height:1.5}
+.ats{font-weight:500;margin-bottom:2px}
+.asd{font-size:11px;color:inherit;opacity:.8;line-height:1.5}
+.alr{background:var(--c-red-bg);border-color:var(--c-red);color:var(--c-red)}
+.ala{background:var(--c-amber-bg);border-color:var(--c-amber);color:var(--c-amber)}
+.alg{background:var(--c-green-bg);border-color:var(--c-green);color:var(--c-green)}
+.alb{background:var(--c-blue-bg);border-color:var(--c-blue);color:var(--c-blue)}
+.alp{background:var(--c-purple-bg);border-color:var(--c-purple);color:var(--c-purple)}
+
+/* ── PROGRESS BAR ── */
+.pbar{background:var(--s3);border-radius:3px;height:4px;overflow:hidden;margin-top:4px}
+.pbi{height:4px;border-radius:3px}
+
+/* ── ROW ITEM ── */
+.row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bd);gap:8px}
+.row:last-child{border-bottom:none}
+.rl{font-size:12px;flex:1;min-width:0}
+.rl strong{display:block;font-size:12px;color:var(--t1);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl small{display:block;font-size:10.5px;color:var(--t3);margin-top:1px}
+
+/* ── TIMELINE ITEM ── */
+.tli{display:flex;gap:11px;padding:8px 0;border-bottom:1px solid var(--bd)}
+.tli:last-child{border-bottom:none}
+.tld{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.tlt{font-size:12px;font-weight:500;color:var(--t1)}
+.tls{font-size:11px;color:var(--t3);margin-top:2px;line-height:1.5}
+
+/* ── SELECT CONTROL ── */
+.ctrl-select{padding:6px 12px;border-radius:var(--r-sm);border:1px solid var(--bd2);background:var(--s2);color:var(--t1);font-size:12px;font-family:var(--font-sans);outline:none;cursor:pointer}
+.ctrl-select:focus{border-color:var(--c-blue)}
+
+.dv{border:none;border-top:1px solid var(--bd);margin:18px 0}
+.cw{position:relative;width:100%}
+footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);text-align:center;font-size:10px;color:var(--t3);font-family:var(--font-mono)}
+
+@media(max-width:900px){.g5{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr}.g2,.g21{grid-template-columns:1fr}.ntabs{display:none}.hamb{display:flex!important}.ndate{display:none}nav{padding:0 1rem}.pg{padding:1.25rem 1rem}}
+@media(max-width:560px){.g5{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}.htitle{font-size:18px}}
+</style>
+</head>
+<body>
+
+<!-- ── LOCK ── -->
+<div id="lock" style="background:var(--bg)">
+  <div class="lbox">
+    <div class="lbrand">Easy Analytics</div>
+    <div style="font-family:var(--font-sans);font-size:28px;font-weight:700;letter-spacing:-.04em;color:var(--t1);margin:2px 0 14px"><span style="color:var(--c-blue)">EASY</span><span style="font-weight:300"> analytics</span></div>
+    <div class="ltitle">Dashboard Executivo</div>
+    <div class="lsub">Conteúdo confidencial</div>
+    <div class="lerr" id="lerr"></div>
+    <div style="position:relative;width:100%;margin-bottom:8px">
+      <input class="linput" id="lpwd" type="password" placeholder="Senha de acesso"
+        onkeydown="if(event.key==='Enter')unl()"
+        onfocus="this.style.borderColor='var(--c-blue)'"
+        onblur="this.style.borderColor='var(--bd2)'">
+      <span onclick="var i=document.getElementById('lpwd');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'"
+        style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:13px;user-select:none;color:var(--t3)">👁</span>
+    </div>
+    <button class="lbtn" onclick="unl()">Acessar</button>
+    <div class="lhint">02/mai/2026 · confidencial</div>
+  </div>
+</div>
+<script>
+(function(){
+  var P='Easy1.2.3.@',K='ea_dash_final';
+  if(sessionStorage.getItem(K)==='1'){document.addEventListener('DOMContentLoaded',function(){var l=document.getElementById('lock');if(l)l.style.display='none';});}
+  window.unl=function(){
+    var i=document.getElementById('lpwd'),e=document.getElementById('lerr');
+    if(i.value===P){sessionStorage.setItem(K,'1');var l=document.getElementById('lock');l.style.transition='opacity .3s';l.style.opacity='0';setTimeout(function(){l.style.display='none';},300);}
+    else{e.textContent='Senha incorreta.';i.value='';i.style.borderColor='var(--c-red)';i.focus();setTimeout(function(){i.style.borderColor='var(--bd2)';e.textContent='';},1500);}
+  };
+})();
+</script>
+
+<!-- ── MOBILE MENU ── -->
+<div class="mobmenu" id="mmenu">
+  <button class="mobtab active" onclick="sp('overview',this,1)">Visão Geral</button>
+  <button class="mobtab" onclick="sp('gastos',this,1)">Gastos Reais</button>
+  <button class="mobtab" onclick="sp('cashflow',this,1)">Caixa</button>
+  <button class="mobtab" onclick="sp('clientes',this,1)">Clientes</button>
+  <button class="mobtab" onclick="sp('pipeline',this,1)">Pipeline</button>
+  <button class="mobtab" onclick="sp('projecao',this,1)">Projeção</button>
+</div>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nbrand"><span style="color:var(--c-blue);font-weight:600">EASY</span><span style="font-weight:400"> analytics</span></div>
+  <div class="ndot"></div>
+  <div class="ntabs">
+    <button class="ntab active" onclick="sp('overview',this)">Visão Geral</button>
+    <button class="ntab" onclick="sp('gastos',this)">Gastos Reais</button>
+    <button class="ntab" onclick="sp('cashflow',this)">Caixa</button>
+    <button class="ntab" onclick="sp('clientes',this)">Clientes</button>
+    <button class="ntab" onclick="sp('pipeline',this)">Pipeline</button>
+    <button class="ntab" onclick="sp('projecao',this)">Projeção</button>
+  </div>
+  <button class="hamb" id="hbtn" onclick="tmob()" style="display:none" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="ndate">02 mai 2026</div>
+</nav>
+
+<!-- ════════════════════════════════════════════
+     VISÃO GERAL
+════════════════════════════════════════════ -->
+<div class="pg active" id="pg-overview">
+<div class="hero">
+  <div>
+    <div class="htitle">Diagnóstico Executivo — Easy Analytics</div>
+    <div class="hsub">jan–abr/2026 · total pago confirmado: R$ 800.401 · fonte: Bling ERP + Relatório Pagamentos</div>
+  </div>
+  <div class="pills">
+    <span class="pill pr"><span class="pdot"></span>Gastos +390% vs. budget</span>
+    <span class="pill pa"><span class="pdot"></span>R$ 94 K Polar sem categoria</span>
+    <span class="pill pg2"><span class="pdot"></span>Buy-out encerra jun/26</span>
+  </div>
+</div>
+
+<div class="sl">Resumo financeiro — jan a abr/2026</div>
+<div class="g5">
+  <div class="met red">
+    <div class="ml">Total pago (confirmado)</div>
+    <div class="mv red">R$ 800 K</div>
+    <div class="ms">excluindo R$ 94 K Polar s/ classif.</div>
+  </div>
+  <div class="met red">
+    <div class="ml">Média mensal real</div>
+    <div class="mv red">R$ 200 K</div>
+    <div class="ms">vs. R$ 30,8 K orçado originalmente</div>
+    <div class="delta d-neg">+R$ 169 K/mês acima</div>
+  </div>
+  <div class="met amber">
+    <div class="ml">Receita estimada</div>
+    <div class="mv amber">~R$ 320 K</div>
+    <div class="ms">~R$ 80 K/mês · budget R$ 90 K/mês</div>
+    <div class="delta d-neg">−11% vs. orçado</div>
+  </div>
+  <div class="met red">
+    <div class="ml">Resultado operacional</div>
+    <div class="mv red">−R$ 480 K</div>
+    <div class="ms">budget previa +R$ 217 K</div>
+    <div class="delta d-neg">desvio −R$ 697 K</div>
+  </div>
+  <div class="met amber">
+    <div class="ml">Polar sem classificação</div>
+    <div class="mv amber">R$ 94 K</div>
+    <div class="ms">mar: R$ 65 K · abr: R$ 29 K</div>
+    <div class="delta d-neu">classificar c/ contador</div>
+  </div>
+</div>
+
+<div class="sl">Ranking de pagamentos — jan a abr/2026 (dados confirmados)</div>
+<div class="g21">
+  <div class="card">
+    <div class="ct">Todos os fornecedores por valor pago · fonte: relatório de pagamentos Bling</div>
+    <table class="dt">
+      <thead>
+        <tr><th>#</th><th>Fornecedor</th><th>Natureza</th><th class="r">Jan</th><th class="r">Fev</th><th class="r">Mar</th><th class="r">Abr</th><th class="r">Total</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="color:var(--c-red);font-family:var(--font-mono)">01</td><td class="lbl">Rômulo Ferreira Lima</td><td><span class="bge bgn">Buy-out quotas</span></td><td class="r">59.814</td><td class="r">59.814</td><td class="r">59.814</td><td class="r">59.814</td><td class="r" style="color:var(--c-red)">239.257</td><td><span class="bge bgr">Não orçado</span></td></tr>
+        <tr><td style="color:var(--c-red);font-family:var(--font-mono)">02</td><td class="lbl">Efata Treinamento Tecnologia</td><td><span class="bge bgn">Serviços PJ</span></td><td class="r">35.000</td><td class="r">35.250</td><td class="r">35.367</td><td class="r">35.082</td><td class="r" style="color:var(--c-red)">140.699</td><td><span class="bge bga">Parcial orç.</span></td></tr>
+        <tr><td style="color:var(--c-red);font-family:var(--font-mono)">03</td><td class="lbl">Milajanu Consultoria TI</td><td><span class="bge bgn">Serviços PJ</span></td><td class="r">28.750</td><td class="r">23.000</td><td class="r">23.717</td><td class="r">23.000</td><td class="r" style="color:var(--c-red)">98.467</td><td><span class="bge bgr">Não orçado</span></td></tr>
+        <tr><td style="color:var(--c-purple);font-family:var(--font-mono)">04</td><td class="lbl">Polar Técnica Comercial</td><td><span class="bge bgp">Aporte/serviço?</span></td><td class="r">—</td><td class="r">—</td><td class="r">65.000</td><td class="r">29.000</td><td class="r" style="color:var(--c-purple)">94.000</td><td><span class="bge bgp">Classificar</span></td></tr>
+        <tr><td style="color:var(--c-red);font-family:var(--font-mono)">05</td><td class="lbl">M. de Q. Macedo — EPP</td><td><span class="bge bgn">Serviços PJ</span></td><td class="r">23.000</td><td class="r">23.000</td><td class="r">23.000</td><td class="r">23.000</td><td class="r" style="color:var(--c-red)">92.000</td><td><span class="bge bgr">Não orçado</span></td></tr>
+        <tr><td style="color:var(--c-amber);font-family:var(--font-mono)">06</td><td class="lbl">EP Serviços de Tecnologia</td><td><span class="bge bgn">Serviços PJ</span></td><td class="r">12.025</td><td class="r">3.868</td><td class="r">10.205</td><td class="r">16.125</td><td class="r" style="color:var(--c-amber)">42.223</td><td><span class="bge bgr">Não orçado</span></td></tr>
+        <tr><td style="color:var(--c-amber);font-family:var(--font-mono)">07</td><td class="lbl">Geremias Ferreira Lima</td><td><span class="bge bgn">Acordo trabalhista</span></td><td class="r">10.000</td><td class="r">10.000</td><td class="r">10.000</td><td class="r">10.000</td><td class="r" style="color:var(--c-amber)">40.000</td><td><span class="bge bgr">Não orçado</span></td></tr>
+        <tr><td style="color:var(--c-amber);font-family:var(--font-mono)">08</td><td class="lbl">Cartão de Crédito</td><td><span class="bge bgn">Despesas gerais</span></td><td class="r">5.739</td><td class="r">6.759</td><td class="r">5.615</td><td class="r">10.031</td><td class="r" style="color:var(--c-amber)">28.144</td><td><span class="bge bgr">Não orçado</span></td></tr>
+        <tr><td style="color:var(--c-amber);font-family:var(--font-mono)">09</td><td class="lbl">Eduardo Faria de Godoy</td><td><span class="bge bgn">Serviços PJ</span></td><td class="r">6.500</td><td class="r">6.500</td><td class="r">6.500</td><td class="r">6.500</td><td class="r" style="color:var(--c-amber)">26.000</td><td><span class="bge bgr">Não orçado</span></td></tr>
+        <tr><td style="font-family:var(--font-mono)">10</td><td class="lbl">IRPJ</td><td><span class="bge bgn">Imposto direto</span></td><td class="r">3.367</td><td class="r">7.078</td><td class="r">3.434</td><td class="r">4.114</td><td class="r">17.992</td><td><span class="bge bga">Não provisionado</span></td></tr>
+        <tr><td style="font-family:var(--font-mono)">11</td><td class="lbl">Vtconn Consultoria</td><td><span class="bge bgn">Consultoria</span></td><td class="r">5.057</td><td class="r">5.057</td><td class="r">6.115</td><td class="r">—</td><td class="r">16.229</td><td><span class="bge bga">Encerrou abr?</span></td></tr>
+        <tr><td style="font-family:var(--font-mono)">12</td><td class="lbl">IVY Group Holding S/A</td><td><span class="bge bgr">Sem categoria</span></td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td class="r">10.521</td><td class="r" style="color:var(--c-amber)">10.521</td><td><span class="bge bgr">Identificar</span></td></tr>
+        <tr><td style="font-family:var(--font-mono)">13</td><td class="lbl">Victor Hugo de Oliveira</td><td><span class="bge bgn">Pessoa física</span></td><td class="r">3.333</td><td class="r">3.333</td><td class="r">3.333</td><td class="r">—</td><td class="r">9.999</td><td><span class="bge bga">Encerrou abr?</span></td></tr>
+        <tr><td style="font-family:var(--font-mono)">14</td><td class="lbl">CSLL</td><td><span class="bge bgn">Imposto direto</span></td><td class="r">1.553</td><td class="r">3.351</td><td class="r">1.584</td><td class="r">1.768</td><td class="r">8.256</td><td><span class="bge bga">Não provisionado</span></td></tr>
+        <tr><td style="font-family:var(--font-mono)">15</td><td class="lbl">CBYK Consultoria Gestão</td><td><span class="bge bgr">Sem categoria</span></td><td class="r">—</td><td class="r">—</td><td class="r">5.523</td><td class="r">—</td><td class="r">5.523</td><td><span class="bge bgr">Identificar</span></td></tr>
+        <tr><td style="font-family:var(--font-mono)">16</td><td class="lbl">Demais (Plentech, Serrano, Cralus, Prefeitura, Bling…)</td><td><span class="bge bgn">Adm./impostos</span></td><td class="r">4.803</td><td class="r">5.863</td><td class="r">3.674</td><td class="r">3.836</td><td class="r">18.176</td><td><span class="bge bgg">Controlados</span></td></tr>
+        <tr class="tot"><td colspan="7">Total pago (sem Polar) · bruto com Polar: R$ 894.401</td><td class="r" style="color:var(--c-red)">800.401</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="ct">Composição — total pago jan–abr</div>
+      <div class="cw" style="height:190px"><canvas id="pieGrupo"></canvas></div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-top:10px;font-size:10.5px;color:var(--t2)">
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-red)"></span>Buy-out Rômulo — 29,9%</span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-amber)"></span>Serv. Terceiros PJ — 45,7%</span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-blue)"></span>Acordo trabalhista — 5%</span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-teal)"></span>Impostos diretos — 3,3%</span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-slate)"></span>Demais — 16,1%</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">Atenção — fornecedores a regularizar</div>
+      <div class="tli"><div class="tld" style="background:var(--c-purple)"></div><div><div class="tlt">Polar Técnica — R$ 94 K sem categoria</div><div class="tls">Sócio investidor. Classificar: devolução de aporte, serviço ou distribuição. Impacto direto no DRE.</div></div></div>
+      <div class="tli"><div class="tld" style="background:var(--c-red)"></div><div><div class="tlt">IVY Group Holding — R$ 10.521 (abr)</div><div class="tls">Novo fornecedor, sem categoria, sem histórico. Identificar contrato.</div></div></div>
+      <div class="tli"><div class="tld" style="background:var(--c-red)"></div><div><div class="tlt">CBYK Consultoria — R$ 5.523 (mar)</div><div class="tls">Pagamento único sem categoria. Identificar serviço.</div></div></div>
+      <div class="tli"><div class="tld" style="background:var(--c-amber)"></div><div><div class="tlt">Vtconn + Victor Hugo — encerrados?</div><div class="tls">Ambos sem pagamento em abril. Confirmar encerramento formal dos contratos.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="sl">Highlights e lowlights</div>
+<div class="g2">
+  <div class="card">
+    <div class="ct">Riscos e desvios</div>
+    <div class="alt alr"><div class="ats">Despesas 390% acima do budget em 4 meses</div><div class="asd">R$ 800 K pago vs. R$ 123 K orçado. O DRE original foi construído sem os principais contratos ativos. 80% das saídas reais não existiam no orçamento.</div></div>
+    <div class="alt alr"><div class="ats">6 fornecedores ativos não estavam no orçamento</div><div class="asd">Buy-out, Geremias, Macedo, EP Serviços, IVY Group e CBYK somam R$ 424 K em 4 meses — completamente fora do budget.</div></div>
+    <div class="alt ala"><div class="ats">Cartão de crédito subiu 75% em abril</div><div class="asd">R$ 5.739 em jan/fev/mar → R$ 10.031 em abril. Verificar causas antes de projetar mai/26.</div></div>
+    <div class="alt ala"><div class="ats">R$ 34.856 vencidos a receber — inadimplência Atacadão</div><div class="asd">3 parcelas do Atacadão (mar, abr, mai) + TOTVS SA (abr) sem recebimento. Padrão sugere inadimplência recorrente.</div></div>
+  </div>
+  <div class="card">
+    <div class="ct">Pontos positivos</div>
+    <div class="alt alg"><div class="ats">Buy-out encerra em 25/jun/26 — R$ 59.814/mês livres a partir de julho</div><div class="asd">Maior despesa da empresa se encerra na parcela 18/18. Melhora permanente e imediata do fluxo a partir de julho.</div></div>
+    <div class="alt alg"><div class="ats">Vtconn e Victor Hugo aparentemente encerrados — economia R$ 8.400/mês</div><div class="asd">Sem pagamentos em abril para ambos. Se encerrados, representa R$ 100 K/ano liberados.</div></div>
+    <div class="alt alg"><div class="ats">Impostos diretos em dia — compliance fiscal saudável</div><div class="asd">IRPJ e CSLL pagos regularmente em todos os meses. Sem risco de passivo tributário acumulado.</div></div>
+    <div class="alt alb"><div class="ats">Efata, Macedo e Godoy com valores estáveis e previsíveis</div><div class="asd">Variação inferior a 2% entre os meses. Facilita projeção e controle orçamentário mensal.</div></div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     GASTOS REAIS
+════════════════════════════════════════════ -->
+<div class="pg" id="pg-gastos">
+<div class="hero">
+  <div>
+    <div class="htitle">Gastos Reais — Jan a Abr 2026</div>
+    <div class="hsub">fonte: relatório de pagamentos Bling · total bruto CSV: R$ 894.401 · total classificado: R$ 800.401</div>
+  </div>
+  <span class="pill pr"><span class="pdot"></span>Média mensal: R$ 200.100</span>
+</div>
+<div class="g4">
+  <div class="met amber"><div class="ml">Janeiro</div><div class="mv amber">R$ 198.012</div><div class="ms">Inclui Milajanu R$ 28,7 K (jan com NF diferente)</div></div>
+  <div class="met amber"><div class="ml">Fevereiro</div><div class="mv amber">R$ 199.852</div><div class="ms">Plentech R$ 7,5 K pontual</div></div>
+  <div class="met red"><div class="ml">Março — pico</div><div class="mv red">R$ 263.052</div><div class="ms">Polar R$ 65 K + CBYK R$ 5,5 K novos</div></div>
+  <div class="met amber"><div class="ml">Abril</div><div class="mv amber">R$ 233.486</div><div class="ms">IVY R$ 10,5 K + cartão R$ 10 K</div></div>
+</div>
+
+<div class="g2">
+  <div class="card">
+    <div class="ct">Evolução mensal por grupo de gasto</div>
+    <div class="cw" style="height:250px"><canvas id="stackBar"></canvas></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:10.5px;color:var(--t2)">
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-red)"></span>Buy-out</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-amber)"></span>Efata</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-blue)"></span>Milajanu + Macedo</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-purple)"></span>Polar</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-teal)"></span>EP + Geremias + Godoy</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-slate)"></span>Outros</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">Serviços terceiros — custo mensal real vs. orçado</div>
+    <div class="cw" style="height:250px"><canvas id="tercChart"></canvas></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:10.5px;color:var(--t2)">
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--c-blue);display:inline-block;border-top:2px dashed var(--c-blue)"></span>Budget R$ 16.500/mês</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-red)"></span>Real (excl. Geremias e Godoy)</span>
+    </div>
+  </div>
+</div>
+
+<div class="sl">Serviços de terceiros — detalhamento completo</div>
+<div class="card">
+  <div style="font-size:11.5px;color:var(--t2);margin-bottom:12px">Total serviços PJ pagos jan–abr: <strong style="color:var(--c-red)">R$ 369.418</strong> · Média mensal: <strong style="color:var(--c-red)">R$ 92.354</strong> · Budget projetado: <strong style="color:var(--c-green)">R$ 16.500/mês</strong> · Desvio: <strong style="color:var(--c-red)">+460%</strong></div>
+  <table class="dt">
+    <thead><tr><th>Fornecedor</th><th>Tipo contrato</th><th class="r">Jan</th><th class="r">Fev</th><th class="r">Mar</th><th class="r">Abr</th><th class="r">Total</th><th class="r">Média/mês</th><th>Recorrência</th></tr></thead>
+    <tbody>
+      <tr><td class="lbl">Efata Treinamento Tecnologia</td><td><span class="bge bgn">Treinamento TI</span></td><td class="r">35.000</td><td class="r">35.250</td><td class="r">35.367</td><td class="r">35.082</td><td class="r" style="color:var(--c-red)">140.699</td><td class="r">35.175</td><td><span class="bge bgg">4/4 meses</span></td></tr>
+      <tr><td class="lbl">Milajanu Consultoria TI</td><td><span class="bge bgn">Consultoria TI</span></td><td class="r">28.750</td><td class="r">23.000</td><td class="r">23.717</td><td class="r">23.000</td><td class="r" style="color:var(--c-red)">98.467</td><td class="r">24.617</td><td><span class="bge bgg">4/4 meses</span></td></tr>
+      <tr><td class="lbl">M. de Q. Macedo — EPP</td><td><span class="bge bgn">Serviços PJ</span></td><td class="r">23.000</td><td class="r">23.000</td><td class="r">23.000</td><td class="r">23.000</td><td class="r" style="color:var(--c-red)">92.000</td><td class="r">23.000</td><td><span class="bge bgg">4/4 meses</span></td></tr>
+      <tr><td class="lbl">EP Serviços de Tecnologia</td><td><span class="bge bgn">TI / Sistemas</span></td><td class="r">12.025</td><td class="r">3.868</td><td class="r">10.205</td><td class="r">16.125</td><td class="r" style="color:var(--c-amber)">42.223</td><td class="r">10.556</td><td><span class="bge bgg">4/4 meses</span></td></tr>
+      <tr><td class="lbl">Geremias Ferreira Lima</td><td><span class="bge bgn">Acordo trabalhista</span></td><td class="r">10.000</td><td class="r">10.000</td><td class="r">10.000</td><td class="r">10.000</td><td class="r" style="color:var(--c-amber)">40.000</td><td class="r">10.000</td><td><span class="bge bgg">4/4 meses</span></td></tr>
+      <tr><td class="lbl">Eduardo Faria de Godoy</td><td><span class="bge bgn">Serviços PJ</span></td><td class="r">6.500</td><td class="r">6.500</td><td class="r">6.500</td><td class="r">6.500</td><td class="r" style="color:var(--c-amber)">26.000</td><td class="r">6.500</td><td><span class="bge bgg">4/4 meses</span></td></tr>
+      <tr><td class="lbl">Vtconn Consultoria Sistemas</td><td><span class="bge bgn">Consultoria</span></td><td class="r">5.057</td><td class="r">5.057</td><td class="r">6.115</td><td class="r">—</td><td class="r">16.229</td><td class="r">5.410*</td><td><span class="bge bga">3/4 — encerrou?</span></td></tr>
+      <tr><td class="lbl">Victor Hugo de Oliveira</td><td><span class="bge bgn">PF</span></td><td class="r">3.333</td><td class="r">3.333</td><td class="r">3.333</td><td class="r">—</td><td class="r">9.999</td><td class="r">3.333*</td><td><span class="bge bga">3/4 — encerrou?</span></td></tr>
+      <tr><td class="lbl">IVY Group Holding S/A</td><td><span class="bge bgr">Sem categoria</span></td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td class="r">10.521</td><td class="r" style="color:var(--c-amber)">10.521</td><td class="r">—</td><td><span class="bge bgr">1/4 — identificar</span></td></tr>
+      <tr><td class="lbl">CBYK Consultoria Gestão</td><td><span class="bge bgr">Sem categoria</span></td><td class="r">—</td><td class="r">—</td><td class="r">5.523</td><td class="r">—</td><td class="r">5.523</td><td class="r">—</td><td><span class="bge bgr">1/4 — identificar</span></td></tr>
+      <tr class="tot"><td colspan="6">Total serviços / acordos terceiros</td><td class="r" style="color:var(--c-red)">481.661</td><td class="r" style="color:var(--c-red)">~R$ 92 K/mês</td><td><span class="bge bgr">budget: R$ 16,5 K</span></td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     CAIXA
+════════════════════════════════════════════ -->
+<div class="pg" id="pg-cashflow">
+<div class="hero">
+  <div>
+    <div class="htitle">Fluxo de Caixa</div>
+    <div class="hsub">jan–abr/2026 histórico · mai–jun/2026 projetado · fonte: Bling ERP</div>
+  </div>
+  <span class="pill pr"><span class="pdot"></span>gap mai–jun: −R$ 194 K</span>
+</div>
+<div class="g4">
+  <div class="met amber"><div class="ml">Saldo estimado hoje</div><div class="mv amber">~R$ 48 K</div><div class="ms">Itaú + Bradesco combinados</div></div>
+  <div class="met red"><div class="ml">A pagar mai–jun</div><div class="mv red">R$ 297 K</div><div class="ms">23 lançamentos em aberto</div></div>
+  <div class="met green"><div class="ml">A receber mai–jun</div><div class="mv green">R$ 102 K</div><div class="ms">8 parcelas confirmadas</div></div>
+  <div class="met red"><div class="ml">Gap líquido</div><div class="mv red">−R$ 194 K</div><div class="ms">Depende de aporte Polar para cobrir</div></div>
+</div>
+<div class="sl">Contas a receber — situação detalhada</div>
+<div class="card" style="margin-bottom:12px">
+  <table class="dt">
+    <thead><tr><th>Cliente</th><th>Vencimento</th><th>Situação</th><th class="r">Saldo</th></tr></thead>
+    <tbody>
+      <tr><td>Atacadão Distribuidora — doc 165</td><td>20/mar/26</td><td><span class="bge bga">Parcial</span></td><td class="r" style="color:var(--c-amber)">R$ 6.578</td></tr>
+      <tr><td>Atacadão Distribuidora — doc 166</td><td>22/mar/26</td><td><span class="bge bgr">Atrasada</span></td><td class="r" style="color:var(--c-red)">R$ 7.039</td></tr>
+      <tr><td>TOTVS SA — RPS 1124</td><td>16/abr/26</td><td><span class="bge bgr">Atrasada</span></td><td class="r" style="color:var(--c-red)">R$ 14.200</td></tr>
+      <tr><td>Atacadão Distribuidora — doc 167</td><td>22/abr/26</td><td><span class="bge bgr">Atrasada</span></td><td class="r" style="color:var(--c-red)">R$ 7.039</td></tr>
+      <tr><td>Sérgio C. Weiser Decoração</td><td>21/mai/26</td><td><span class="bge bgb">Em aberto</span></td><td class="r">R$ 5.256</td></tr>
+      <tr><td>Atacadão Distribuidora — doc 168</td><td>22/mai/26</td><td><span class="bge bgb">Em aberto</span></td><td class="r">R$ 7.039</td></tr>
+      <tr><td>Usina São Francisco S/A</td><td>29/mai/26</td><td><span class="bge bgb">Em aberto</span></td><td class="r">R$ 5.631</td></tr>
+      <tr><td>TOTVS S.A. — Previsão faturamento</td><td>15/jun/26</td><td><span class="bge bgg">Previsto</span></td><td class="r" style="color:var(--c-green)">R$ 50.000</td></tr>
+      <tr class="tot"><td colspan="3">Total · vencidos: R$ 34.856</td><td class="r">R$ 102.780</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="ct">Maio/2026 — total: R$ 155.645</div>
+    <table class="dt">
+      <thead><tr><th>Fornecedor</th><th class="r">Venc.</th><th class="r">Valor</th></tr></thead>
+      <tbody>
+        <tr><td>TOTVS S.A. renovação parceria</td><td class="r">07/mai</td><td class="r" style="color:var(--c-amber)">R$ 11.871</td></tr>
+        <tr><td>Plentech LTDA</td><td class="r">11/mai</td><td class="r">R$ 2.500</td></tr>
+        <tr><td>Cartão de Crédito</td><td class="r">15/mai</td><td class="r">R$ 5.739</td></tr>
+        <tr><td>Geremias Lima (5/20)</td><td class="r">19/mai</td><td class="r" style="color:var(--c-amber)">R$ 10.000</td></tr>
+        <tr><td>Efata Treinamento</td><td class="r">20/mai</td><td class="r" style="color:var(--c-amber)">R$ 35.000</td></tr>
+        <tr><td>M. de Q. Macedo</td><td class="r">20/mai</td><td class="r" style="color:var(--c-amber)">R$ 23.000</td></tr>
+        <tr><td>Eduardo Faria de Godoy</td><td class="r">20/mai</td><td class="r">R$ 6.500</td></tr>
+        <tr><td><strong>Rômulo Lima (17/18)</strong></td><td class="r">25/mai</td><td class="r" style="color:var(--c-red)">R$ 59.814</td></tr>
+        <tr><td style="color:var(--t3)">Outros (ISS, Bling, DCTF…)</td><td class="r">vários</td><td class="r">R$ 1.221</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="ct">Junho/2026 — total: R$ 141.304 · <span style="color:var(--c-green)">última parcela buy-out</span></div>
+    <table class="dt">
+      <thead><tr><th>Fornecedor</th><th class="r">Venc.</th><th class="r">Valor</th></tr></thead>
+      <tbody>
+        <tr><td>Cartão de Crédito</td><td class="r">15/jun</td><td class="r">R$ 5.739</td></tr>
+        <tr><td>Geremias Lima (6/20)</td><td class="r">18/jun</td><td class="r" style="color:var(--c-amber)">R$ 10.000</td></tr>
+        <tr><td>Efata Treinamento</td><td class="r">22/jun</td><td class="r" style="color:var(--c-amber)">R$ 35.000</td></tr>
+        <tr><td>M. de Q. Macedo</td><td class="r">22/jun</td><td class="r" style="color:var(--c-amber)">R$ 23.000</td></tr>
+        <tr><td>Eduardo Faria de Godoy</td><td class="r">22/jun</td><td class="r">R$ 6.500</td></tr>
+        <tr><td><strong style="color:var(--c-green)">Rômulo Lima (18/18 — ÚLTIMA)</strong></td><td class="r">25/jun</td><td class="r" style="color:var(--c-red)">R$ 59.814</td></tr>
+        <tr><td style="color:var(--t3)">Outros</td><td class="r">vários</td><td class="r">R$ 1.251</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     CLIENTES
+════════════════════════════════════════════ -->
+<div class="pg" id="pg-clientes">
+<div class="hero">
+  <div>
+    <div class="htitle">Base de Clientes & Retenção</div>
+    <div class="hsub">27 pagantes · 68 histórico total · referência: out/25–abr/26</div>
+  </div>
+  <span class="pill pr"><span class="pdot"></span>60% churn histórico</span>
+</div>
+<div class="g4">
+  <div class="met blue"><div class="ml">Base histórica total</div><div class="mv blue">68</div><div class="ms">Todos os já implantados</div></div>
+  <div class="met green"><div class="ml">Pagamento ativo</div><div class="mv green">27 (40%)</div><div class="ms">Pgt + uso ativo: 20 clientes</div></div>
+  <div class="met red"><div class="ml">Inativos (churned)</div><div class="mv red">41 (60%)</div><div class="ms">Sem estrutura de CS documentada</div></div>
+  <div class="met amber"><div class="ml">Risco churn imediato</div><div class="mv amber">6</div><div class="ms">Flag churn = SIM — ação imediata</div></div>
+</div>
+<div class="sl">Funil de retenção</div>
+<div class="card" style="margin-bottom:12px">
+  <div style="display:flex;flex-direction:column;gap:11px;padding:2px 0">
+    <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;font-family:var(--font-mono)"><span style="color:var(--t2)">Base histórica total</span><span style="color:var(--c-blue)">68 (100%)</span></div><div class="pbar"><div class="pbi" style="width:100%;background:var(--c-blue)"></div></div></div>
+    <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;font-family:var(--font-mono)"><span style="color:var(--t2)">Pagamento ativo</span><span style="color:var(--c-green)">27 (40%)</span></div><div class="pbar"><div class="pbi" style="width:40%;background:var(--c-green)"></div></div></div>
+    <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;font-family:var(--font-mono)"><span style="color:var(--t2)">Pgt ativo + uso ativo (saudáveis)</span><span style="color:var(--c-green)">20 (29%)</span></div><div class="pbar"><div class="pbi" style="width:29%;background:var(--c-green)"></div></div></div>
+    <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;font-family:var(--font-mono)"><span style="color:var(--t2)">Uso ativo confirmado abr/26</span><span style="color:var(--c-amber)">15 (22%)</span></div><div class="pbar"><div class="pbi" style="width:22%;background:var(--c-amber)"></div></div></div>
+    <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;font-family:var(--font-mono)"><span style="color:var(--t2)">Pgt ativo + uso INATIVO (risco)</span><span style="color:var(--c-red)">7 (10%)</span></div><div class="pbar"><div class="pbi" style="width:10%;background:var(--c-red)"></div></div></div>
+    <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;font-family:var(--font-mono)"><span style="color:var(--t2)">Flag churn = SIM</span><span style="color:var(--c-red)">6 (9%)</span></div><div class="pbar"><div class="pbi" style="width:9%;background:var(--c-red)"></div></div></div>
+  </div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="ct">Clientes com risco de churn — ação imediata</div>
+    <div class="row"><div class="rl"><strong>Editora do Brasil SA</strong><small>Set/2021 · uso inativo · gaps desde dez/25</small></div><span class="bge bgr">Churn SIM</span></div>
+    <div class="row"><div class="rl"><strong>Guaraves Guarabira Aves</strong><small>Ago/2022 · uso inativo</small></div><span class="bge bgr">Churn SIM</span></div>
+    <div class="row"><div class="rl"><strong>JDK Presentes Finos (Dryzum)</strong><small>Jun/2023 · obs: "fase de cancelamento"</small></div><span class="bge bgr">Churn SIM</span></div>
+    <div class="row"><div class="rl"><strong>Lab. Florais Joel Aleixo</strong><small>Parou de usar em fev/26</small></div><span class="bge bgr">Churn SIM</span></div>
+    <div class="row"><div class="rl"><strong>Sky Cranes & Hoists</strong><small>Nunca ativou efetivamente</small></div><span class="bge bgr">Churn SIM</span></div>
+    <div class="row"><div class="rl"><strong>Polar Store LTDA</strong><small>7 meses pago, sem uso — vínculo sócio?</small></div><span class="bge bga">Verificar</span></div>
+    <div class="row"><div class="rl"><strong>Dux Company SA</strong><small>CNPJ marcado "solicitou cancelamento"</small></div><span class="bge bga">Alerta</span></div>
+  </div>
+  <div class="card">
+    <div class="ct">Uso em abr/26 — 27 clientes pagantes</div>
+    <div class="cw" style="height:200px"><canvas id="usageChart"></canvas></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:10.5px;color:var(--t2)">
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-green)"></span>Ativo confirmado (15)</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-amber)"></span>Incerto (5)</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-red)"></span>Inativo/churn (7)</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PIPELINE
+════════════════════════════════════════════ -->
+<div class="pg" id="pg-pipeline">
+<div class="hero">
+  <div>
+    <div class="htitle">Pipeline Comercial & Propostas</div>
+    <div class="hsub">31 oportunidades · 7 propostas ativas · mar–mai/2026</div>
+  </div>
+  <span class="pill pa"><span class="pdot"></span>29% taxa de avanço</span>
+</div>
+<div class="g4">
+  <div class="met blue"><div class="ml">Proposta / apresentação</div><div class="mv blue">9</div><div class="ms">29% do pipeline total</div></div>
+  <div class="met amber"><div class="ml">Parados</div><div class="mv amber">10</div><div class="ms">ESN TOTVS — principal gargalo</div></div>
+  <div class="met red"><div class="ml">Perdidos</div><div class="mv red">10</div><div class="ms">32% — concorrência + desistência</div></div>
+  <div class="met green"><div class="ml">Potencial SaaS/mês</div><div class="mv green">R$ 33 K</div><div class="ms">Se todas as 7 propostas fecharem</div></div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="ct">Distribuição do pipeline</div>
+    <div class="cw" style="height:200px"><canvas id="pipeChart"></canvas></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:10.5px;color:var(--t2)">
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-blue)"></span>Proposta (7)</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-green)"></span>Apresentação (2)</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-amber)"></span>Parado (10)</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-red)"></span>Perdido (10)</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-slate)"></span>Não iniciado (2)</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">Propostas ativas — prioridade comercial</div>
+    <div class="row"><div class="rl"><strong>Baianão Móveis e Eletrodomésticos</strong><small>150–300M fat. · em avaliação interna</small></div><div style="text-align:right"><span style="font-family:var(--font-mono);font-size:11px;color:var(--c-green)">+R$ 18.639/mês</span></div></div>
+    <div class="row"><div class="rl"><strong>SESI</strong><small>Instituição · proposta enviada 30/abr</small></div><div style="text-align:right"><span style="font-family:var(--font-mono);font-size:11px;color:var(--c-green)">+R$ 2.502/mês</span></div></div>
+    <div class="row"><div class="rl"><strong>Hyundai</strong><small>Feiras · proposta enviada abr</small></div><div style="text-align:right"><span style="font-family:var(--font-mono);font-size:11px">+R$ 950/mês</span></div></div>
+    <div class="row"><div class="rl"><strong>Vetor Editora Psico-Pedagógica</strong><small>Em avaliação interna</small></div><div style="text-align:right"><span style="font-family:var(--font-mono);font-size:11px">+R$ 7.500/mês</span></div></div>
+    <div class="row"><div class="rl"><strong>Pinacoteca</strong><small>Aguardando retorno</small></div><div style="text-align:right"><span style="font-family:var(--font-mono);font-size:11px">+R$ 2.504/mês</span></div></div>
+    <div class="row"><div class="rl"><strong>Inhotim + Nova Aliança</strong><small>Em negociação</small></div><div style="text-align:right"><span style="font-family:var(--font-mono);font-size:11px">+R$ 1.380/mês</span></div></div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PROJEÇÃO
+════════════════════════════════════════════ -->
+<div class="pg" id="pg-projecao">
+<div class="hero">
+  <div>
+    <div class="htitle">Projeção de Caixa — H2/2026 e 2027</div>
+    <div class="hsub">modelo interativo · ajuste as premissas abaixo para simular cenários</div>
+  </div>
+  <span class="pill pg2"><span class="pdot"></span>Buy-out encerra jun/26</span>
+</div>
+<div class="sl">Premissas do modelo</div>
+<div class="card" style="margin-bottom:12px">
+  <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center">
+    <div><div style="font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase">Receita mensal</div>
+      <select class="ctrl-select" id="rSel" onchange="upd()">
+        <option value="65000">R$ 65 K — conservador</option>
+        <option value="80000" selected>R$ 80 K — base</option>
+        <option value="100000">R$ 100 K — otimista</option>
+        <option value="120000">R$ 120 K — agressivo</option>
+      </select>
+    </div>
+    <div><div style="font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase">Recuperação Atacadão</div>
+      <select class="ctrl-select" id="aSel" onchange="upd()">
+        <option value="0">Não recupera</option>
+        <option value="17428" selected>50% — R$ 17 K</option>
+        <option value="34856">100% — R$ 34 K</option>
+      </select>
+    </div>
+    <div><div style="font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase">Efata em 2027</div>
+      <select class="ctrl-select" id="eSel" onchange="upd()">
+        <option value="12" selected>Mantém o ano todo</option>
+        <option value="3">Encerra mar/27</option>
+        <option value="6">Encerra jun/27</option>
+        <option value="9">Encerra set/27</option>
+      </select>
+    </div>
+    <div style="margin-left:auto;text-align:right">
+      <div style="font-size:10px;color:var(--t3);font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase">Caixa estimado dez/27</div>
+      <div id="pFinal" style="font-family:var(--font-mono);font-size:22px;font-weight:500;color:var(--c-green)">—</div>
+    </div>
+  </div>
+</div>
+<div class="g3" id="pMets" style="margin-bottom:12px"></div>
+<div class="card" style="margin-bottom:12px">
+  <div class="ct">Resultado mensal — H2/2026 + 2027</div>
+  <div class="cw" style="height:255px"><canvas id="pBar"></canvas></div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;font-size:10.5px;color:var(--t2)">
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-green)"></span>Resultado positivo</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-red)"></span>Resultado negativo</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:2px;border-top:2px dashed var(--c-red);display:inline-block"></span>Se buy-out continuasse</span>
+  </div>
+</div>
+<div class="card">
+  <div class="ct">Caixa acumulado projetado</div>
+  <div class="cw" style="height:200px"><canvas id="pLine"></canvas></div>
+</div>
+</div>
+
+<footer>easy analytics · dashboard executivo · 02/mai/2026 · dados: bling erp + relatório pagamentos + pipeline + base clientes · confidencial</footer>
+
+<script>
+// ── CHART DEFAULTS — paleta fixa ──
+Chart.defaults.color='#4a5f7a';
+Chart.defaults.borderColor='rgba(60,90,130,0.1)';
+Chart.defaults.font.family="'IBM Plex Mono',monospace";
+Chart.defaults.font.size=11;
+
+const COLORS={
+  red:'#e05c5c', amber:'#d4943a', green:'#3d9e6e',
+  blue:'#4a8fc4', purple:'#7c6fcd', teal:'#3a9499', slate:'#5a7a9e'
+};
+const fBR=n=>'R$ '+Math.round(n).toLocaleString('pt-BR');
+const fK=n=>(n>=0?'':'-')+'R$ '+Math.abs(Math.round(n/1000))+'K';
+const PAGES=['overview','gastos','cashflow','clientes','pipeline','projecao'];
+
+function sp(id,btn,mob){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ntab,.mobtab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pg-'+id).classList.add('active');
+  btn.classList.add('active');
+  var idx=PAGES.indexOf(id);
+  var other=mob?document.querySelectorAll('.ntab'):document.querySelectorAll('.mobtab');
+  if(idx>=0&&other[idx])other[idx].classList.add('active');
+  if(mob){document.getElementById('mmenu').classList.remove('open');document.getElementById('hbtn').classList.remove('open');}
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='projecao')upd();
+}
+function tmob(){document.getElementById('mmenu').classList.toggle('open');document.getElementById('hbtn').classList.toggle('open');}
+
+// ── PIE — composição total ──
+new Chart(document.getElementById('pieGrupo'),{
+  type:'doughnut',
+  data:{
+    labels:['Buy-out Rômulo','Serv. Terceiros PJ','Acordo Trabalhista','Impostos','Outros'],
+    datasets:[{
+      data:[239257,369418,40000,26248,125478],
+      backgroundColor:[COLORS.red,COLORS.amber,COLORS.blue,COLORS.teal,COLORS.slate],
+      borderWidth:0
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+fBR(c.parsed)+' ('+Math.round(c.parsed/800401*100)+'%)'}}}}
+});
+
+// ── STACKED BAR — evolução mensal ──
+new Chart(document.getElementById('stackBar'),{
+  type:'bar',
+  data:{
+    labels:['Jan','Fev','Mar','Abr'],
+    datasets:[
+      {label:'Buy-out',data:[59814,59814,59814,59814],backgroundColor:COLORS.red,borderWidth:0},
+      {label:'Efata',data:[35000,35250,35367,35082],backgroundColor:COLORS.amber,borderWidth:0},
+      {label:'Milajanu + Macedo',data:[51750,46000,46717,46000],backgroundColor:COLORS.blue,borderWidth:0},
+      {label:'Polar',data:[0,0,65000,29000],backgroundColor:COLORS.purple,borderWidth:0},
+      {label:'EP + Geremias + Godoy',data:[29858,21239,27038,33025],backgroundColor:COLORS.teal,borderWidth:0},
+      {label:'Outros',data:[21590,37549,29116,30564],backgroundColor:COLORS.slate,borderWidth:0}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',callbacks:{label:c=>c.dataset.label+': '+fBR(c.parsed.y),footer:items=>'Total: '+fBR(items.reduce((a,i)=>a+i.parsed.y,0))}}},scales:{x:{stacked:true,ticks:{font:{size:11}}},y:{stacked:true,ticks:{callback:fK},grid:{color:'rgba(60,90,130,0.08)'}}}}
+});
+
+// ── LINE — serviços terceiros ──
+new Chart(document.getElementById('tercChart'),{
+  type:'bar',
+  data:{
+    labels:['Jan','Fev','Mar','Abr'],
+    datasets:[
+      {label:'Serv. terceiros real',data:[102307,96968,104929,110332],backgroundColor:COLORS.red+'cc',borderWidth:0},
+      {label:'Budget',data:[16500,16500,16500,16500],type:'line',borderColor:COLORS.blue,borderDash:[5,4],borderWidth:2,pointRadius:0,fill:false,tension:0}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fBR(c.parsed.y)}}},scales:{x:{ticks:{font:{size:11}}},y:{ticks:{callback:fK},grid:{color:'rgba(60,90,130,0.08)'}}}}
+});
+
+// ── USAGE CHART ──
+new Chart(document.getElementById('usageChart'),{
+  type:'doughnut',
+  data:{
+    labels:['Uso ativo confirmado','Uso incerto','Inativo / churn'],
+    datasets:[{data:[15,5,7],backgroundColor:[COLORS.green,COLORS.amber,COLORS.red],borderWidth:0}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,cutout:'64%',plugins:{legend:{display:true,position:'right',labels:{boxWidth:10,padding:12,color:'#7d8ea8',font:{family:"'IBM Plex Mono',monospace",size:10}}},tooltip:{callbacks:{label:c=>c.label+': '+c.parsed+' ('+Math.round(c.parsed/27*100)+'%)'}}}}
+});
+
+// ── PIPELINE CHART ──
+new Chart(document.getElementById('pipeChart'),{
+  type:'doughnut',
+  data:{
+    labels:['Proposta','Apresentação','Parado','Perdido','Não iniciado'],
+    datasets:[{data:[7,2,10,10,2],backgroundColor:[COLORS.blue,COLORS.green,COLORS.amber,COLORS.red,COLORS.slate],borderWidth:0}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+c.parsed}}}}
+});
+
+// ── PROJECTION ──
+const MH2=['Jul/26','Ago/26','Set/26','Out/26','Nov/26','Dez/26'];
+const M27=['Jan/27','Fev/27','Mar/27','Abr/27','Mai/27','Jun/27','Jul/27','Ago/27','Set/27','Out/27','Nov/27','Dez/27'];
+const ALL=[...MH2,...M27];
+const OP=31244,EF=35000,GSTOP=8,BO=59814,S0=48000;
+let pB=null,pL=null;
+
+function upd(){
+  const rev=+document.getElementById('rSel').value;
+  const atac=+document.getElementById('aSel').value;
+  const efStop=+document.getElementById('eSel').value;
+  const res=[],acums=[],resBO=[];
+  let ac=S0+atac;
+  MH2.forEach(()=>{const s=OP+EF,r=rev-s;res.push(r);resBO.push(r-BO);ac+=r;acums.push(ac);});
+  M27.forEach((_,i)=>{const g=i<GSTOP?10000:0,e=i<efStop?EF:0,r=rev-OP-e-g;res.push(r);resBO.push(r-BO);ac+=r;acums.push(ac);});
+  const tH2=res.slice(0,6).reduce((a,b)=>a+b,0);
+  const t27=res.slice(6).reduce((a,b)=>a+b,0);
+  const fin=acums[17];
+  document.getElementById('pFinal').textContent=fBR(fin);
+  document.getElementById('pFinal').style.color=fin>=0?'var(--c-green)':'var(--c-red)';
+  document.getElementById('pMets').innerHTML=`
+    <div class="met ${tH2>=0?'green':'red'}"><div class="ml">Resultado acum. H2/26</div><div class="mv ${tH2>=0?'green':'red'}">${fBR(tH2)}</div><div class="ms">vs. ${fBR(resBO.slice(0,6).reduce((a,b)=>a+b,0))} se buy-out continuasse</div></div>
+    <div class="met ${t27>=0?'green':'red'}"><div class="ml">Resultado acum. 2027</div><div class="mv ${t27>=0?'green':'red'}">${fBR(t27)}</div><div class="ms">Média mensal: ${fBR(t27/12)}</div></div>
+    <div class="met ${fin>=0?'teal':'red'}"><div class="ml">Caixa estimado dez/27</div><div class="mv ${fin>=0?'teal':'red'}">${fBR(fin)}</div><div class="ms">Partindo de ~R$ 48 K hoje</div></div>
+  `;
+  const bc=res.map(r=>r>=0?COLORS.green+'cc':COLORS.red+'cc');
+  if(pB)pB.destroy();
+  pB=new Chart(document.getElementById('pBar'),{
+    type:'bar',
+    data:{labels:ALL,datasets:[
+      {label:'Resultado',data:res,backgroundColor:bc,borderWidth:0,order:2},
+      {label:'Se buy-out continuasse',data:resBO,type:'line',borderColor:COLORS.red,borderDash:[5,4],borderWidth:1.5,pointStyle:'triangle',pointRadius:3,fill:false,tension:0,order:1}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fBR(c.parsed.y)}}},scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:10}}},y:{ticks:{callback:fK},grid:{color:'rgba(60,90,130,0.08)'}}}}
+  });
+  const lc=acums.map(a=>a>=0?COLORS.blue:COLORS.red);
+  if(pL)pL.destroy();
+  pL=new Chart(document.getElementById('pLine'),{
+    type:'line',
+    data:{labels:ALL,datasets:[{label:'Caixa acumulado',data:acums,borderColor:COLORS.blue,backgroundColor:'rgba(74,143,196,0.08)',fill:true,tension:0.3,pointRadius:3,pointBackgroundColor:lc,borderWidth:1.5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Caixa: '+fBR(c.parsed.y)}}},scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:10}}},y:{ticks:{callback:fK},grid:{color:'rgba(60,90,130,0.08)'}}}}
+  });
+}
+setTimeout(upd,150);
+</script>
+</body>
+</html>
