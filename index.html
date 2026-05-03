@@ -2,59 +2,47 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
 <title>Easy Analytics — Dashboard Executivo</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-/* ── DESIGN SYSTEM FIXO — nunca muda ── */
 :root{
-  --bg:#f4f6f9;
-  --s1:#ffffff;
-  --s2:#f0f3f7;
-  --s3:#e4e9f0;
-  --bd:rgba(60,90,130,0.1);
-  --bd2:rgba(60,90,130,0.2);
-  --t1:#1a2436;
-  --t2:#4a5f7a;
-  --t3:#8a9db8;
-  --c-red:#c0392b;    --c-red-bg:rgba(192,57,43,0.08);    --c-red-br:rgba(192,57,43,0.18);
-  --c-amber:#b7650a;  --c-amber-bg:rgba(183,101,10,0.08);  --c-amber-br:rgba(183,101,10,0.18);
-  --c-green:#1e7e4f;  --c-green-bg:rgba(30,126,79,0.08);  --c-green-br:rgba(30,126,79,0.18);
-  --c-blue:#1a5fa8;   --c-blue-bg:rgba(26,95,168,0.08);   --c-blue-br:rgba(26,95,168,0.18);
-  --c-purple:#5b4ab0; --c-purple-bg:rgba(91,74,176,0.08); --c-purple-br:rgba(91,74,176,0.18);
-  --c-teal:#1a7a80;   --c-teal-bg:rgba(26,122,128,0.08);  --c-teal-br:rgba(26,122,128,0.18);
-  --c-slate:#3d5a80;  --c-slate-bg:rgba(61,90,128,0.08);  --c-slate-br:rgba(61,90,128,0.18);
-  --font-sans:'IBM Plex Sans',sans-serif;
-  --font-mono:'IBM Plex Mono',monospace;
-  --r-sm:6px; --r-md:10px; --r-lg:14px;
+  --bg:#f4f6f9;--s1:#fff;--s2:#f0f3f7;--s3:#e4e9f0;
+  --bd:rgba(60,90,130,0.1);--bd2:rgba(60,90,130,0.2);
+  --t1:#1a2436;--t2:#4a5f7a;--t3:#8a9db8;
+  --red:#c0392b;--red-bg:rgba(192,57,43,0.08);--red-br:rgba(192,57,43,0.2);
+  --amber:#b7650a;--amber-bg:rgba(183,101,10,0.08);--amber-br:rgba(183,101,10,0.2);
+  --green:#1e7e4f;--green-bg:rgba(30,126,79,0.08);--green-br:rgba(30,126,79,0.2);
+  --blue:#1a5fa8;--blue-bg:rgba(26,95,168,0.08);--blue-br:rgba(26,95,168,0.2);
+  --purple:#5b4ab0;--purple-bg:rgba(91,74,176,0.08);--purple-br:rgba(91,74,176,0.2);
+  --teal:#1a7a80;--teal-bg:rgba(26,122,128,0.08);
+  --slate:#3d5a80;--slate-bg:rgba(61,90,128,0.08);--slate-br:rgba(61,90,128,0.2);
+  --sans:'IBM Plex Sans',sans-serif;--mono:'IBM Plex Mono',monospace;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--t1);font-family:var(--font-sans);font-size:14px;line-height:1.6;min-height:100vh}
-
-/* ── LOCK ── */
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh}
+/* LOCK */
 #lock{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
-.lbox{background:var(--s1);border:1px solid var(--bd2);border-radius:var(--r-lg);padding:40px 44px;width:min(380px,90vw);display:flex;flex-direction:column;align-items:center;box-shadow:0 4px 24px rgba(60,90,130,0.1)}
-.lbrand{font-family:var(--font-mono);font-size:13px;font-weight:500;letter-spacing:.12em;color:var(--t3);text-transform:uppercase;margin-bottom:20px}
-.ltitle{font-family:var(--font-sans);font-size:16px;font-weight:600;color:var(--t1);margin-bottom:3px;text-align:center}
-.lsub{font-size:12px;color:var(--t3);text-align:center;margin-bottom:20px}
-.lerr{font-size:11px;color:var(--c-red);min-height:15px;margin-bottom:6px;text-align:center}
-.linput{width:100%;padding:10px 42px 10px 14px;border-radius:var(--r-md);border:1px solid var(--bd2);background:var(--s2);color:var(--t1);font-size:13px;outline:none;transition:border-color .2s;font-family:var(--font-sans)}
-.linput:focus{border-color:var(--c-blue)}
-.lbtn{width:100%;padding:11px;border-radius:var(--r-md);background:var(--c-blue);color:#ffffff;font-family:var(--font-sans);font-weight:500;font-size:13px;border:none;cursor:pointer;margin-top:8px;transition:opacity .15s;letter-spacing:.02em}
+.lbox{background:var(--s1);border:1px solid var(--bd2);border-radius:14px;padding:40px 44px;width:min(380px,90vw);display:flex;flex-direction:column;align-items:center;box-shadow:0 4px 24px rgba(60,90,130,0.1)}
+.ltitle{font-size:16px;font-weight:600;color:var(--t1);margin-bottom:3px;text-align:center}
+.lsub{font-size:12px;color:var(--t3);text-align:center;margin-bottom:18px}
+.lerr{font-size:11px;color:var(--red);min-height:15px;margin-bottom:5px;text-align:center}
+.linput{width:100%;padding:10px 42px 10px 14px;border-radius:10px;border:1px solid var(--bd2);background:var(--s2);color:var(--t1);font-size:13px;outline:none;transition:border-color .2s;font-family:var(--sans)}
+.linput:focus{border-color:var(--blue)}
+.lbtn{width:100%;padding:11px;border-radius:10px;background:var(--blue);color:#fff;font-family:var(--sans);font-weight:500;font-size:13px;border:none;cursor:pointer;margin-top:8px;transition:opacity .15s}
 .lbtn:hover{opacity:.85}
-.lhint{font-size:10px;color:var(--t3);margin-top:14px;font-family:var(--font-mono)}
-
-/* ── NAV ── */
+.lhint{font-size:10px;color:var(--t3);margin-top:14px;font-family:var(--mono)}
+/* NAV */
 nav{position:sticky;top:0;z-index:100;background:rgba(244,246,249,0.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd);height:50px;padding:0 1.5rem;display:flex;align-items:center;gap:12px}
-.nbrand{font-family:var(--font-mono);font-size:12px;font-weight:500;letter-spacing:.1em;color:var(--t2);text-transform:uppercase;white-space:nowrap;flex-shrink:0}
-.ndot{width:4px;height:4px;border-radius:50%;background:var(--c-blue);flex-shrink:0}
-.ntabs{display:flex;gap:1px;overflow-x:auto;scrollbar-width:none}
+.nbrand{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.1em;color:var(--t2);white-space:nowrap;flex-shrink:0}
+.nbrand b{color:var(--blue)}
+.ndot{width:4px;height:4px;border-radius:50%;background:var(--blue);flex-shrink:0}
+.ntabs{display:flex;gap:1px;overflow-x:auto;scrollbar-width:none;flex:1}
 .ntabs::-webkit-scrollbar{display:none}
-.ntab{padding:5px 12px;border-radius:var(--r-sm);font-size:12px;font-weight:400;color:var(--t3);cursor:pointer;border:none;background:none;font-family:var(--font-sans);transition:all .15s;white-space:nowrap;flex-shrink:0;letter-spacing:.01em}
-.ntab:hover{color:var(--t1)}
-.ntab.active{color:var(--t1);background:var(--s2)}
-.ndate{font-family:var(--font-mono);font-size:10px;color:var(--t3);white-space:nowrap;margin-left:auto}
+.ntab{padding:5px 11px;border-radius:6px;font-size:12px;font-weight:400;color:var(--t3);cursor:pointer;border:none;background:none;font-family:var(--sans);transition:all .15s;white-space:nowrap;flex-shrink:0}
+.ntab:hover{color:var(--t1)}.ntab.active{color:var(--t1);background:var(--s2)}
+.ndate{font-family:var(--mono);font-size:10px;color:var(--t3);white-space:nowrap}
 .hamb{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:7px;border:none;background:none;flex-shrink:0}
 .hamb span{display:block;width:18px;height:1.5px;background:var(--t2);border-radius:2px;transition:all .22s}
 .hamb.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg)}
@@ -62,12 +50,10 @@ nav{position:sticky;top:0;z-index:100;background:rgba(244,246,249,0.96);backdrop
 .hamb.open span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg)}
 .mobmenu{display:none;position:fixed;top:50px;left:0;right:0;background:rgba(244,246,249,0.98);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd);z-index:99;flex-direction:column;padding:4px 0}
 .mobmenu.open{display:flex}
-.mobtab{padding:12px 20px;font-size:13px;color:var(--t2);cursor:pointer;border:none;background:none;text-align:left;font-family:var(--font-sans);border-left:2px solid transparent;transition:all .15s}
-.mobtab:hover{color:var(--t1)}
-.mobtab.active{color:var(--t1);border-left-color:var(--c-blue);background:var(--s1)}
-
-/* ── PAGES ── */
-.pg{display:none;padding:1.75rem 1.5rem;max-width:1360px;margin:0 auto}
+.mobtab{padding:12px 20px;font-size:13px;color:var(--t2);cursor:pointer;border:none;background:none;text-align:left;font-family:var(--sans);border-left:2px solid transparent;transition:all .15s}
+.mobtab.active{color:var(--t1);border-left-color:var(--blue);background:var(--s1)}
+/* PAGES */
+.pg{display:none;padding:1.5rem;max-width:1360px;margin:0 auto}
 .pg.active{display:block}
 @keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .pg.active>*{animation:fu .22s ease both}
@@ -75,165 +61,159 @@ nav{position:sticky;top:0;z-index:100;background:rgba(244,246,249,0.96);backdrop
 .pg.active>*:nth-child(3){animation-delay:.08s}
 .pg.active>*:nth-child(4){animation-delay:.12s}
 .pg.active>*:nth-child(5){animation-delay:.16s}
-
-/* ── HERO ── */
+/* HERO */
 .hero{margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1px solid var(--bd);display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
-.htitle{font-family:var(--font-sans);font-size:20px;font-weight:600;letter-spacing:-.02em;line-height:1.25;color:var(--t1)}
-.hsub{font-size:11.5px;color:var(--t3);margin-top:3px;font-family:var(--font-mono)}
+.htitle{font-size:20px;font-weight:600;letter-spacing:-.02em;line-height:1.25}
+.hsub{font-size:11px;color:var(--t3);margin-top:3px;font-family:var(--mono)}
 .pills{display:flex;gap:6px;flex-wrap:wrap}
-.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:500;font-family:var(--font-mono);letter-spacing:.03em}
-.pr{background:var(--c-red-bg);color:var(--c-red);border:1px solid var(--c-red-br)}
-.pa{background:var(--c-amber-bg);color:var(--c-amber);border:1px solid var(--c-amber-br)}
-.pg2{background:var(--c-green-bg);color:var(--c-green);border:1px solid var(--c-green-br)}
-.pb2{background:var(--c-blue-bg);color:var(--c-blue);border:1px solid var(--c-blue-br)}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:500;font-family:var(--mono)}
+.pr{background:var(--red-bg);color:var(--red);border:1px solid var(--red-br)}
+.pa{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-br)}
+.pg2{background:var(--green-bg);color:var(--green);border:1px solid var(--green-br)}
+.pb2{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-br)}
 .pdot{width:4px;height:4px;border-radius:50%;background:currentColor}
-
-/* ── SECTION LABEL ── */
-.sl{font-family:var(--font-mono);font-size:9px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.12em;margin:22px 0 10px;display:flex;align-items:center;gap:8px}
+/* SECTION LABEL */
+.sl{font-family:var(--mono);font-size:9px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.12em;margin:18px 0 10px;display:flex;align-items:center;gap:8px}
 .sl::after{content:'';flex:1;height:1px;background:var(--bd)}
-
-/* ── GRIDS ── */
+/* GRIDS */
 .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .g21{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px}
-
-/* ── METRIC CARD ── */
-.met{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-md);padding:14px 16px;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(60,90,130,0.06)}
-.met::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px}
-.met.red::after{background:var(--c-red-br)}
-.met.amber::after{background:var(--c-amber-br)}
-.met.green::after{background:var(--c-green-br)}
-.met.blue::after{background:var(--c-blue-br)}
-.met.purple::after{background:var(--c-purple-br)}
-.met.teal::after{background:var(--c-teal-br)}
-.ml{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;font-family:var(--font-mono)}
-.mv{font-family:var(--font-mono);font-size:20px;font-weight:500;letter-spacing:-.01em;line-height:1;color:var(--t1)}
-.mv.red{color:var(--c-red)}.mv.amber{color:var(--c-amber)}.mv.green{color:var(--c-green)}.mv.blue{color:var(--c-blue)}.mv.purple{color:var(--c-purple)}.mv.teal{color:var(--c-teal)}
-.ms{font-size:10.5px;color:var(--t3);margin-top:5px}
-.delta{font-size:10px;font-weight:500;margin-top:5px;padding:2px 7px;border-radius:999px;display:inline-block;font-family:var(--font-mono)}
-.d-neg{background:var(--c-red-bg);color:var(--c-red)}
-.d-pos{background:var(--c-green-bg);color:var(--c-green)}
-.d-neu{background:var(--c-slate-bg);color:var(--c-slate)}
-
-/* ── CARD ── */
-.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-lg);padding:16px;margin-bottom:0;box-shadow:0 1px 3px rgba(60,90,130,0.06)}
-.ct{font-family:var(--font-mono);font-size:9.5px;font-weight:500;letter-spacing:.1em;color:var(--t3);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:6px}
-
-/* ── TABLE ── */
+/* METRIC */
+.met{background:var(--s1);border:1px solid var(--bd);border-radius:11px;padding:14px 16px;box-shadow:0 1px 3px rgba(60,90,130,0.06);position:relative;overflow:hidden;cursor:pointer;transition:all .18s;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.met::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.met.red::after{background:var(--red)}.met.amber::after{background:var(--amber)}.met.green::after{background:var(--green)}.met.blue::after{background:var(--blue)}.met.purple::after{background:var(--purple)}.met.teal::after{background:var(--teal)}
+.met.sel{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-bg)}.met.dim{opacity:.3}
+.ml{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;font-family:var(--mono)}
+.mv{font-family:var(--mono);font-size:20px;font-weight:500;letter-spacing:-.01em;line-height:1}
+.mv.red{color:var(--red)}.mv.amber{color:var(--amber)}.mv.green{color:var(--green)}.mv.blue{color:var(--blue)}.mv.purple{color:var(--purple)}.mv.teal{color:var(--teal)}
+.ms{font-size:10.5px;color:var(--t3);margin-top:4px}
+.delta{font-size:10px;font-weight:500;margin-top:4px;padding:2px 7px;border-radius:999px;display:inline-block;font-family:var(--mono)}
+.d-neg{background:var(--red-bg);color:var(--red)}.d-pos{background:var(--green-bg);color:var(--green)}.d-neu{background:var(--slate-bg);color:var(--slate)}
+/* CARD */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;box-shadow:0 1px 3px rgba(60,90,130,0.06);margin-bottom:0}
+.ct{font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.1em;color:var(--t3);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.ct-tag{background:var(--s2);border:1px solid var(--bd);border-radius:4px;padding:1px 6px;font-size:9px}
+/* TABLE */
 .dt{width:100%;border-collapse:collapse;font-size:12px}
-.dt th{text-align:left;padding:6px 8px;color:var(--t3);font-size:9.5px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--bd);font-family:var(--font-mono)}
+.dt th{text-align:left;padding:6px 8px;color:var(--t3);font-size:9.5px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--bd);font-family:var(--mono)}
 .dt th.r{text-align:right}
-.dt td{padding:7px 8px;border-bottom:1px solid var(--bd);color:var(--t1);vertical-align:middle}
+.dt td{padding:7px 8px;border-bottom:1px solid var(--bd);color:var(--t1);vertical-align:middle;transition:opacity .2s}
 .dt tr:last-child td{border-bottom:none}
-.dt tr:hover td{background:rgba(60,90,130,0.04)}
-.dt td.r{text-align:right;font-family:var(--font-mono);font-size:11px}
+.dt tr{cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.dt tr.sel td{background:var(--blue-bg)}.dt tr.dim td{opacity:.22}
+.dt td.r{text-align:right;font-family:var(--mono);font-size:11px}
 .dt td.lbl{font-weight:500}
-.dt tr.sub td{background:var(--s2);font-size:10px;color:var(--t3);font-weight:500;font-family:var(--font-mono);letter-spacing:.05em}
-.dt tr.tot td{background:var(--s3);font-weight:600;font-size:12px}
-
-/* ── BADGE ── */
-.bge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:var(--r-sm);font-size:10px;font-weight:500;white-space:nowrap;font-family:var(--font-mono)}
-.bgr{background:var(--c-red-bg);color:var(--c-red)}
-.bga{background:var(--c-amber-bg);color:var(--c-amber)}
-.bgg{background:var(--c-green-bg);color:var(--c-green)}
-.bgb{background:var(--c-blue-bg);color:var(--c-blue)}
-.bgp{background:var(--c-purple-bg);color:var(--c-purple)}
-.bgt{background:var(--c-teal-bg);color:var(--c-teal)}
-.bgn{background:var(--c-slate-bg);color:var(--c-slate)}
-
-/* ── ALERT ── */
-.alt{padding:10px 14px;border-radius:var(--r-md);margin-bottom:8px;border-left:2px solid;font-size:12px;line-height:1.5}
-.ats{font-weight:500;margin-bottom:2px}
-.asd{font-size:11px;color:inherit;opacity:.8;line-height:1.5}
-.alr{background:var(--c-red-bg);border-color:var(--c-red);color:var(--c-red)}
-.ala{background:var(--c-amber-bg);border-color:var(--c-amber);color:var(--c-amber)}
-.alg{background:var(--c-green-bg);border-color:var(--c-green);color:var(--c-green)}
-.alb{background:var(--c-blue-bg);border-color:var(--c-blue);color:var(--c-blue)}
-.alp{background:var(--c-purple-bg);border-color:var(--c-purple);color:var(--c-purple)}
-
-/* ── PROGRESS BAR ── */
-.pbar{background:var(--s3);border-radius:3px;height:4px;overflow:hidden;margin-top:4px}
+.dt tr.sub td{background:var(--s2);font-size:10px;color:var(--t3);font-family:var(--mono)}
+.dt tr.tot td{background:var(--s3);font-weight:600}
+/* BADGE */
+.bge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:5px;font-size:10px;font-weight:500;white-space:nowrap;font-family:var(--mono)}
+.bgr{background:var(--red-bg);color:var(--red)}.bga{background:var(--amber-bg);color:var(--amber)}
+.bgg{background:var(--green-bg);color:var(--green)}.bgb{background:var(--blue-bg);color:var(--blue)}
+.bgp{background:var(--purple-bg);color:var(--purple)}.bgn{background:var(--slate-bg);color:var(--slate)}
+/* ALERT */
+.alt{padding:10px 13px;border-radius:9px;margin-bottom:8px;border-left:2px solid;font-size:12px;line-height:1.5}
+.ats{font-weight:500;margin-bottom:2px}.asd{font-size:11px;opacity:.82}
+.alr{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.ala{background:var(--amber-bg);border-color:var(--amber);color:var(--amber)}
+.alg{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.alb{background:var(--blue-bg);border-color:var(--blue);color:var(--blue)}
+/* CROSS FILTER */
+.cf-hint{background:var(--blue-bg);border:1px solid var(--blue-br);border-radius:9px;padding:8px 13px;font-size:11px;color:var(--blue);margin-bottom:12px;font-family:var(--mono);display:flex;align-items:center;gap:7px}
+.month-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.mpill{padding:4px 12px;border-radius:999px;font-size:11px;font-family:var(--mono);font-weight:500;cursor:pointer;border:1px solid var(--bd);background:var(--s2);color:var(--t2);transition:all .15s;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.mpill.sel{background:var(--blue);border-color:var(--blue);color:#fff}.mpill.dim{opacity:.3}
+.dl-item{display:flex;align-items:center;gap:8px;cursor:pointer;padding:5px 7px;border-radius:7px;border:1px solid transparent;margin-bottom:4px;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.dl-item.sel{background:var(--blue-bg);border-color:var(--blue-br)}.dl-item.dim{opacity:.3}
+.dl-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.dl-name{font-size:11.5px;color:var(--t1);flex:1}.dl-val{font-family:var(--mono);font-size:10.5px;color:var(--t2)}
+.bar-item{display:flex;align-items:center;gap:9px;cursor:pointer;padding:5px 7px;border-radius:7px;border:1px solid transparent;margin-bottom:4px;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.bar-item.sel{background:var(--blue-bg);border-color:var(--blue-br)}.bar-item.dim{opacity:.3}
+.bar-label{font-size:11px;color:var(--t1);width:155px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;background:var(--s3);border-radius:3px;height:5px;overflow:hidden}
+.bar-fill{height:5px;border-radius:3px}
+.bar-value{font-family:var(--mono);font-size:10.5px;color:var(--t2);width:70px;text-align:right;flex-shrink:0}
+.reset-btn{background:var(--red-bg);border:1px solid var(--red-br);border-radius:7px;padding:4px 11px;font-size:10.5px;font-family:var(--mono);color:var(--red);cursor:pointer;display:none}
+.reset-btn.vis{display:inline-block}
+.sel-lbl{font-size:10.5px;color:var(--blue);font-family:var(--mono);font-weight:500}
+.totals{display:flex;gap:12px;padding:8px;background:var(--s2);border-radius:8px;margin-top:10px;font-family:var(--mono);font-size:11px;flex-wrap:wrap}
+.tot-i{display:flex;flex-direction:column;gap:2px}
+.tot-l{color:var(--t3);font-size:9px;text-transform:uppercase;letter-spacing:.06em}
+.tot-v{font-weight:500}
+/* PBAR */
+.pbar{background:var(--s3);border-radius:3px;height:4px;overflow:hidden;margin-top:3px}
 .pbi{height:4px;border-radius:3px}
-
-/* ── ROW ITEM ── */
+/* ROW */
 .row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bd);gap:8px}
 .row:last-child{border-bottom:none}
 .rl{font-size:12px;flex:1;min-width:0}
 .rl strong{display:block;font-size:12px;color:var(--t1);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rl small{display:block;font-size:10.5px;color:var(--t3);margin-top:1px}
-
-/* ── TIMELINE ITEM ── */
 .tli{display:flex;gap:11px;padding:8px 0;border-bottom:1px solid var(--bd)}
 .tli:last-child{border-bottom:none}
 .tld{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0}
-.tlt{font-size:12px;font-weight:500;color:var(--t1)}
-.tls{font-size:11px;color:var(--t3);margin-top:2px;line-height:1.5}
-
-/* ── SELECT CONTROL ── */
-.ctrl-select{padding:6px 12px;border-radius:var(--r-sm);border:1px solid var(--bd2);background:var(--s2);color:var(--t1);font-size:12px;font-family:var(--font-sans);outline:none;cursor:pointer}
-.ctrl-select:focus{border-color:var(--c-blue)}
-
-.dv{border:none;border-top:1px solid var(--bd);margin:18px 0}
+.tlt{font-size:12px;font-weight:500;color:var(--t1)}.tls{font-size:10.5px;color:var(--t3);margin-top:2px;line-height:1.5}
+.ctrl-select{padding:5px 11px;border-radius:7px;border:1px solid var(--bd2);background:var(--s2);color:var(--t1);font-size:12px;font-family:var(--sans);outline:none;cursor:pointer}
+.dv{border:none;border-top:1px solid var(--bd);margin:16px 0}
 .cw{position:relative;width:100%}
-footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);text-align:center;font-size:10px;color:var(--t3);font-family:var(--font-mono)}
-
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono)}
 @media(max-width:900px){.g5{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr}.g2,.g21{grid-template-columns:1fr}.ntabs{display:none}.hamb{display:flex!important}.ndate{display:none}nav{padding:0 1rem}.pg{padding:1.25rem 1rem}}
 @media(max-width:560px){.g5{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}.htitle{font-size:18px}}
 </style>
 </head>
 <body>
 
-<!-- ── LOCK ── -->
-<div id="lock" style="background:var(--bg)">
+<!-- LOCK -->
+<div id="lock">
   <div class="lbox">
-    <div class="lbrand">Easy Analytics</div>
-    <div style="font-family:var(--font-sans);font-size:28px;font-weight:700;letter-spacing:-.04em;color:var(--t1);margin:2px 0 14px"><span style="color:var(--c-blue)">EASY</span><span style="font-weight:300"> analytics</span></div>
+    <div style="font-size:26px;font-weight:700;letter-spacing:-.03em;color:var(--t1);margin-bottom:16px"><span style="color:var(--blue)">EASY</span><span style="font-weight:300;color:var(--t2)"> analytics</span></div>
     <div class="ltitle">Dashboard Executivo</div>
     <div class="lsub">Conteúdo confidencial</div>
     <div class="lerr" id="lerr"></div>
     <div style="position:relative;width:100%;margin-bottom:8px">
       <input class="linput" id="lpwd" type="password" placeholder="Senha de acesso"
         onkeydown="if(event.key==='Enter')unl()"
-        onfocus="this.style.borderColor='var(--c-blue)'"
+        onfocus="this.style.borderColor='var(--blue)'"
         onblur="this.style.borderColor='var(--bd2)'">
       <span onclick="var i=document.getElementById('lpwd');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'"
         style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:13px;user-select:none;color:var(--t3)">👁</span>
     </div>
     <button class="lbtn" onclick="unl()">Acessar</button>
-    <div class="lhint">02/mai/2026 · confidencial</div>
+    <div class="lhint">Easy Analytics · 02/mai/2026 · confidencial</div>
   </div>
 </div>
 <script>
 (function(){
-  var P='Easy1.2.3.@',K='ea_dash_final';
+  var P='Easy1.2.3.@',K='ea_dash_v3';
   if(sessionStorage.getItem(K)==='1'){document.addEventListener('DOMContentLoaded',function(){var l=document.getElementById('lock');if(l)l.style.display='none';});}
   window.unl=function(){
     var i=document.getElementById('lpwd'),e=document.getElementById('lerr');
     if(i.value===P){sessionStorage.setItem(K,'1');var l=document.getElementById('lock');l.style.transition='opacity .3s';l.style.opacity='0';setTimeout(function(){l.style.display='none';},300);}
-    else{e.textContent='Senha incorreta.';i.value='';i.style.borderColor='var(--c-red)';i.focus();setTimeout(function(){i.style.borderColor='var(--bd2)';e.textContent='';},1500);}
+    else{e.textContent='Senha incorreta.';i.value='';i.style.borderColor='var(--red)';i.focus();setTimeout(function(){i.style.borderColor='var(--bd2)';e.textContent='';},1500);}
   };
 })();
 </script>
 
-<!-- ── MOBILE MENU ── -->
+<!-- MOBILE MENU -->
 <div class="mobmenu" id="mmenu">
   <button class="mobtab active" onclick="sp('overview',this,1)">Visão Geral</button>
-  <button class="mobtab" onclick="sp('gastos',this,1)">Gastos Reais</button>
+  <button class="mobtab" onclick="sp('gastos',this,1)">Gastos</button>
   <button class="mobtab" onclick="sp('cashflow',this,1)">Caixa</button>
   <button class="mobtab" onclick="sp('clientes',this,1)">Clientes</button>
   <button class="mobtab" onclick="sp('pipeline',this,1)">Pipeline</button>
   <button class="mobtab" onclick="sp('projecao',this,1)">Projeção</button>
 </div>
 
-<!-- ── NAV ── -->
+<!-- NAV -->
 <nav>
-  <div class="nbrand"><span style="color:var(--c-blue);font-weight:600">EASY</span><span style="font-weight:400"> analytics</span></div>
+  <div class="nbrand"><b>EASY</b> analytics</div>
   <div class="ndot"></div>
   <div class="ntabs">
     <button class="ntab active" onclick="sp('overview',this)">Visão Geral</button>
-    <button class="ntab" onclick="sp('gastos',this)">Gastos Reais</button>
+    <button class="ntab" onclick="sp('gastos',this)">Gastos</button>
     <button class="ntab" onclick="sp('cashflow',this)">Caixa</button>
     <button class="ntab" onclick="sp('clientes',this)">Clientes</button>
     <button class="ntab" onclick="sp('pipeline',this)">Pipeline</button>
@@ -245,390 +225,371 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   <div class="ndate">02 mai 2026</div>
 </nav>
 
-<!-- ════════════════════════════════════════════
-     VISÃO GERAL
-════════════════════════════════════════════ -->
+<!-- ═══ VISÃO GERAL ═══ -->
 <div class="pg active" id="pg-overview">
 <div class="hero">
-  <div>
-    <div class="htitle">Diagnóstico Executivo — Easy Analytics</div>
-    <div class="hsub">jan–abr/2026 · total pago confirmado: R$ 800.401 · fonte: Bling ERP + Relatório Pagamentos</div>
-  </div>
+  <div><div class="htitle">Diagnóstico Executivo<br>Easy Analytics 2026</div><div class="hsub">jan–abr/2026 · total pago confirmado: R$ 800.401 · fonte: Bling ERP</div></div>
   <div class="pills">
     <span class="pill pr"><span class="pdot"></span>Gastos +390% vs. budget</span>
     <span class="pill pa"><span class="pdot"></span>R$ 94 K Polar sem categoria</span>
     <span class="pill pg2"><span class="pdot"></span>Buy-out encerra jun/26</span>
   </div>
 </div>
-
-<div class="sl">Resumo financeiro — jan a abr/2026</div>
+<div class="sl">KPIs executivos</div>
 <div class="g5">
-  <div class="met red">
-    <div class="ml">Total pago (confirmado)</div>
-    <div class="mv red">R$ 800 K</div>
-    <div class="ms">excluindo R$ 94 K Polar s/ classif.</div>
-  </div>
-  <div class="met red">
-    <div class="ml">Média mensal real</div>
-    <div class="mv red">R$ 200 K</div>
-    <div class="ms">vs. R$ 30,8 K orçado originalmente</div>
-    <div class="delta d-neg">+R$ 169 K/mês acima</div>
-  </div>
-  <div class="met amber">
-    <div class="ml">Receita estimada</div>
-    <div class="mv amber">~R$ 320 K</div>
-    <div class="ms">~R$ 80 K/mês · budget R$ 90 K/mês</div>
-    <div class="delta d-neg">−11% vs. orçado</div>
-  </div>
-  <div class="met red">
-    <div class="ml">Resultado operacional</div>
-    <div class="mv red">−R$ 480 K</div>
-    <div class="ms">budget previa +R$ 217 K</div>
-    <div class="delta d-neg">desvio −R$ 697 K</div>
-  </div>
-  <div class="met amber">
-    <div class="ml">Polar sem classificação</div>
-    <div class="mv amber">R$ 94 K</div>
-    <div class="ms">mar: R$ 65 K · abr: R$ 29 K</div>
-    <div class="delta d-neu">classificar c/ contador</div>
-  </div>
+  <div class="met red"><div class="ml">Total pago (confirmado)</div><div class="mv red">R$ 800 K</div><div class="ms">excl. R$ 94 K Polar s/ classif.</div></div>
+  <div class="met red"><div class="ml">Média mensal real</div><div class="mv red">R$ 200 K</div><div class="ms">vs. R$ 30,8 K orçado</div><div class="delta d-neg">+R$ 169 K/mês acima</div></div>
+  <div class="met amber"><div class="ml">Receita estimada</div><div class="mv amber">~R$ 320 K</div><div class="ms">~R$ 80 K/mês vs. R$ 90 K orçado</div></div>
+  <div class="met red"><div class="ml">Resultado operacional</div><div class="mv red">−R$ 480 K</div><div class="ms">budget previa +R$ 217 K</div></div>
+  <div class="met amber"><div class="ml">Polar sem classificação</div><div class="mv amber">R$ 94 K</div><div class="ms">mar: R$ 65 K · abr: R$ 29 K</div></div>
 </div>
-
-<div class="sl">Ranking de pagamentos — jan a abr/2026 (dados confirmados)</div>
-<div class="g21">
-  <div class="card">
-    <div class="ct">Todos os fornecedores por valor pago · fonte: relatório de pagamentos Bling</div>
-    <table class="dt">
-      <thead>
-        <tr><th>#</th><th>Fornecedor</th><th>Natureza</th><th class="r">Jan</th><th class="r">Fev</th><th class="r">Mar</th><th class="r">Abr</th><th class="r">Total</th><th>Status</th></tr>
-      </thead>
-      <tbody>
-        <tr><td style="color:var(--c-red);font-family:var(--font-mono)">01</td><td class="lbl">Rômulo Ferreira Lima</td><td><span class="bge bgn">Buy-out quotas</span></td><td class="r">59.814</td><td class="r">59.814</td><td class="r">59.814</td><td class="r">59.814</td><td class="r" style="color:var(--c-red)">239.257</td><td><span class="bge bgr">Não orçado</span></td></tr>
-        <tr><td style="color:var(--c-red);font-family:var(--font-mono)">02</td><td class="lbl">Efata Treinamento Tecnologia</td><td><span class="bge bgn">Serviços PJ</span></td><td class="r">35.000</td><td class="r">35.250</td><td class="r">35.367</td><td class="r">35.082</td><td class="r" style="color:var(--c-red)">140.699</td><td><span class="bge bga">Parcial orç.</span></td></tr>
-        <tr><td style="color:var(--c-red);font-family:var(--font-mono)">03</td><td class="lbl">Milajanu Consultoria TI</td><td><span class="bge bgn">Serviços PJ</span></td><td class="r">28.750</td><td class="r">23.000</td><td class="r">23.717</td><td class="r">23.000</td><td class="r" style="color:var(--c-red)">98.467</td><td><span class="bge bgr">Não orçado</span></td></tr>
-        <tr><td style="color:var(--c-purple);font-family:var(--font-mono)">04</td><td class="lbl">Polar Técnica Comercial</td><td><span class="bge bgp">Aporte/serviço?</span></td><td class="r">—</td><td class="r">—</td><td class="r">65.000</td><td class="r">29.000</td><td class="r" style="color:var(--c-purple)">94.000</td><td><span class="bge bgp">Classificar</span></td></tr>
-        <tr><td style="color:var(--c-red);font-family:var(--font-mono)">05</td><td class="lbl">M. de Q. Macedo — EPP</td><td><span class="bge bgn">Serviços PJ</span></td><td class="r">23.000</td><td class="r">23.000</td><td class="r">23.000</td><td class="r">23.000</td><td class="r" style="color:var(--c-red)">92.000</td><td><span class="bge bgr">Não orçado</span></td></tr>
-        <tr><td style="color:var(--c-amber);font-family:var(--font-mono)">06</td><td class="lbl">EP Serviços de Tecnologia</td><td><span class="bge bgn">Serviços PJ</span></td><td class="r">12.025</td><td class="r">3.868</td><td class="r">10.205</td><td class="r">16.125</td><td class="r" style="color:var(--c-amber)">42.223</td><td><span class="bge bgr">Não orçado</span></td></tr>
-        <tr><td style="color:var(--c-amber);font-family:var(--font-mono)">07</td><td class="lbl">Geremias Ferreira Lima</td><td><span class="bge bgn">Acordo trabalhista</span></td><td class="r">10.000</td><td class="r">10.000</td><td class="r">10.000</td><td class="r">10.000</td><td class="r" style="color:var(--c-amber)">40.000</td><td><span class="bge bgr">Não orçado</span></td></tr>
-        <tr><td style="color:var(--c-amber);font-family:var(--font-mono)">08</td><td class="lbl">Cartão de Crédito</td><td><span class="bge bgn">Despesas gerais</span></td><td class="r">5.739</td><td class="r">6.759</td><td class="r">5.615</td><td class="r">10.031</td><td class="r" style="color:var(--c-amber)">28.144</td><td><span class="bge bgr">Não orçado</span></td></tr>
-        <tr><td style="color:var(--c-amber);font-family:var(--font-mono)">09</td><td class="lbl">Eduardo Faria de Godoy</td><td><span class="bge bgn">Serviços PJ</span></td><td class="r">6.500</td><td class="r">6.500</td><td class="r">6.500</td><td class="r">6.500</td><td class="r" style="color:var(--c-amber)">26.000</td><td><span class="bge bgr">Não orçado</span></td></tr>
-        <tr><td style="font-family:var(--font-mono)">10</td><td class="lbl">IRPJ</td><td><span class="bge bgn">Imposto direto</span></td><td class="r">3.367</td><td class="r">7.078</td><td class="r">3.434</td><td class="r">4.114</td><td class="r">17.992</td><td><span class="bge bga">Não provisionado</span></td></tr>
-        <tr><td style="font-family:var(--font-mono)">11</td><td class="lbl">Vtconn Consultoria</td><td><span class="bge bgn">Consultoria</span></td><td class="r">5.057</td><td class="r">5.057</td><td class="r">6.115</td><td class="r">—</td><td class="r">16.229</td><td><span class="bge bga">Encerrou abr?</span></td></tr>
-        <tr><td style="font-family:var(--font-mono)">12</td><td class="lbl">IVY Group Holding S/A</td><td><span class="bge bgr">Sem categoria</span></td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td class="r">10.521</td><td class="r" style="color:var(--c-amber)">10.521</td><td><span class="bge bgr">Identificar</span></td></tr>
-        <tr><td style="font-family:var(--font-mono)">13</td><td class="lbl">Victor Hugo de Oliveira</td><td><span class="bge bgn">Pessoa física</span></td><td class="r">3.333</td><td class="r">3.333</td><td class="r">3.333</td><td class="r">—</td><td class="r">9.999</td><td><span class="bge bga">Encerrou abr?</span></td></tr>
-        <tr><td style="font-family:var(--font-mono)">14</td><td class="lbl">CSLL</td><td><span class="bge bgn">Imposto direto</span></td><td class="r">1.553</td><td class="r">3.351</td><td class="r">1.584</td><td class="r">1.768</td><td class="r">8.256</td><td><span class="bge bga">Não provisionado</span></td></tr>
-        <tr><td style="font-family:var(--font-mono)">15</td><td class="lbl">CBYK Consultoria Gestão</td><td><span class="bge bgr">Sem categoria</span></td><td class="r">—</td><td class="r">—</td><td class="r">5.523</td><td class="r">—</td><td class="r">5.523</td><td><span class="bge bgr">Identificar</span></td></tr>
-        <tr><td style="font-family:var(--font-mono)">16</td><td class="lbl">Demais (Plentech, Serrano, Cralus, Prefeitura, Bling…)</td><td><span class="bge bgn">Adm./impostos</span></td><td class="r">4.803</td><td class="r">5.863</td><td class="r">3.674</td><td class="r">3.836</td><td class="r">18.176</td><td><span class="bge bgg">Controlados</span></td></tr>
-        <tr class="tot"><td colspan="7">Total pago (sem Polar) · bruto com Polar: R$ 894.401</td><td class="r" style="color:var(--c-red)">800.401</td><td></td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div>
-    <div class="card" style="margin-bottom:12px">
-      <div class="ct">Composição — total pago jan–abr</div>
-      <div class="cw" style="height:190px"><canvas id="pieGrupo"></canvas></div>
-      <div style="display:flex;flex-direction:column;gap:5px;margin-top:10px;font-size:10.5px;color:var(--t2)">
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-red)"></span>Buy-out Rômulo — 29,9%</span>
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-amber)"></span>Serv. Terceiros PJ — 45,7%</span>
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-blue)"></span>Acordo trabalhista — 5%</span>
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-teal)"></span>Impostos diretos — 3,3%</span>
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-slate)"></span>Demais — 16,1%</span>
-      </div>
-    </div>
-    <div class="card">
-      <div class="ct">Atenção — fornecedores a regularizar</div>
-      <div class="tli"><div class="tld" style="background:var(--c-purple)"></div><div><div class="tlt">Polar Técnica — R$ 94 K sem categoria</div><div class="tls">Sócio investidor. Classificar: devolução de aporte, serviço ou distribuição. Impacto direto no DRE.</div></div></div>
-      <div class="tli"><div class="tld" style="background:var(--c-red)"></div><div><div class="tlt">IVY Group Holding — R$ 10.521 (abr)</div><div class="tls">Novo fornecedor, sem categoria, sem histórico. Identificar contrato.</div></div></div>
-      <div class="tli"><div class="tld" style="background:var(--c-red)"></div><div><div class="tlt">CBYK Consultoria — R$ 5.523 (mar)</div><div class="tls">Pagamento único sem categoria. Identificar serviço.</div></div></div>
-      <div class="tli"><div class="tld" style="background:var(--c-amber)"></div><div><div class="tlt">Vtconn + Victor Hugo — encerrados?</div><div class="tls">Ambos sem pagamento em abril. Confirmar encerramento formal dos contratos.</div></div></div>
-    </div>
-  </div>
-</div>
-
 <div class="sl">Highlights e lowlights</div>
 <div class="g2">
   <div class="card">
     <div class="ct">Riscos e desvios</div>
-    <div class="alt alr"><div class="ats">Despesas 390% acima do budget em 4 meses</div><div class="asd">R$ 800 K pago vs. R$ 123 K orçado. O DRE original foi construído sem os principais contratos ativos. 80% das saídas reais não existiam no orçamento.</div></div>
-    <div class="alt alr"><div class="ats">6 fornecedores ativos não estavam no orçamento</div><div class="asd">Buy-out, Geremias, Macedo, EP Serviços, IVY Group e CBYK somam R$ 424 K em 4 meses — completamente fora do budget.</div></div>
-    <div class="alt ala"><div class="ats">Cartão de crédito subiu 75% em abril</div><div class="asd">R$ 5.739 em jan/fev/mar → R$ 10.031 em abril. Verificar causas antes de projetar mai/26.</div></div>
-    <div class="alt ala"><div class="ats">R$ 34.856 vencidos a receber — inadimplência Atacadão</div><div class="asd">3 parcelas do Atacadão (mar, abr, mai) + TOTVS SA (abr) sem recebimento. Padrão sugere inadimplência recorrente.</div></div>
+    <div class="alt alr"><div class="ats">Despesas 390% acima do budget em 4 meses</div><div class="asd">R$ 800 K pago vs. R$ 123 K orçado. 80% das saídas não existiam no orçamento original.</div></div>
+    <div class="alt alr"><div class="ats">6 fornecedores ativos não estavam no orçamento</div><div class="asd">Buy-out, Geremias, Macedo, EP Serv., IVY Group e CBYK somam R$ 424 K em 4 meses.</div></div>
+    <div class="alt ala"><div class="ats">Cartão de crédito subiu 75% em abril</div><div class="asd">R$ 5.739 em jan/fev/mar → R$ 10.031 em abril. Verificar causas.</div></div>
+    <div class="alt ala"><div class="ats">R$ 34.856 vencidos a receber</div><div class="asd">Atacadão (3 parcelas) + TOTVS SA (abr) sem recebimento. Padrão sugere inadimplência recorrente.</div></div>
   </div>
   <div class="card">
     <div class="ct">Pontos positivos</div>
-    <div class="alt alg"><div class="ats">Buy-out encerra em 25/jun/26 — R$ 59.814/mês livres a partir de julho</div><div class="asd">Maior despesa da empresa se encerra na parcela 18/18. Melhora permanente e imediata do fluxo a partir de julho.</div></div>
-    <div class="alt alg"><div class="ats">Vtconn e Victor Hugo aparentemente encerrados — economia R$ 8.400/mês</div><div class="asd">Sem pagamentos em abril para ambos. Se encerrados, representa R$ 100 K/ano liberados.</div></div>
-    <div class="alt alg"><div class="ats">Impostos diretos em dia — compliance fiscal saudável</div><div class="asd">IRPJ e CSLL pagos regularmente em todos os meses. Sem risco de passivo tributário acumulado.</div></div>
-    <div class="alt alb"><div class="ats">Efata, Macedo e Godoy com valores estáveis e previsíveis</div><div class="asd">Variação inferior a 2% entre os meses. Facilita projeção e controle orçamentário mensal.</div></div>
+    <div class="alt alg"><div class="ats">Buy-out encerra 25/jun/26 — R$ 59.814/mês libres a partir de julho</div><div class="asd">Maior despesa da empresa encerra na parcela 18/18. Melhora permanente no fluxo.</div></div>
+    <div class="alt alg"><div class="ats">Vtconn e Victor Hugo aparentemente encerrados — R$ 8.400/mês liberados</div><div class="asd">Sem pagamentos em abril para ambos. Se encerrados, R$ 100 K/ano liberados.</div></div>
+    <div class="alt alg"><div class="ats">IRPJ e CSLL pagos regularmente — compliance fiscal saudável</div><div class="asd">R$ 26 K em impostos diretos em 4 meses. Sem risco de passivo tributário.</div></div>
+    <div class="alt alb"><div class="ats">Efata, Macedo e Godoy com valores estáveis</div><div class="asd">Variação inferior a 2% entre meses. Facilita projeção e controle orçamentário.</div></div>
   </div>
 </div>
-</div>
-
-<!-- ════════════════════════════════════════════
-     GASTOS REAIS
-════════════════════════════════════════════ -->
-<div class="pg" id="pg-gastos">
-<div class="hero">
-  <div>
-    <div class="htitle">Gastos Reais — Jan a Abr 2026</div>
-    <div class="hsub">fonte: relatório de pagamentos Bling · total bruto CSV: R$ 894.401 · total classificado: R$ 800.401</div>
-  </div>
-  <span class="pill pr"><span class="pdot"></span>Média mensal: R$ 200.100</span>
-</div>
-<div class="g4">
-  <div class="met amber"><div class="ml">Janeiro</div><div class="mv amber">R$ 198.012</div><div class="ms">Inclui Milajanu R$ 28,7 K (jan com NF diferente)</div></div>
-  <div class="met amber"><div class="ml">Fevereiro</div><div class="mv amber">R$ 199.852</div><div class="ms">Plentech R$ 7,5 K pontual</div></div>
-  <div class="met red"><div class="ml">Março — pico</div><div class="mv red">R$ 263.052</div><div class="ms">Polar R$ 65 K + CBYK R$ 5,5 K novos</div></div>
-  <div class="met amber"><div class="ml">Abril</div><div class="mv amber">R$ 233.486</div><div class="ms">IVY R$ 10,5 K + cartão R$ 10 K</div></div>
-</div>
-
+<div class="sl">Ações imediatas</div>
 <div class="g2">
   <div class="card">
-    <div class="ct">Evolução mensal por grupo de gasto</div>
-    <div class="cw" style="height:250px"><canvas id="stackBar"></canvas></div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:10.5px;color:var(--t2)">
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-red)"></span>Buy-out</span>
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-amber)"></span>Efata</span>
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-blue)"></span>Milajanu + Macedo</span>
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-purple)"></span>Polar</span>
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-teal)"></span>EP + Geremias + Godoy</span>
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-slate)"></span>Outros</span>
-    </div>
+    <div class="ct">Esta semana</div>
+    <div class="tli"><div class="tld" style="background:var(--red)"></div><div><div class="tlt">Confirmar status jurídico buy-out (18/18 vence 25/jun)</div><div class="tls">Contatar advogado antes do vencimento</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--red)"></div><div><div class="tlt">Cobrança formal Atacadão — 3 parcelas vencidas</div><div class="tls">R$ 20.277 em aberto — boleto + contato direto</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--red)"></div><div><div class="tlt">Confirmar TOTVS SA — R$ 14.200 vencido (abr)</div><div class="tls">RPS nº 1124 sem baixa confirmada</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--red)"></div><div><div class="tlt">Classificar Polar Técnica — R$ 94 K sem categoria</div><div class="tls">Aporte, serviço ou distribuição? Impacta DRE</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--amber)"></div><div><div class="tlt">Identificar IVY Group Holding e CBYK</div><div class="tls">R$ 16 K sem contrato identificado — risco compliance</div></div></div>
   </div>
   <div class="card">
-    <div class="ct">Serviços terceiros — custo mensal real vs. orçado</div>
-    <div class="cw" style="height:250px"><canvas id="tercChart"></canvas></div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:10.5px;color:var(--t2)">
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--c-blue);display:inline-block;border-top:2px dashed var(--c-blue)"></span>Budget R$ 16.500/mês</span>
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-red)"></span>Real (excl. Geremias e Godoy)</span>
-    </div>
+    <div class="ct">Mai–Jun 2026</div>
+    <div class="tli"><div class="tld" style="background:var(--amber)"></div><div><div class="tlt">Follow-up prioritário: Baianão + SESI</div><div class="tls">R$ 21 K/mês SaaS se ambos fecharem</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--amber)"></div><div><div class="tlt">Avaliar continuidade Efata (R$ 35 K/mês)</div><div class="tls">Maior despesa op. pós-buy-out. Analisar ROI</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--amber)"></div><div><div class="tlt">Garantir aporte Polar para cobrir gap de mai</div><div class="tls">~R$ 145 K em saídas projetadas em maio</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--blue)"></div><div><div class="tlt">Reativar 10 oportunidades paradas no pipeline</div><div class="tls">Nova abordagem direta — não depender só do ESN</div></div></div>
+    <div class="tli"><div class="tld" style="background:var(--blue)"></div><div><div class="tlt">Estruturar CS básico — NPS + QBR top 10 contas</div><div class="tls">Churn de 60% histórico continua sem ação estruturada</div></div></div>
   </div>
 </div>
+</div>
 
-<div class="sl">Serviços de terceiros — detalhamento completo</div>
+<!-- ═══ GASTOS COM CROSS FILTER ═══ -->
+<div class="pg" id="pg-gastos">
+<div class="hero">
+  <div><div class="htitle">Gastos Reais — Jan a Abr 2026</div><div class="hsub">fonte: relatório de pagamentos Bling · total bruto: R$ 894.401 · total classificado: R$ 800.401</div></div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span class="sel-lbl" id="selLbl"></span>
+    <button class="reset-btn" id="resetBtn" onclick="cfReset()">✕ Limpar filtros</button>
+  </div>
+</div>
+<div class="cf-hint">💡 Toque em qualquer gráfico, barra ou linha da tabela para filtrar todos os painéis simultaneamente</div>
+<div class="g4">
+  <div class="met red" id="kpi-buyout" onclick="cfCat('Buy-out')"><div class="ml">Buy-out quotas</div><div class="mv red" id="kv-buyout">—</div><div class="ms">Rômulo Lima · 4 parcelas</div></div>
+  <div class="met amber" id="kpi-pj" onclick="cfCat('Serviços PJ')"><div class="ml">Serviços PJ</div><div class="mv amber" id="kv-pj">—</div><div class="ms">6 fornecedores ativos</div></div>
+  <div class="met blue" id="kpi-out" onclick="cfCat('Outros')"><div class="ml">Outros</div><div class="mv blue" id="kv-out">—</div><div class="ms">Impostos + adm + Polar</div></div>
+  <div class="met teal" id="kpi-total"><div class="ml">Total filtrado</div><div class="mv teal" id="kv-total">—</div><div class="ms" id="kv-sub">todos os meses</div></div>
+</div>
+<div class="sl">Filtrar por mês</div>
+<div class="month-pills" id="cfPills">
+  <div class="mpill sel" data-m="all" onclick="cfMonth('all')">Todos</div>
+  <div class="mpill" data-m="jan" onclick="cfMonth('jan')">Janeiro</div>
+  <div class="mpill" data-m="fev" onclick="cfMonth('fev')">Fevereiro</div>
+  <div class="mpill" data-m="mar" onclick="cfMonth('mar')">Março</div>
+  <div class="mpill" data-m="abr" onclick="cfMonth('abr')">Abril</div>
+</div>
+<div class="g2" style="margin-bottom:12px">
+  <div class="card">
+    <div class="ct">Composição de gastos <span class="ct-tag">toque para filtrar</span></div>
+    <div class="cw" style="height:185px"><canvas id="cfDonut"></canvas></div>
+    <div id="cfLegend" style="margin-top:8px"></div>
+  </div>
+  <div class="card">
+    <div class="ct">Top fornecedores <span class="ct-tag" id="cfBarTitle">todos os meses</span></div>
+    <div id="cfBars"></div>
+    <div class="totals" id="cfBarTot"></div>
+  </div>
+</div>
+<div class="card" style="margin-bottom:12px">
+  <div class="ct">Evolução mensal por grupo <span class="ct-tag">toque na barra para filtrar mês</span></div>
+  <div class="cw" style="height:230px"><canvas id="cfStack"></canvas></div>
+</div>
 <div class="card">
-  <div style="font-size:11.5px;color:var(--t2);margin-bottom:12px">Total serviços PJ pagos jan–abr: <strong style="color:var(--c-red)">R$ 369.418</strong> · Média mensal: <strong style="color:var(--c-red)">R$ 92.354</strong> · Budget projetado: <strong style="color:var(--c-green)">R$ 16.500/mês</strong> · Desvio: <strong style="color:var(--c-red)">+460%</strong></div>
-  <table class="dt">
-    <thead><tr><th>Fornecedor</th><th>Tipo contrato</th><th class="r">Jan</th><th class="r">Fev</th><th class="r">Mar</th><th class="r">Abr</th><th class="r">Total</th><th class="r">Média/mês</th><th>Recorrência</th></tr></thead>
-    <tbody>
-      <tr><td class="lbl">Efata Treinamento Tecnologia</td><td><span class="bge bgn">Treinamento TI</span></td><td class="r">35.000</td><td class="r">35.250</td><td class="r">35.367</td><td class="r">35.082</td><td class="r" style="color:var(--c-red)">140.699</td><td class="r">35.175</td><td><span class="bge bgg">4/4 meses</span></td></tr>
-      <tr><td class="lbl">Milajanu Consultoria TI</td><td><span class="bge bgn">Consultoria TI</span></td><td class="r">28.750</td><td class="r">23.000</td><td class="r">23.717</td><td class="r">23.000</td><td class="r" style="color:var(--c-red)">98.467</td><td class="r">24.617</td><td><span class="bge bgg">4/4 meses</span></td></tr>
-      <tr><td class="lbl">M. de Q. Macedo — EPP</td><td><span class="bge bgn">Serviços PJ</span></td><td class="r">23.000</td><td class="r">23.000</td><td class="r">23.000</td><td class="r">23.000</td><td class="r" style="color:var(--c-red)">92.000</td><td class="r">23.000</td><td><span class="bge bgg">4/4 meses</span></td></tr>
-      <tr><td class="lbl">EP Serviços de Tecnologia</td><td><span class="bge bgn">TI / Sistemas</span></td><td class="r">12.025</td><td class="r">3.868</td><td class="r">10.205</td><td class="r">16.125</td><td class="r" style="color:var(--c-amber)">42.223</td><td class="r">10.556</td><td><span class="bge bgg">4/4 meses</span></td></tr>
-      <tr><td class="lbl">Geremias Ferreira Lima</td><td><span class="bge bgn">Acordo trabalhista</span></td><td class="r">10.000</td><td class="r">10.000</td><td class="r">10.000</td><td class="r">10.000</td><td class="r" style="color:var(--c-amber)">40.000</td><td class="r">10.000</td><td><span class="bge bgg">4/4 meses</span></td></tr>
-      <tr><td class="lbl">Eduardo Faria de Godoy</td><td><span class="bge bgn">Serviços PJ</span></td><td class="r">6.500</td><td class="r">6.500</td><td class="r">6.500</td><td class="r">6.500</td><td class="r" style="color:var(--c-amber)">26.000</td><td class="r">6.500</td><td><span class="bge bgg">4/4 meses</span></td></tr>
-      <tr><td class="lbl">Vtconn Consultoria Sistemas</td><td><span class="bge bgn">Consultoria</span></td><td class="r">5.057</td><td class="r">5.057</td><td class="r">6.115</td><td class="r">—</td><td class="r">16.229</td><td class="r">5.410*</td><td><span class="bge bga">3/4 — encerrou?</span></td></tr>
-      <tr><td class="lbl">Victor Hugo de Oliveira</td><td><span class="bge bgn">PF</span></td><td class="r">3.333</td><td class="r">3.333</td><td class="r">3.333</td><td class="r">—</td><td class="r">9.999</td><td class="r">3.333*</td><td><span class="bge bga">3/4 — encerrou?</span></td></tr>
-      <tr><td class="lbl">IVY Group Holding S/A</td><td><span class="bge bgr">Sem categoria</span></td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td class="r">10.521</td><td class="r" style="color:var(--c-amber)">10.521</td><td class="r">—</td><td><span class="bge bgr">1/4 — identificar</span></td></tr>
-      <tr><td class="lbl">CBYK Consultoria Gestão</td><td><span class="bge bgr">Sem categoria</span></td><td class="r">—</td><td class="r">—</td><td class="r">5.523</td><td class="r">—</td><td class="r">5.523</td><td class="r">—</td><td><span class="bge bgr">1/4 — identificar</span></td></tr>
-      <tr class="tot"><td colspan="6">Total serviços / acordos terceiros</td><td class="r" style="color:var(--c-red)">481.661</td><td class="r" style="color:var(--c-red)">~R$ 92 K/mês</td><td><span class="bge bgr">budget: R$ 16,5 K</span></td></tr>
-    </tbody>
-  </table>
+  <div class="ct">Detalhamento por fornecedor <span id="cfTblCount" style="color:var(--t2)"></span></div>
+  <div class="tbl-wrap">
+    <table class="dt">
+      <thead><tr><th>#</th><th>Fornecedor</th><th>Categoria</th><th class="r">Jan</th><th class="r">Fev</th><th class="r">Mar</th><th class="r">Abr</th><th class="r">Total</th><th>Status</th></tr></thead>
+      <tbody id="cfTbody"></tbody>
+    </table>
+  </div>
+  <div class="totals" id="cfTblTot"></div>
 </div>
 </div>
 
-<!-- ════════════════════════════════════════════
-     CAIXA
-════════════════════════════════════════════ -->
+<!-- ═══ CAIXA ═══ -->
 <div class="pg" id="pg-cashflow">
 <div class="hero">
-  <div>
-    <div class="htitle">Fluxo de Caixa</div>
-    <div class="hsub">jan–abr/2026 histórico · mai–jun/2026 projetado · fonte: Bling ERP</div>
+  <div><div class="htitle">Fluxo de Caixa</div><div class="hsub">jan–abr/2026 histórico · mai–jun/2026 projetado</div></div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span class="sel-lbl" id="cxSelLbl"></span>
+    <button class="reset-btn" id="cxResetBtn" onclick="cxReset()">✕ Limpar</button>
   </div>
-  <span class="pill pr"><span class="pdot"></span>gap mai–jun: −R$ 194 K</span>
 </div>
+<div class="cf-hint">💡 Toque nas pills de situação, no gráfico ou em qualquer linha para filtrar</div>
 <div class="g4">
-  <div class="met amber"><div class="ml">Saldo estimado hoje</div><div class="mv amber">~R$ 48 K</div><div class="ms">Itaú + Bradesco combinados</div></div>
+  <div class="met amber"><div class="ml">Saldo estimado hoje</div><div class="mv amber">~R$ 48 K</div><div class="ms">Itaú + Bradesco</div></div>
   <div class="met red"><div class="ml">A pagar mai–jun</div><div class="mv red">R$ 297 K</div><div class="ms">23 lançamentos em aberto</div></div>
-  <div class="met green"><div class="ml">A receber mai–jun</div><div class="mv green">R$ 102 K</div><div class="ms">8 parcelas confirmadas</div></div>
-  <div class="met red"><div class="ml">Gap líquido</div><div class="mv red">−R$ 194 K</div><div class="ms">Depende de aporte Polar para cobrir</div></div>
+  <div class="met green"><div class="ml">A receber (filtrado)</div><div class="mv green" id="cxvRec">R$ 102 K</div><div class="ms" id="cxsRec">8 parcelas</div></div>
+  <div class="met red"><div class="ml">Gap líquido</div><div class="mv red">−R$ 194 K</div><div class="ms">Depende de aporte Polar</div></div>
 </div>
-<div class="sl">Contas a receber — situação detalhada</div>
+<div class="sl">Filtrar por situação</div>
+<div class="month-pills" id="cxPills">
+  <div class="mpill sel" data-s="all" onclick="cxSit('all')">Todos</div>
+  <div class="mpill" data-s="Atrasada" onclick="cxSit('Atrasada')">Atrasadas</div>
+  <div class="mpill" data-s="Parcial" onclick="cxSit('Parcial')">Parcial</div>
+  <div class="mpill" data-s="Em aberto" onclick="cxSit('Em aberto')">Em aberto</div>
+  <div class="mpill" data-s="Previsto" onclick="cxSit('Previsto')">Previsto</div>
+</div>
+<div class="g2" style="margin-bottom:12px">
+  <div class="card">
+    <div class="ct">Distribuição por situação <span class="ct-tag">toque para filtrar</span></div>
+    <div class="cw" style="height:185px"><canvas id="cxDonut"></canvas></div>
+    <div id="cxLegend" style="margin-top:8px"></div>
+  </div>
+  <div class="card">
+    <div class="ct">Valor por cliente <span class="ct-tag" id="cxBarTitle">todos</span></div>
+    <div id="cxBars"></div>
+    <div class="totals" id="cxBarTot"></div>
+  </div>
+</div>
 <div class="card" style="margin-bottom:12px">
-  <table class="dt">
-    <thead><tr><th>Cliente</th><th>Vencimento</th><th>Situação</th><th class="r">Saldo</th></tr></thead>
-    <tbody>
-      <tr><td>Atacadão Distribuidora — doc 165</td><td>20/mar/26</td><td><span class="bge bga">Parcial</span></td><td class="r" style="color:var(--c-amber)">R$ 6.578</td></tr>
-      <tr><td>Atacadão Distribuidora — doc 166</td><td>22/mar/26</td><td><span class="bge bgr">Atrasada</span></td><td class="r" style="color:var(--c-red)">R$ 7.039</td></tr>
-      <tr><td>TOTVS SA — RPS 1124</td><td>16/abr/26</td><td><span class="bge bgr">Atrasada</span></td><td class="r" style="color:var(--c-red)">R$ 14.200</td></tr>
-      <tr><td>Atacadão Distribuidora — doc 167</td><td>22/abr/26</td><td><span class="bge bgr">Atrasada</span></td><td class="r" style="color:var(--c-red)">R$ 7.039</td></tr>
-      <tr><td>Sérgio C. Weiser Decoração</td><td>21/mai/26</td><td><span class="bge bgb">Em aberto</span></td><td class="r">R$ 5.256</td></tr>
-      <tr><td>Atacadão Distribuidora — doc 168</td><td>22/mai/26</td><td><span class="bge bgb">Em aberto</span></td><td class="r">R$ 7.039</td></tr>
-      <tr><td>Usina São Francisco S/A</td><td>29/mai/26</td><td><span class="bge bgb">Em aberto</span></td><td class="r">R$ 5.631</td></tr>
-      <tr><td>TOTVS S.A. — Previsão faturamento</td><td>15/jun/26</td><td><span class="bge bgg">Previsto</span></td><td class="r" style="color:var(--c-green)">R$ 50.000</td></tr>
-      <tr class="tot"><td colspan="3">Total · vencidos: R$ 34.856</td><td class="r">R$ 102.780</td></tr>
-    </tbody>
-  </table>
+  <div class="ct">Contas a receber — detalhamento <span id="cxTblCount" style="color:var(--t2)"></span></div>
+  <div class="tbl-wrap">
+    <table class="dt">
+      <thead><tr><th>#</th><th>Cliente / Documento</th><th>Vencimento</th><th>Situação</th><th class="r">Saldo</th></tr></thead>
+      <tbody id="cxTbody"></tbody>
+    </table>
+  </div>
+  <div class="totals" id="cxTblTot"></div>
 </div>
+<div class="sl">Contas a pagar — mai e jun/2026</div>
 <div class="g2">
   <div class="card">
     <div class="ct">Maio/2026 — total: R$ 155.645</div>
     <table class="dt">
       <thead><tr><th>Fornecedor</th><th class="r">Venc.</th><th class="r">Valor</th></tr></thead>
       <tbody>
-        <tr><td>TOTVS S.A. renovação parceria</td><td class="r">07/mai</td><td class="r" style="color:var(--c-amber)">R$ 11.871</td></tr>
+        <tr><td>TOTVS S.A. renovação</td><td class="r">07/mai</td><td class="r" style="color:var(--amber)">R$ 11.871</td></tr>
         <tr><td>Plentech LTDA</td><td class="r">11/mai</td><td class="r">R$ 2.500</td></tr>
         <tr><td>Cartão de Crédito</td><td class="r">15/mai</td><td class="r">R$ 5.739</td></tr>
-        <tr><td>Geremias Lima (5/20)</td><td class="r">19/mai</td><td class="r" style="color:var(--c-amber)">R$ 10.000</td></tr>
-        <tr><td>Efata Treinamento</td><td class="r">20/mai</td><td class="r" style="color:var(--c-amber)">R$ 35.000</td></tr>
-        <tr><td>M. de Q. Macedo</td><td class="r">20/mai</td><td class="r" style="color:var(--c-amber)">R$ 23.000</td></tr>
+        <tr><td>Geremias Lima (5/20)</td><td class="r">19/mai</td><td class="r" style="color:var(--amber)">R$ 10.000</td></tr>
+        <tr><td>Efata Treinamento</td><td class="r">20/mai</td><td class="r" style="color:var(--amber)">R$ 35.000</td></tr>
+        <tr><td>M. de Q. Macedo</td><td class="r">20/mai</td><td class="r" style="color:var(--amber)">R$ 23.000</td></tr>
         <tr><td>Eduardo Faria de Godoy</td><td class="r">20/mai</td><td class="r">R$ 6.500</td></tr>
-        <tr><td><strong>Rômulo Lima (17/18)</strong></td><td class="r">25/mai</td><td class="r" style="color:var(--c-red)">R$ 59.814</td></tr>
+        <tr><td><strong>Rômulo Lima (17/18)</strong></td><td class="r">25/mai</td><td class="r" style="color:var(--red)">R$ 59.814</td></tr>
         <tr><td style="color:var(--t3)">Outros (ISS, Bling, DCTF…)</td><td class="r">vários</td><td class="r">R$ 1.221</td></tr>
       </tbody>
     </table>
   </div>
   <div class="card">
-    <div class="ct">Junho/2026 — total: R$ 141.304 · <span style="color:var(--c-green)">última parcela buy-out</span></div>
+    <div class="ct">Junho/2026 — total: R$ 141.304 · <span style="color:var(--green)">★ última parcela buy-out</span></div>
     <table class="dt">
       <thead><tr><th>Fornecedor</th><th class="r">Venc.</th><th class="r">Valor</th></tr></thead>
       <tbody>
         <tr><td>Cartão de Crédito</td><td class="r">15/jun</td><td class="r">R$ 5.739</td></tr>
-        <tr><td>Geremias Lima (6/20)</td><td class="r">18/jun</td><td class="r" style="color:var(--c-amber)">R$ 10.000</td></tr>
-        <tr><td>Efata Treinamento</td><td class="r">22/jun</td><td class="r" style="color:var(--c-amber)">R$ 35.000</td></tr>
-        <tr><td>M. de Q. Macedo</td><td class="r">22/jun</td><td class="r" style="color:var(--c-amber)">R$ 23.000</td></tr>
+        <tr><td>Geremias Lima (6/20)</td><td class="r">18/jun</td><td class="r" style="color:var(--amber)">R$ 10.000</td></tr>
+        <tr><td>Efata Treinamento</td><td class="r">22/jun</td><td class="r" style="color:var(--amber)">R$ 35.000</td></tr>
+        <tr><td>M. de Q. Macedo</td><td class="r">22/jun</td><td class="r" style="color:var(--amber)">R$ 23.000</td></tr>
         <tr><td>Eduardo Faria de Godoy</td><td class="r">22/jun</td><td class="r">R$ 6.500</td></tr>
-        <tr><td><strong style="color:var(--c-green)">Rômulo Lima (18/18 — ÚLTIMA)</strong></td><td class="r">25/jun</td><td class="r" style="color:var(--c-red)">R$ 59.814</td></tr>
+        <tr><td><strong style="color:var(--green)">Rômulo Lima (18/18 — ÚLTIMA)</strong></td><td class="r">25/jun</td><td class="r" style="color:var(--red)">R$ 59.814</td></tr>
         <tr><td style="color:var(--t3)">Outros</td><td class="r">vários</td><td class="r">R$ 1.251</td></tr>
       </tbody>
     </table>
   </div>
 </div>
 </div>
-
-<!-- ════════════════════════════════════════════
-     CLIENTES
-════════════════════════════════════════════ -->
+<!-- ═══ CLIENTES ═══ -->
 <div class="pg" id="pg-clientes">
 <div class="hero">
-  <div>
-    <div class="htitle">Base de Clientes & Retenção</div>
-    <div class="hsub">27 pagantes · 68 histórico total · referência: out/25–abr/26</div>
+  <div><div class="htitle">Base de Clientes & Retenção</div><div class="hsub">27 pagantes · R$ 196.687/mês total mapeado · out/25–abr/26</div></div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span class="sel-lbl" id="cliSelLbl"></span>
+    <button class="reset-btn" id="cliResetBtn" onclick="cliReset()">✕ Limpar</button>
   </div>
-  <span class="pill pr"><span class="pdot"></span>60% churn histórico</span>
 </div>
+
+<div class="cf-hint">💡 Toque em qualquer elemento para filtrar todos os painéis — valores e quantidades</div>
+
+<!-- KPI VALORES -->
+<div class="sl">Faturamento por categoria de risco — toque para filtrar</div>
 <div class="g4">
-  <div class="met blue"><div class="ml">Base histórica total</div><div class="mv blue">68</div><div class="ms">Todos os já implantados</div></div>
-  <div class="met green"><div class="ml">Pagamento ativo</div><div class="mv green">27 (40%)</div><div class="ms">Pgt + uso ativo: 20 clientes</div></div>
-  <div class="met red"><div class="ml">Inativos (churned)</div><div class="mv red">41 (60%)</div><div class="ms">Sem estrutura de CS documentada</div></div>
-  <div class="met amber"><div class="ml">Risco churn imediato</div><div class="mv amber">6</div><div class="ms">Flag churn = SIM — ação imediata</div></div>
-</div>
-<div class="sl">Funil de retenção</div>
-<div class="card" style="margin-bottom:12px">
-  <div style="display:flex;flex-direction:column;gap:11px;padding:2px 0">
-    <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;font-family:var(--font-mono)"><span style="color:var(--t2)">Base histórica total</span><span style="color:var(--c-blue)">68 (100%)</span></div><div class="pbar"><div class="pbi" style="width:100%;background:var(--c-blue)"></div></div></div>
-    <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;font-family:var(--font-mono)"><span style="color:var(--t2)">Pagamento ativo</span><span style="color:var(--c-green)">27 (40%)</span></div><div class="pbar"><div class="pbi" style="width:40%;background:var(--c-green)"></div></div></div>
-    <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;font-family:var(--font-mono)"><span style="color:var(--t2)">Pgt ativo + uso ativo (saudáveis)</span><span style="color:var(--c-green)">20 (29%)</span></div><div class="pbar"><div class="pbi" style="width:29%;background:var(--c-green)"></div></div></div>
-    <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;font-family:var(--font-mono)"><span style="color:var(--t2)">Uso ativo confirmado abr/26</span><span style="color:var(--c-amber)">15 (22%)</span></div><div class="pbar"><div class="pbi" style="width:22%;background:var(--c-amber)"></div></div></div>
-    <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;font-family:var(--font-mono)"><span style="color:var(--t2)">Pgt ativo + uso INATIVO (risco)</span><span style="color:var(--c-red)">7 (10%)</span></div><div class="pbar"><div class="pbi" style="width:10%;background:var(--c-red)"></div></div></div>
-    <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;font-family:var(--font-mono)"><span style="color:var(--t2)">Flag churn = SIM</span><span style="color:var(--c-red)">6 (9%)</span></div><div class="pbar"><div class="pbi" style="width:9%;background:var(--c-red)"></div></div></div>
+  <div class="met green" id="ckpi-gar" onclick="cliCat('garantido')">
+    <div class="ml">✅ Garantido</div>
+    <div class="mv green">R$ 79.741</div>
+    <div class="ms">15 clientes · uso ativo abr/26</div>
+    <div class="delta d-pos">41% da receita</div>
+  </div>
+  <div class="met amber" id="ckpi-med" onclick="cliCat('medio')">
+    <div class="ml">🟡 Risco médio</div>
+    <div class="mv amber">R$ 26.769</div>
+    <div class="ms">6 clientes · paga mas não usa</div>
+    <div class="delta d-neg">14% da receita</div>
+  </div>
+  <div class="met red" id="ckpi-alt" onclick="cliCat('alto')">
+    <div class="ml">🔴 Risco alto</div>
+    <div class="mv red">R$ 45.580</div>
+    <div class="ms">6 clientes · churn flagged</div>
+    <div class="delta d-neg">23% da receita</div>
+  </div>
+  <div class="met blue" id="ckpi-tot">
+    <div class="ml">Total mapeado</div>
+    <div class="mv blue" id="ckv-tot">R$ 196.687</div>
+    <div class="ms" id="ckv-sub">27 clientes ativos</div>
   </div>
 </div>
-<div class="g2">
+
+<!-- FUNIL + DONUT LADO A LADO -->
+<div class="g2" style="margin-bottom:12px">
   <div class="card">
-    <div class="ct">Clientes com risco de churn — ação imediata</div>
-    <div class="row"><div class="rl"><strong>Editora do Brasil SA</strong><small>Set/2021 · uso inativo · gaps desde dez/25</small></div><span class="bge bgr">Churn SIM</span></div>
-    <div class="row"><div class="rl"><strong>Guaraves Guarabira Aves</strong><small>Ago/2022 · uso inativo</small></div><span class="bge bgr">Churn SIM</span></div>
-    <div class="row"><div class="rl"><strong>JDK Presentes Finos (Dryzum)</strong><small>Jun/2023 · obs: "fase de cancelamento"</small></div><span class="bge bgr">Churn SIM</span></div>
-    <div class="row"><div class="rl"><strong>Lab. Florais Joel Aleixo</strong><small>Parou de usar em fev/26</small></div><span class="bge bgr">Churn SIM</span></div>
-    <div class="row"><div class="rl"><strong>Sky Cranes & Hoists</strong><small>Nunca ativou efetivamente</small></div><span class="bge bgr">Churn SIM</span></div>
-    <div class="row"><div class="rl"><strong>Polar Store LTDA</strong><small>7 meses pago, sem uso — vínculo sócio?</small></div><span class="bge bga">Verificar</span></div>
-    <div class="row"><div class="rl"><strong>Dux Company SA</strong><small>CNPJ marcado "solicitou cancelamento"</small></div><span class="bge bga">Alerta</span></div>
-  </div>
-  <div class="card">
-    <div class="ct">Uso em abr/26 — 27 clientes pagantes</div>
-    <div class="cw" style="height:200px"><canvas id="usageChart"></canvas></div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:10.5px;color:var(--t2)">
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-green)"></span>Ativo confirmado (15)</span>
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-amber)"></span>Incerto (5)</span>
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-red)"></span>Inativo/churn (7)</span>
+    <div class="ct">Funil de retenção — quantidade e valor</div>
+    <div style="display:flex;flex-direction:column;gap:10px;padding:2px 0">
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
+          <span style="color:var(--t2)">Base histórica total</span><span style="color:var(--blue)">68 clientes</span>
+        </div>
+        <div class="pbar"><div class="pbi" style="width:100%;background:var(--blue)"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
+          <span style="color:var(--t2)">Pagamento ativo</span><span style="color:var(--green)">27 (40%) · R$ 196.687/mês</span>
+        </div>
+        <div class="pbar"><div class="pbi" style="width:40%;background:var(--green)"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
+          <span style="color:var(--t2)">✅ Garantido (uso ativo)</span><span style="color:var(--green)">15 clientes · R$ 79.741/mês</span>
+        </div>
+        <div class="pbar"><div class="pbi" style="width:29%;background:var(--green)"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
+          <span style="color:var(--t2)">🟡 Risco médio (não usa)</span><span style="color:var(--amber)">6 clientes · R$ 26.769/mês</span>
+        </div>
+        <div class="pbar"><div class="pbi" style="width:14%;background:var(--amber)"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
+          <span style="color:var(--t2)">🔴 Risco alto (churn)</span><span style="color:var(--red)">6 clientes · R$ 45.580/mês</span>
+        </div>
+        <div class="pbar"><div class="pbi" style="width:23%;background:var(--red)"></div></div>
+      </div>
+      <div style="background:var(--red-bg);border-radius:8px;padding:8px 10px;font-size:11px;font-family:var(--mono);color:var(--red);margin-top:4px">
+        ⚠️ Se risco alto cancelar: −R$ 45.580/mês &nbsp;|&nbsp; Se tudo cancelar: −R$ 72.349/mês
+      </div>
     </div>
   </div>
+  <div class="card">
+    <div class="ct">Distribuição da receita por risco <span class="ct-tag">toque para filtrar</span></div>
+    <div class="cw" style="height:185px"><canvas id="cliDonut"></canvas></div>
+    <div id="cliLegend" style="margin-top:8px"></div>
+  </div>
+</div>
+
+<!-- BARCHART RECEITA POR CLIENTE -->
+<div class="card" style="margin-bottom:12px">
+  <div class="ct">Receita mensal por cliente <span class="ct-tag" id="cliBarTitle">todos</span></div>
+  <div class="cw" style="height:280px"><canvas id="cliBar"></canvas></div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:10.5px;color:var(--t2)">
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--green)"></span>Garantido</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--amber)"></span>Risco médio</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--red)"></span>Risco alto / churn</span>
+  </div>
+</div>
+
+<!-- TABELA COMPLETA -->
+<div class="card">
+  <div class="ct">Todos os clientes — receita e status <span id="cliTblCount" style="color:var(--t2)"></span></div>
+  <div class="tbl-wrap">
+    <table class="dt">
+      <thead><tr>
+        <th>#</th><th>Cliente</th><th>Categoria de risco</th>
+        <th class="r">Receita/mês</th><th class="r">% da receita</th>
+        <th>Uso abr/26</th><th>Situação</th>
+      </tr></thead>
+      <tbody id="cliTbody"></tbody>
+    </table>
+  </div>
+  <div class="totals" id="cliTblTot"></div>
 </div>
 </div>
 
-<!-- ════════════════════════════════════════════
-     PIPELINE
-════════════════════════════════════════════ -->
+<!-- ═══ PIPELINE ═══ -->
 <div class="pg" id="pg-pipeline">
 <div class="hero">
-  <div>
-    <div class="htitle">Pipeline Comercial & Propostas</div>
-    <div class="hsub">31 oportunidades · 7 propostas ativas · mar–mai/2026</div>
+  <div><div class="htitle">Pipeline Comercial & Propostas</div><div class="hsub">31 oportunidades · 7 propostas ativas · mar–mai/2026</div></div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span class="sel-lbl" id="ppSelLbl"></span>
+    <button class="reset-btn" id="ppResetBtn" onclick="ppReset()">✕ Limpar</button>
   </div>
-  <span class="pill pa"><span class="pdot"></span>29% taxa de avanço</span>
 </div>
+<div class="cf-hint">💡 Toque no gráfico de status, nas barras ou nas linhas da tabela para filtrar todas as oportunidades</div>
 <div class="g4">
-  <div class="met blue"><div class="ml">Proposta / apresentação</div><div class="mv blue">9</div><div class="ms">29% do pipeline total</div></div>
-  <div class="met amber"><div class="ml">Parados</div><div class="mv amber">10</div><div class="ms">ESN TOTVS — principal gargalo</div></div>
-  <div class="met red"><div class="ml">Perdidos</div><div class="mv red">10</div><div class="ms">32% — concorrência + desistência</div></div>
-  <div class="met green"><div class="ml">Potencial SaaS/mês</div><div class="mv green">R$ 33 K</div><div class="ms">Se todas as 7 propostas fecharem</div></div>
+  <div class="met blue" id="ppkpi-Proposta" onclick="ppSt('Proposta')"><div class="ml">Proposta</div><div class="mv blue">7</div><div class="ms">Toque para filtrar</div></div>
+  <div class="met green" id="ppkpi-Apresentação" onclick="ppSt('Apresentação')"><div class="ml">Apresentação</div><div class="mv green">2</div><div class="ms">Toque para filtrar</div></div>
+  <div class="met amber" id="ppkpi-Parado" onclick="ppSt('Parado')"><div class="ml">Parado</div><div class="mv amber">10</div><div class="ms">ESN TOTVS — gargalo</div></div>
+  <div class="met red" id="ppkpi-Perdido" onclick="ppSt('Perdido')"><div class="ml">Perdido</div><div class="mv red">10</div><div class="ms">Toque para filtrar</div></div>
 </div>
-<div class="g2">
+<div class="g2" style="margin-bottom:12px">
   <div class="card">
-    <div class="ct">Distribuição do pipeline</div>
-    <div class="cw" style="height:200px"><canvas id="pipeChart"></canvas></div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:10.5px;color:var(--t2)">
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-blue)"></span>Proposta (7)</span>
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-green)"></span>Apresentação (2)</span>
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-amber)"></span>Parado (10)</span>
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-red)"></span>Perdido (10)</span>
-      <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-slate)"></span>Não iniciado (2)</span>
-    </div>
+    <div class="ct">Status do pipeline <span class="ct-tag">toque para filtrar</span></div>
+    <div class="cw" style="height:185px"><canvas id="ppDonut"></canvas></div>
+    <div id="ppLegend" style="margin-top:8px"></div>
   </div>
   <div class="card">
-    <div class="ct">Propostas ativas — prioridade comercial</div>
-    <div class="row"><div class="rl"><strong>Baianão Móveis e Eletrodomésticos</strong><small>150–300M fat. · em avaliação interna</small></div><div style="text-align:right"><span style="font-family:var(--font-mono);font-size:11px;color:var(--c-green)">+R$ 18.639/mês</span></div></div>
-    <div class="row"><div class="rl"><strong>SESI</strong><small>Instituição · proposta enviada 30/abr</small></div><div style="text-align:right"><span style="font-family:var(--font-mono);font-size:11px;color:var(--c-green)">+R$ 2.502/mês</span></div></div>
-    <div class="row"><div class="rl"><strong>Hyundai</strong><small>Feiras · proposta enviada abr</small></div><div style="text-align:right"><span style="font-family:var(--font-mono);font-size:11px">+R$ 950/mês</span></div></div>
-    <div class="row"><div class="rl"><strong>Vetor Editora Psico-Pedagógica</strong><small>Em avaliação interna</small></div><div style="text-align:right"><span style="font-family:var(--font-mono);font-size:11px">+R$ 7.500/mês</span></div></div>
-    <div class="row"><div class="rl"><strong>Pinacoteca</strong><small>Aguardando retorno</small></div><div style="text-align:right"><span style="font-family:var(--font-mono);font-size:11px">+R$ 2.504/mês</span></div></div>
-    <div class="row"><div class="rl"><strong>Inhotim + Nova Aliança</strong><small>Em negociação</small></div><div style="text-align:right"><span style="font-family:var(--font-mono);font-size:11px">+R$ 1.380/mês</span></div></div>
+    <div class="ct">Potencial SaaS/mês <span class="ct-tag" id="ppBarTitle">todas</span></div>
+    <div id="ppBars"></div>
+    <div class="totals" id="ppBarTot"></div>
   </div>
 </div>
+<div class="card">
+  <div class="ct">Todas as oportunidades <span id="ppTblCount" style="color:var(--t2)"></span></div>
+  <div class="tbl-wrap">
+    <table class="dt">
+      <thead><tr><th>#</th><th>Empresa</th><th>Status</th><th class="r">Impl.</th><th class="r">SaaS/mês</th><th>Observação</th></tr></thead>
+      <tbody id="ppTbody"></tbody>
+    </table>
+  </div>
+  <div class="totals" id="ppTblTot"></div>
 </div>
-
-<!-- ════════════════════════════════════════════
-     PROJEÇÃO
-════════════════════════════════════════════ -->
+</div>
+<!-- ═══ PROJEÇÃO ═══ -->
 <div class="pg" id="pg-projecao">
 <div class="hero">
-  <div>
-    <div class="htitle">Projeção de Caixa — H2/2026 e 2027</div>
-    <div class="hsub">modelo interativo · ajuste as premissas abaixo para simular cenários</div>
-  </div>
+  <div><div class="htitle">Projeção de Caixa — H2/2026 e 2027</div><div class="hsub">modelo interativo · ajuste as premissas abaixo</div></div>
   <span class="pill pg2"><span class="pdot"></span>Buy-out encerra jun/26</span>
 </div>
-<div class="sl">Premissas do modelo</div>
+<div class="sl">Premissas</div>
 <div class="card" style="margin-bottom:12px">
-  <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center">
-    <div><div style="font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase">Receita mensal</div>
-      <select class="ctrl-select" id="rSel" onchange="upd()">
-        <option value="65000">R$ 65 K — conservador</option>
-        <option value="80000" selected>R$ 80 K — base</option>
-        <option value="100000">R$ 100 K — otimista</option>
-        <option value="120000">R$ 120 K — agressivo</option>
-      </select>
+  <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center">
+    <div><div style="font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em">Receita mensal</div>
+      <select class="ctrl-select" id="rSel" onchange="updProj()"><option value="65000">R$ 65 K — conservador</option><option value="80000" selected>R$ 80 K — base</option><option value="100000">R$ 100 K — otimista</option><option value="120000">R$ 120 K — agressivo</option></select>
     </div>
-    <div><div style="font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase">Recuperação Atacadão</div>
-      <select class="ctrl-select" id="aSel" onchange="upd()">
-        <option value="0">Não recupera</option>
-        <option value="17428" selected>50% — R$ 17 K</option>
-        <option value="34856">100% — R$ 34 K</option>
-      </select>
+    <div><div style="font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em">Recuperação Atacadão</div>
+      <select class="ctrl-select" id="aSel" onchange="updProj()"><option value="0">Não recupera</option><option value="17428" selected>50% — R$ 17 K</option><option value="34856">100% — R$ 34 K</option></select>
     </div>
-    <div><div style="font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase">Efata em 2027</div>
-      <select class="ctrl-select" id="eSel" onchange="upd()">
-        <option value="12" selected>Mantém o ano todo</option>
-        <option value="3">Encerra mar/27</option>
-        <option value="6">Encerra jun/27</option>
-        <option value="9">Encerra set/27</option>
-      </select>
+    <div><div style="font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em">Efata em 2027</div>
+      <select class="ctrl-select" id="eSel" onchange="updProj()"><option value="12" selected>Mantém o ano todo</option><option value="3">Encerra mar/27</option><option value="6">Encerra jun/27</option><option value="9">Encerra set/27</option></select>
     </div>
     <div style="margin-left:auto;text-align:right">
-      <div style="font-size:10px;color:var(--t3);font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase">Caixa estimado dez/27</div>
-      <div id="pFinal" style="font-family:var(--font-mono);font-size:22px;font-weight:500;color:var(--c-green)">—</div>
+      <div style="font-size:10px;color:var(--t3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em">Caixa estimado dez/27</div>
+      <div id="pFinal" style="font-family:var(--mono);font-size:22px;font-weight:500;color:var(--green)">—</div>
     </div>
   </div>
 </div>
@@ -637,9 +598,9 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   <div class="ct">Resultado mensal — H2/2026 + 2027</div>
   <div class="cw" style="height:255px"><canvas id="pBar"></canvas></div>
   <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;font-size:10.5px;color:var(--t2)">
-    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-green)"></span>Resultado positivo</span>
-    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--c-red)"></span>Resultado negativo</span>
-    <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:2px;border-top:2px dashed var(--c-red);display:inline-block"></span>Se buy-out continuasse</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--green)"></span>Resultado positivo</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--red)"></span>Resultado negativo</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:2px;border-top:2px dashed var(--red);display:inline-block"></span>Se buy-out continuasse</span>
   </div>
 </div>
 <div class="card">
@@ -651,23 +612,20 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <footer>easy analytics · dashboard executivo · 02/mai/2026 · dados: bling erp + relatório pagamentos + pipeline + base clientes · confidencial</footer>
 
 <script>
-// ── CHART DEFAULTS — paleta fixa ──
+// ── CHART DEFAULTS ──
 Chart.defaults.color='#4a5f7a';
 Chart.defaults.borderColor='rgba(60,90,130,0.1)';
 Chart.defaults.font.family="'IBM Plex Mono',monospace";
 Chart.defaults.font.size=11;
 
-const COLORS={
-  red:'#e05c5c', amber:'#d4943a', green:'#3d9e6e',
-  blue:'#4a8fc4', purple:'#7c6fcd', teal:'#3a9499', slate:'#5a7a9e'
-};
-const fBR=n=>'R$ '+Math.round(n).toLocaleString('pt-BR');
-const fK=n=>(n>=0?'':'-')+'R$ '+Math.abs(Math.round(n/1000))+'K';
-const PAGES=['overview','gastos','cashflow','clientes','pipeline','projecao'];
+var fBR=function(v){return v===0?'—':'R$\u00a0'+Math.round(v).toLocaleString('pt-BR');};
+var fK=function(v){return (v>=0?'':'-')+'R$\u00a0'+Math.abs(Math.round(v/1000))+'K';};
+var PAGES=['overview','gastos','cashflow','clientes','pipeline','projecao'];
 
+// ── NAV ──
 function sp(id,btn,mob){
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.ntab,.mobtab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.ntab,.mobtab').forEach(function(t){t.classList.remove('active');});
   document.getElementById('pg-'+id).classList.add('active');
   btn.classList.add('active');
   var idx=PAGES.indexOf(id);
@@ -675,118 +633,573 @@ function sp(id,btn,mob){
   if(idx>=0&&other[idx])other[idx].classList.add('active');
   if(mob){document.getElementById('mmenu').classList.remove('open');document.getElementById('hbtn').classList.remove('open');}
   window.scrollTo({top:0,behavior:'smooth'});
-  if(id==='projecao')upd();
+  if(id==='projecao')updProj();
 }
 function tmob(){document.getElementById('mmenu').classList.toggle('open');document.getElementById('hbtn').classList.toggle('open');}
 
-// ── PIE — composição total ──
-new Chart(document.getElementById('pieGrupo'),{
+// ── CROSS FILTER DATA ──
+var ROWS=[
+  {id:'romulo',  n:'Rômulo Ferreira Lima',      cat:'Buy-out',    jan:59814,fev:59814,mar:59814,abr:59814,st:'Não orçado',sc:'bgr'},
+  {id:'efata',   n:'Efata Treinamento',          cat:'Serviços PJ',jan:35000,fev:35250,mar:35367,abr:35082,st:'Parcial',   sc:'bga'},
+  {id:'milajanu',n:'Milajanu Consultoria TI',    cat:'Serviços PJ',jan:28750,fev:23000,mar:23717,abr:23000,st:'Não orçado',sc:'bgr'},
+  {id:'macedo',  n:'M. de Q. Macedo',            cat:'Serviços PJ',jan:23000,fev:23000,mar:23000,abr:23000,st:'Não orçado',sc:'bgr'},
+  {id:'ep',      n:'EP Serviços Tecnologia',     cat:'Serviços PJ',jan:12025,fev:3868, mar:10205,abr:16125,st:'Não orçado',sc:'bgr'},
+  {id:'geremias',n:'Geremias Ferreira Lima',     cat:'Outros',     jan:10000,fev:10000,mar:10000,abr:10000,st:'Não orçado',sc:'bgr'},
+  {id:'cartao',  n:'Cartão de Crédito',          cat:'Outros',     jan:5739, fev:6759, mar:5615, abr:10031,st:'Não orçado',sc:'bgr'},
+  {id:'godoy',   n:'Eduardo Faria de Godoy',     cat:'Serviços PJ',jan:6500, fev:6500, mar:6500, abr:6500, st:'Não orçado',sc:'bgr'},
+  {id:'irpj',    n:'IRPJ',                       cat:'Outros',     jan:3367, fev:7078, mar:3434, abr:4114, st:'Não provis.',sc:'bga'},
+  {id:'vtconn',  n:'Vtconn Consultoria',         cat:'Serviços PJ',jan:5057, fev:5057, mar:6115, abr:0,    st:'Encerrou?', sc:'bga'},
+  {id:'victor',  n:'Victor Hugo de Oliveira',    cat:'Serviços PJ',jan:3333, fev:3333, mar:3333, abr:0,    st:'Encerrou?', sc:'bga'},
+  {id:'csll',    n:'CSLL',                       cat:'Outros',     jan:1553, fev:3351, mar:1584, abr:1768, st:'Não provis.',sc:'bga'},
+  {id:'polar',   n:'Polar Técnica Comercial',    cat:'Outros',     jan:0,    fev:0,    mar:65000,abr:29000,st:'Classificar',sc:'bgp'},
+  {id:'ivy',     n:'IVY Group Holding S/A',      cat:'Outros',     jan:0,    fev:0,    mar:0,    abr:10521,st:'Identificar',sc:'bgr'},
+  {id:'cbyk',    n:'CBYK Consultoria',           cat:'Outros',     jan:0,    fev:0,    mar:5523, abr:0,    st:'Identificar',sc:'bgr'}
+];
+var CF_CATS=[{cat:'Buy-out',color:'#c0392b'},{cat:'Serviços PJ',color:'#b7650a'},{cat:'Outros',color:'#3d5a80'}];
+var CF_MONTHS=['jan','fev','mar','abr'];
+var CF_AM='all',CF_AC=null,CF_AR=null;
+
+function cfMval(r,m){return m==='all'?r.jan+r.fev+r.mar+r.abr:(r[m]||0);}
+function cfVis(r){return (!CF_AC||r.cat===CF_AC)&&(!CF_AR||r.id===CF_AR);}
+
+// Create charts ONCE
+var cfDonut=new Chart(document.getElementById('cfDonut'),{
   type:'doughnut',
-  data:{
-    labels:['Buy-out Rômulo','Serv. Terceiros PJ','Acordo Trabalhista','Impostos','Outros'],
-    datasets:[{
-      data:[239257,369418,40000,26248,125478],
-      backgroundColor:[COLORS.red,COLORS.amber,COLORS.blue,COLORS.teal,COLORS.slate],
-      borderWidth:0
-    }]
-  },
-  options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+fBR(c.parsed)+' ('+Math.round(c.parsed/800401*100)+'%)'}}}}
+  data:{labels:CF_CATS.map(function(c){return c.cat;}),datasets:[{data:[1,1,1],backgroundColor:CF_CATS.map(function(c){return c.color;}),borderWidth:2,borderColor:'#fff'}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'64%',animation:{duration:250},
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.label+': '+fBR(c.parsed);}}}},
+    onClick:function(_,els){if(els&&els.length>0){var cat=CF_CATS[els[0].index].cat;CF_AC=CF_AC===cat?null:cat;CF_AR=null;cfRender();}}
+  }
 });
 
-// ── STACKED BAR — evolução mensal ──
-new Chart(document.getElementById('stackBar'),{
+var cfStack=new Chart(document.getElementById('cfStack'),{
   type:'bar',
-  data:{
-    labels:['Jan','Fev','Mar','Abr'],
-    datasets:[
-      {label:'Buy-out',data:[59814,59814,59814,59814],backgroundColor:COLORS.red,borderWidth:0},
-      {label:'Efata',data:[35000,35250,35367,35082],backgroundColor:COLORS.amber,borderWidth:0},
-      {label:'Milajanu + Macedo',data:[51750,46000,46717,46000],backgroundColor:COLORS.blue,borderWidth:0},
-      {label:'Polar',data:[0,0,65000,29000],backgroundColor:COLORS.purple,borderWidth:0},
-      {label:'EP + Geremias + Godoy',data:[29858,21239,27038,33025],backgroundColor:COLORS.teal,borderWidth:0},
-      {label:'Outros',data:[21590,37549,29116,30564],backgroundColor:COLORS.slate,borderWidth:0}
-    ]
-  },
-  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',callbacks:{label:c=>c.dataset.label+': '+fBR(c.parsed.y),footer:items=>'Total: '+fBR(items.reduce((a,i)=>a+i.parsed.y,0))}}},scales:{x:{stacked:true,ticks:{font:{size:11}}},y:{stacked:true,ticks:{callback:fK},grid:{color:'rgba(60,90,130,0.08)'}}}}
+  data:{labels:['Jan/26','Fev/26','Mar/26','Abr/26'],datasets:[
+    {label:'Buy-out',backgroundColor:'#c0392bcc',data:[0,0,0,0],borderWidth:0,borderRadius:2},
+    {label:'Efata',backgroundColor:'#b7650acc',data:[0,0,0,0],borderWidth:0,borderRadius:2},
+    {label:'Mil.+Mac.',backgroundColor:'#1a5fa8cc',data:[0,0,0,0],borderWidth:0,borderRadius:2},
+    {label:'EP+Godoy',backgroundColor:'#1a7a80cc',data:[0,0,0,0],borderWidth:0,borderRadius:2},
+    {label:'Geremias',backgroundColor:'#5b4ab0cc',data:[0,0,0,0],borderWidth:0,borderRadius:2},
+    {label:'Outros',backgroundColor:'#3d5a80cc',data:[0,0,0,0],borderWidth:0,borderRadius:2}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,animation:{duration:250},
+    plugins:{legend:{display:true,position:'bottom',labels:{boxWidth:10,padding:12,font:{size:10}}},
+      tooltip:{mode:'index',callbacks:{footer:function(items){return 'Total: '+fBR(items.reduce(function(s,i){return s+i.parsed.y;},0));}}}},
+    scales:{x:{stacked:true,ticks:{font:{size:10}}},y:{stacked:true,ticks:{callback:fK},grid:{color:'rgba(60,90,130,0.08)'}}},
+    onClick:function(_,els){if(els&&els.length>0){var m=CF_MONTHS[els[0].index];CF_AM=CF_AM===m?'all':m;CF_AR=null;cfRender();}}
+  }
 });
 
-// ── LINE — serviços terceiros ──
-new Chart(document.getElementById('tercChart'),{
+// Usage donut (clientes page) — static
+// ── CAIXA CROSS FILTER ──
+var CX_DATA=[
+  {id:'atac165',c:'Atacadão — doc 165',venc:'20/mar/26',sit:'Parcial',   val:6578,  bgc:'bga'},
+  {id:'atac166',c:'Atacadão — doc 166',venc:'22/mar/26',sit:'Atrasada',  val:7039,  bgc:'bgr'},
+  {id:'totvs',  c:'TOTVS SA — RPS 1124',venc:'16/abr/26',sit:'Atrasada',val:14200, bgc:'bgr'},
+  {id:'atac167',c:'Atacadão — doc 167',venc:'22/abr/26',sit:'Atrasada',  val:7039,  bgc:'bgr'},
+  {id:'weiser', c:'Sérgio Weiser Decoração',venc:'21/mai/26',sit:'Em aberto',val:5256,bgc:'bgb'},
+  {id:'atac168',c:'Atacadão — doc 168',venc:'22/mai/26',sit:'Em aberto', val:7039,  bgc:'bgb'},
+  {id:'usina',  c:'Usina São Francisco S/A',venc:'29/mai/26',sit:'Em aberto',val:5631,bgc:'bgb'},
+  {id:'totvs2', c:'TOTVS S.A. — Previsão jun',venc:'15/jun/26',sit:'Previsto',val:50000,bgc:'bgg'}
+];
+var CX_SITS=[
+  {sit:'Atrasada', color:'#c0392b'},
+  {sit:'Parcial',  color:'#b7650a'},
+  {sit:'Em aberto',color:'#1a5fa8'},
+  {sit:'Previsto', color:'#1e7e4f'}
+];
+var CX_AS='all', CX_AR=null;
+function cxVis(r){return (CX_AS==='all'||r.sit===CX_AS)&&(!CX_AR||r.id===CX_AR);}
+function fBRx(v){return 'R $ '+Math.round(v).toLocaleString('pt-BR');}
+
+var cxDonut=new Chart(document.getElementById('cxDonut'),{
+  type:'doughnut',
+  data:{labels:CX_SITS.map(function(s){return s.sit;}),
+    datasets:[{data:[28278,6578,17926,50000],backgroundColor:CX_SITS.map(function(s){return s.color;}),borderWidth:2,borderColor:'#fff'}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'64%',animation:{duration:250},
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.label+': R$ '+Math.round(c.parsed).toLocaleString('pt-BR');}}},},
+    onClick:function(_,els){if(els&&els.length>0){var s=CX_SITS[els[0].index].sit;CX_AS=CX_AS===s?'all':s;CX_AR=null;cxRender();}}
+  }
+});
+
+function cxRender(){
+  var filtered=CX_DATA.filter(function(r){return cxVis(r);});
+  var tot=filtered.reduce(function(s,r){return s+r.val;},0);
+
+  // donut
+  var sitTots={};CX_SITS.forEach(function(s){sitTots[s.sit]=0;});
+  CX_DATA.filter(function(r){return cxVis(r);}).forEach(function(r){sitTots[r.sit]=(sitTots[r.sit]||0)+r.val;});
+  // only filter by AR for donut (show all sits if no sit filter)
+  if(CX_AS==='all'){
+    var allSitTots={};CX_SITS.forEach(function(s){allSitTots[s.sit]=0;});
+    CX_DATA.forEach(function(r){allSitTots[r.sit]=(allSitTots[r.sit]||0)+r.val;});
+    cxDonut.data.datasets[0].data=CX_SITS.map(function(s){return allSitTots[s.sit]||0;});
+  } else {
+    cxDonut.data.datasets[0].data=CX_SITS.map(function(s){return s.sit===CX_AS?(sitTots[s.sit]||0):0;});
+  }
+  cxDonut.update('none');
+
+  // legend
+  var leg=document.getElementById('cxLegend');leg.innerHTML='';
+  CX_SITS.forEach(function(s){
+    var v=0;CX_DATA.forEach(function(r){if(r.sit===s.sit)v+=r.val;});
+    var isSel=CX_AS===s.sit,isDim=!!(CX_AS!=='all'&&CX_AS!==s.sit);
+    var d=document.createElement('div');d.className='dl-item'+(isSel?' sel':isDim?' dim':'');
+    d.innerHTML='<div class="dl-dot" style="background:'+s.color+'"></div><div class="dl-name">'+s.sit+'</div><div class="dl-val">R$ '+Math.round(v).toLocaleString('pt-BR')+'</div>';
+    (function(sit){d.onclick=function(){CX_AS=CX_AS===sit?'all':sit;CX_AR=null;cxRender();};})(s.sit);
+    leg.appendChild(d);
+  });
+
+  // bars
+  var wv=filtered.map(function(r){return {r:r,v:r.val};}).sort(function(a,b){return b.v-a.v;});
+  var maxV=wv.length?wv[0].v:1;
+  var barsEl=document.getElementById('cxBars');barsEl.innerHTML='';
+  wv.forEach(function(x){
+    var row=x.r,pct=Math.round(x.v/maxV*100);
+    var col=CX_SITS.find(function(s){return s.sit===row.sit;});var color=col?col.color:'#3d5a80';
+    var isSel=CX_AR===row.id,isDim=!!(CX_AR&&CX_AR!==row.id);
+    var d=document.createElement('div');d.className='bar-item'+(isSel?' sel':isDim?' dim':'');
+    d.innerHTML='<div class="bar-label" title="'+row.c+'">'+row.c.split(' ')[0]+' '+row.c.split(' ')[1]+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div><div class="bar-value">R$ '+Math.round(x.v).toLocaleString('pt-BR')+'</div>';
+    (function(id){d.onclick=function(){CX_AR=CX_AR===id?null:id;cxRender();};})(row.id);
+    barsEl.appendChild(d);
+  });
+  document.getElementById('cxBarTitle').textContent=CX_AS==='all'?'todos':CX_AS;
+  document.getElementById('cxBarTot').innerHTML='<div class="tot-i"><div class="tot-l">Parcelas</div><div class="tot-v">'+filtered.length+'</div></div><div class="tot-i"><div class="tot-l">Total filtrado</div><div class="tot-v" style="color:var(--green)">R$ '+Math.round(tot).toLocaleString('pt-BR')+'</div></div>';
+
+  // table
+  var tbody=document.getElementById('cxTbody');tbody.innerHTML='';
+  var idx=1,tFil=0;
+  CX_DATA.forEach(function(row){
+    var vis=cxVis(row);if(vis)tFil+=row.val;
+    var isSel=CX_AR===row.id;
+    var col=CX_SITS.find(function(s){return s.sit===row.sit;});var color=col?col.color:'#3d5a80';
+    var tr=document.createElement('tr');tr.className=isSel?'sel':(!vis?'dim':'');
+    tr.innerHTML='<td style="color:var(--t3);font-family:var(--mono)">'+String(idx++).padStart(2,'0')+'</td><td class="lbl">'+row.c+'</td><td>'+row.venc+'</td><td><span class="bge '+row.bgc+'">'+row.sit+'</span></td><td class="r" style="font-weight:600;color:'+color+'">R$ '+Math.round(row.val).toLocaleString('pt-BR')+'</td>';
+    (function(id){tr.onclick=function(){CX_AR=CX_AR===id?null:id;cxRender();};})(row.id);
+    tbody.appendChild(tr);
+  });
+  document.getElementById('cxTblCount').textContent=filtered.length+'/'+CX_DATA.length;
+  document.getElementById('cxTblTot').innerHTML='<div class="tot-i"><div class="tot-l">Vencidos</div><div class="tot-v" style="color:var(--red)">R$ 34.856</div></div><div class="tot-i"><div class="tot-l">Total filtrado</div><div class="tot-v" style="color:var(--blue)">R$ '+Math.round(tFil).toLocaleString('pt-BR')+'</div></div>';
+  document.getElementById('cxvRec').textContent='R$ '+Math.round(tFil).toLocaleString('pt-BR').replace(/\.\d+$/,'');
+  document.getElementById('cxsRec').textContent=filtered.length+' parcelas filtradas';
+
+  // pills
+  document.querySelectorAll('#cxPills .mpill').forEach(function(p){
+    p.classList.remove('sel','dim');if(p.dataset.s===CX_AS)p.classList.add('sel');else if(CX_AS!=='all')p.classList.add('dim');
+  });
+
+  var parts=[];if(CX_AS!=='all')parts.push(CX_AS);if(CX_AR){var rr=CX_DATA.find(function(x){return x.id===CX_AR;});if(rr)parts.push(rr.c.split(' ')[0]);}
+  var lbl=document.getElementById('cxSelLbl'),btn=document.getElementById('cxResetBtn');
+  if(parts.length){lbl.textContent='🔍 '+parts.join(' · ');btn.classList.add('vis');}else{lbl.textContent='';btn.classList.remove('vis');}
+}
+function cxSit(s){CX_AS=CX_AS===s?'all':s;CX_AR=null;cxRender();}
+function cxReset(){CX_AS='all';CX_AR=null;cxRender();}
+cxRender();
+
+// ── PIPELINE CROSS FILTER ──
+var PP_DATA=[
+  {id:'baianao',  n:'Baianão Móveis',          st:'Proposta',     impl:37370, saas:18639,obs:'150–300M fat. · em avaliação'},
+  {id:'sesi',     n:'SESI',                     st:'Proposta',     impl:37914, saas:2502, obs:'Instituição · enviada 30/abr'},
+  {id:'hyundai',  n:'Hyundai',                  st:'Proposta',     impl:37914, saas:950,  obs:'Feiras · proposta abr'},
+  {id:'vetor',    n:'Vetor Editora Psico',       st:'Proposta',     impl:25000, saas:7500, obs:'Em avaliação interna'},
+  {id:'pinaco',   n:'Pinacoteca',               st:'Proposta',     impl:22500, saas:2504, obs:'Aguardando retorno'},
+  {id:'inhotim',  n:'Inhotim + Nova Aliança',   st:'Proposta',     impl:40000, saas:1380, obs:'Em negociação'},
+  {id:'mapfre',   n:'Mapfre',                   st:'Proposta',     impl:25000, saas:1000, obs:'Em análise'},
+  {id:'sesi2',    n:'SESI Loja São Paulo',      st:'Apresentação', impl:15000, saas:2000, obs:'Apresentação agendada'},
+  {id:'sebrae',   n:'Sebrae Nacional',           st:'Apresentação', impl:50000, saas:0,    obs:'Aguardando definição modelo'},
+  {id:'esn1',     n:'ESN TOTVS — oport. 1',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
+  {id:'esn2',     n:'ESN TOTVS — oport. 2',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
+  {id:'esn3',     n:'ESN TOTVS — oport. 3',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
+  {id:'esn4',     n:'ESN TOTVS — oport. 4',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
+  {id:'esn5',     n:'ESN TOTVS — oport. 5',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
+  {id:'esn6',     n:'ESN TOTVS — oport. 6',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
+  {id:'esn7',     n:'ESN TOTVS — oport. 7',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
+  {id:'esn8',     n:'ESN TOTVS — oport. 8',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
+  {id:'esn9',     n:'ESN TOTVS — oport. 9',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
+  {id:'esn10',    n:'ESN TOTVS — oport. 10',   st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
+  {id:'perd1',    n:'Perdido 1',                st:'Perdido',      impl:0,     saas:0,    obs:'Concorrência'},
+  {id:'perd2',    n:'Perdido 2',                st:'Perdido',      impl:0,     saas:0,    obs:'Desistência'},
+  {id:'perd3',    n:'Perdido 3',                st:'Perdido',      impl:0,     saas:0,    obs:'Sem resposta'},
+  {id:'perd4',    n:'Perdido 4',                st:'Perdido',      impl:0,     saas:0,    obs:'Orçamento'},
+  {id:'perd5',    n:'Perdido 5',                st:'Perdido',      impl:0,     saas:0,    obs:'Concorrência'},
+  {id:'perd6',    n:'Perdido 6',                st:'Perdido',      impl:0,     saas:0,    obs:'Prazo'},
+  {id:'perd7',    n:'Perdido 7',                st:'Perdido',      impl:0,     saas:0,    obs:'Sem resposta'},
+  {id:'perd8',    n:'Perdido 8',                st:'Perdido',      impl:0,     saas:0,    obs:'Orçamento'},
+  {id:'perd9',    n:'Perdido 9',                st:'Perdido',      impl:0,     saas:0,    obs:'Concorrência'},
+  {id:'perd10',   n:'Perdido 10',               st:'Perdido',      impl:0,     saas:0,    obs:'Desistência'},
+  {id:'ninit1',   n:'Não iniciado 1',           st:'Não iniciado', impl:0,     saas:0,    obs:'Aguardando contato'},
+  {id:'ninit2',   n:'Não iniciado 2',           st:'Não iniciado', impl:0,     saas:0,    obs:'Aguardando contato'}
+];
+var PP_CATS=[
+  {st:'Proposta',     color:'#1a5fa8',cnt:7},
+  {st:'Apresentação', color:'#1e7e4f',cnt:2},
+  {st:'Parado',       color:'#b7650a',cnt:10},
+  {st:'Perdido',      color:'#c0392b',cnt:10},
+  {st:'Não iniciado', color:'#3d5a80',cnt:2}
+];
+var PP_ST=null,PP_AR=null;
+function ppVis(r){return (!PP_ST||r.st===PP_ST)&&(!PP_AR||r.id===PP_AR);}
+function fBRpp(v){return v>0?'R$ '+Math.round(v).toLocaleString('pt-BR'):'—';}
+
+var ppDonut=new Chart(document.getElementById('ppDonut'),{
+  type:'doughnut',
+  data:{labels:PP_CATS.map(function(c){return c.st;}),
+    datasets:[{data:PP_CATS.map(function(c){return c.cnt;}),backgroundColor:PP_CATS.map(function(c){return c.color;}),borderWidth:2,borderColor:'#fff'}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'64%',animation:{duration:250},
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.label+': '+c.parsed+' oportunidades';}}}},
+    onClick:function(_,els){if(els&&els.length>0){var s=PP_CATS[els[0].index].st;PP_ST=PP_ST===s?null:s;PP_AR=null;ppRender();}}
+  }
+});
+
+function ppRender(){
+  var filtered=PP_DATA.filter(function(r){return ppVis(r);});
+  var totSaas=filtered.reduce(function(s,r){return s+r.saas;},0);
+  var totImpl=filtered.reduce(function(s,r){return s+r.impl;},0);
+
+  // donut counts
+  var stCnts={};PP_CATS.forEach(function(c){stCnts[c.st]=0;});
+  PP_DATA.filter(function(r){return ppVis(r);}).forEach(function(r){stCnts[r.st]=(stCnts[r.st]||0)+1;});
+  ppDonut.data.datasets[0].data=PP_CATS.map(function(c){return stCnts[c.st]||0;});
+  ppDonut.update('none');
+
+  // legend
+  var leg=document.getElementById('ppLegend');leg.innerHTML='';
+  PP_CATS.forEach(function(c){
+    var cnt=PP_DATA.filter(function(r){return r.st===c.st;}).length;
+    var isSel=PP_ST===c.st,isDim=!!(PP_ST&&PP_ST!==c.st);
+    var d=document.createElement('div');d.className='dl-item'+(isSel?' sel':isDim?' dim':'');
+    d.innerHTML='<div class="dl-dot" style="background:'+c.color+'"></div><div class="dl-name">'+c.st+'</div><div class="dl-val">'+cnt+' oport.</div>';
+    (function(st){d.onclick=function(){PP_ST=PP_ST===st?null:st;PP_AR=null;ppRender();};})(c.st);
+    leg.appendChild(d);
+  });
+
+  // bars — only those with saas > 0
+  var wv=filtered.filter(function(r){return r.saas>0;}).sort(function(a,b){return b.saas-a.saas;});
+  var maxV=wv.length?wv[0].saas:1;
+  var barsEl=document.getElementById('ppBars');barsEl.innerHTML='';
+  if(wv.length===0){
+    barsEl.innerHTML='<div style="font-size:12px;color:var(--t3);padding:8px;font-family:var(--mono)">Nenhuma oportunidade com valor SaaS no filtro selecionado</div>';
+  } else {
+    wv.forEach(function(x){
+      var pct=Math.round(x.saas/maxV*100);
+      var col=PP_CATS.find(function(c){return c.st===x.st;});var color=col?col.color:'#3d5a80';
+      var isSel=PP_AR===x.id,isDim=!!(PP_AR&&PP_AR!==x.id);
+      var d=document.createElement('div');d.className='bar-item'+(isSel?' sel':isDim?' dim':'');
+      d.innerHTML='<div class="bar-label" title="'+x.n+'">'+x.n+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div><div class="bar-value">R$ '+Math.round(x.saas).toLocaleString('pt-BR')+'</div>';
+      (function(id){d.onclick=function(){PP_AR=PP_AR===id?null:id;PP_ST=null;ppRender();};})(x.id);
+      barsEl.appendChild(d);
+    });
+  }
+  document.getElementById('ppBarTitle').textContent=PP_ST||'todas';
+  document.getElementById('ppBarTot').innerHTML='<div class="tot-i"><div class="tot-l">Oportunidades</div><div class="tot-v">'+filtered.length+'</div></div><div class="tot-i"><div class="tot-l">SaaS potencial/mês</div><div class="tot-v" style="color:var(--green)">'+fBRpp(totSaas)+'</div></div><div class="tot-i"><div class="tot-l">Impl. potencial</div><div class="tot-v">'+fBRpp(totImpl)+'</div></div>';
+
+  // table
+  var tbody=document.getElementById('ppTbody');tbody.innerHTML='';
+  var idx=1;
+  PP_DATA.forEach(function(row){
+    var vis=ppVis(row);
+    var isSel=PP_AR===row.id;
+    var col=PP_CATS.find(function(c){return c.st===row.st;});var color=col?col.color:'#3d5a80';
+    var bgClass=row.st==='Proposta'?'bgb':row.st==='Apresentação'?'bgg':row.st==='Parado'?'bga':row.st==='Perdido'?'bgr':'bgn';
+    var tr=document.createElement('tr');tr.className=isSel?'sel':(!vis?'dim':'');
+    tr.innerHTML='<td style="color:var(--t3);font-family:var(--mono)">'+String(idx++).padStart(2,'0')+'</td><td class="lbl">'+row.n+'</td><td><span class="bge '+bgClass+'">'+row.st+'</span></td><td class="r">'+fBRpp(row.impl)+'</td><td class="r" style="color:'+color+'">'+fBRpp(row.saas)+'</td><td style="font-size:11px;color:var(--t2)">'+row.obs+'</td>';
+    (function(id){tr.onclick=function(){PP_AR=PP_AR===id?null:id;PP_ST=null;ppRender();};})(row.id);
+    tbody.appendChild(tr);
+  });
+  document.getElementById('ppTblCount').textContent=filtered.length+'/'+PP_DATA.length;
+  document.getElementById('ppTblTot').innerHTML='<div class="tot-i"><div class="tot-l">Filtradas</div><div class="tot-v">'+filtered.length+'</div></div><div class="tot-i"><div class="tot-l">SaaS potencial</div><div class="tot-v" style="color:var(--green)">'+fBRpp(totSaas)+'/mês</div></div>';
+
+  // kpi cards
+  PP_CATS.forEach(function(c){
+    var el=document.getElementById('ppkpi-'+c.st);
+    if(!el)return;
+    el.classList.remove('sel','dim');
+    if(PP_ST){el.classList.add(PP_ST===c.st?'sel':'dim');}
+  });
+  document.getElementById('ppBarTitle').textContent=PP_ST||'todas';
+
+  var parts=[];if(PP_ST)parts.push(PP_ST);if(PP_AR){var rr=PP_DATA.find(function(x){return x.id===PP_AR;});if(rr)parts.push(rr.n.split(' ').slice(0,2).join(' '));}
+  var lbl=document.getElementById('ppSelLbl'),btn=document.getElementById('ppResetBtn');
+  if(parts.length){lbl.textContent='🔍 '+parts.join(' · ');btn.classList.add('vis');}else{lbl.textContent='';btn.classList.remove('vis');}
+}
+function ppSt(s){PP_ST=PP_ST===s?null:s;PP_AR=null;ppRender();}
+function ppReset(){PP_ST=null;PP_AR=null;ppRender();}
+ppRender();
+
+// ── CLIENTES CROSS FILTER ──
+var CLI_DATA=[
+  {id:'cantu',   n:'Cantu Importação',        cat:'garantido',valor:11535,uso:'Ativo',  abr:'Ativo',obs:''},
+  {id:'telerio', n:'Tele Rio Eletro',          cat:'garantido',valor:10978,uso:'Ativo',  abr:'Ativo',obs:''},
+  {id:'pia',     n:'Pia Sociedade SP',         cat:'garantido',valor:10205,uso:'Ativo',  abr:'Ativo',obs:''},
+  {id:'masp',    n:'MASP',                     cat:'garantido',valor:8883, uso:'Ativo',  abr:'Ativo',obs:''},
+  {id:'mir',     n:'MIR (Ramsons)',            cat:'garantido',valor:6445, uso:'Ativo',  abr:'Ativo',obs:''},
+  {id:'usina',   n:'Usina São Francisco',      cat:'garantido',valor:5271, uso:'Ativo',  abr:'Ativo',obs:''},
+  {id:'khronos', n:'Khronos Eletrônica',       cat:'garantido',valor:5264, uso:'Ativo',  abr:'Ativo',obs:''},
+  {id:'atacadao',n:'Atacadão Autopecas',       cat:'garantido',valor:4232, uso:'Ativo',  abr:'Ativo',obs:'Parcela parcial'},
+  {id:'lord',    n:'Org. Lord (Conbral)',      cat:'garantido',valor:4154, uso:'Ativo',  abr:'Ativo',obs:''},
+  {id:'decanter',n:'Decanter Vinhos Finos',    cat:'garantido',valor:2640, uso:'Ativo',  abr:'Ativo',obs:''},
+  {id:'hsr',     n:'HSR Shopping Lustres',     cat:'garantido',valor:2625, uso:'Ativo',  abr:'Ativo',obs:''},
+  {id:'fueltech',n:'Fueltech LTDA',            cat:'garantido',valor:2338, uso:'Ativo',  abr:'Ativo',obs:''},
+  {id:'higi',    n:'Higimaster',               cat:'garantido',valor:2322, uso:'Ativo',  abr:'Ativo',obs:''},
+  {id:'manole',  n:'Editora Manole',           cat:'garantido',valor:1809, uso:'Ativo',  abr:'Ativo',obs:''},
+  {id:'ralston', n:'Ind. Alim. Ralston',       cat:'garantido',valor:1041, uso:'Ativo',  abr:'Ativo',obs:''},
+  {id:'polar_s', n:'Polar Store LTDA',         cat:'medio',    valor:6754, uso:'Inativo',abr:'—',   obs:'Vínculo sócio Polar'},
+  {id:'congr',   n:'Congregação SS Redentor',  cat:'medio',    valor:6147, uso:'Ativo',  abr:'?',   obs:'Uso incerto'},
+  {id:'dorel',   n:'Dorel Comércio',           cat:'medio',    valor:4735, uso:'Ativo',  abr:'não', obs:'Não usou abr'},
+  {id:'weiser',  n:'Sérgio Weiser Decoração',  cat:'medio',    valor:4643, uso:'Ativo',  abr:'não', obs:'Não usou abr'},
+  {id:'funpar',  n:'FUNPAR',                   cat:'medio',    valor:2366, uso:'Ativo',  abr:'não', obs:'Não usou abr'},
+  {id:'elshadai',n:'Elshadai Alimentos',       cat:'medio',    valor:2123, uso:'Ativo',  abr:'não', obs:'Não usou abr'},
+  {id:'editora', n:'Editora do Brasil SA',     cat:'alto',     valor:17739,uso:'Inativo',abr:'—',   obs:'Uso inativo · set/2021'},
+  {id:'guaraves',n:'Guaraves Guarabira Aves',  cat:'alto',     valor:10584,uso:'Inativo',abr:'—',   obs:'Uso inativo · ago/2022'},
+  {id:'dux',     n:'Dux Company SA',           cat:'alto',     valor:9863, uso:'Ativo',  abr:'não', obs:'Solicitou cancelamento'},
+  {id:'jdk',     n:'JDK Presentes (Dryzum)',   cat:'alto',     valor:3829, uso:'Inativo',abr:'—',   obs:'Fase de cancelamento'},
+  {id:'lab',     n:'Lab. Florais Joel Aleixo', cat:'alto',     valor:2120, uso:'Inativo',abr:'—',   obs:'Parou de usar fev/26'},
+  {id:'sky',     n:'Sky Cranes & Hoists',      cat:'alto',     valor:1446, uso:'Inativo',abr:'—',   obs:'Nunca ativou'}
+];
+var CAT_CLI=[
+  {cat:'garantido',label:'Garantido',  color:'#1e7e4f'},
+  {cat:'medio',    label:'Risco Médio',color:'#b7650a'},
+  {cat:'alto',     label:'Risco Alto', color:'#c0392b'}
+];
+var CLI_AC=null,CLI_AR=null;
+var GRAND_TOT=CLI_DATA.reduce(function(s,r){return s+r.valor;},0);
+function cliVis(r){return (!CLI_AC||r.cat===CLI_AC)&&(!CLI_AR||r.id===CLI_AR);}
+function fBRc(v){return 'R$ '+Math.round(v).toLocaleString('pt-BR');}
+
+var cliDonut=new Chart(document.getElementById('cliDonut'),{
+  type:'doughnut',
+  data:{labels:CAT_CLI.map(function(c){return c.label;}),
+    datasets:[{data:[79741,26769,45580],backgroundColor:CAT_CLI.map(function(c){return c.color;}),borderWidth:2,borderColor:'#fff'}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'64%',animation:{duration:250},
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.label+': '+fBRc(c.parsed)+'/mês';}}}},
+    onClick:function(_,els){if(els&&els.length>0){var cat=CAT_CLI[els[0].index].cat;CLI_AC=CLI_AC===cat?null:cat;CLI_AR=null;cliRender();}}
+  }
+});
+
+var cliBar=new Chart(document.getElementById('cliBar'),{
   type:'bar',
-  data:{
-    labels:['Jan','Fev','Mar','Abr'],
-    datasets:[
-      {label:'Serv. terceiros real',data:[102307,96968,104929,110332],backgroundColor:COLORS.red+'cc',borderWidth:0},
-      {label:'Budget',data:[16500,16500,16500,16500],type:'line',borderColor:COLORS.blue,borderDash:[5,4],borderWidth:2,pointRadius:0,fill:false,tension:0}
-    ]
-  },
-  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fBR(c.parsed.y)}}},scales:{x:{ticks:{font:{size:11}}},y:{ticks:{callback:fK},grid:{color:'rgba(60,90,130,0.08)'}}}}
+  data:{labels:CLI_DATA.map(function(r){return r.n;}),
+    datasets:[{data:CLI_DATA.map(function(r){return r.valor;}),
+      backgroundColor:CLI_DATA.map(function(r){return r.cat==='garantido'?'#1e7e4f':r.cat==='medio'?'#b7650a':'#c0392b';}),
+      borderWidth:0,borderRadius:3}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:250},
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fBRc(c.parsed.x)+'/mês';},afterLabel:function(c){var r=CLI_DATA[c.dataIndex];return 'Uso abr: '+r.abr+(r.obs?' · '+r.obs:'');}}}},
+    scales:{x:{ticks:{callback:function(v){return 'R$ '+Math.abs(Math.round(v/1000))+'K';},font:{size:10}},grid:{color:'rgba(60,90,130,0.08)'}},y:{ticks:{font:{size:10}}}},
+    onClick:function(_,els){if(els&&els.length>0){var id=CLI_DATA[els[0].index].id;CLI_AR=CLI_AR===id?null:id;CLI_AC=null;cliRender();}}
+  }
 });
 
-// ── USAGE CHART ──
-new Chart(document.getElementById('usageChart'),{
-  type:'doughnut',
-  data:{
-    labels:['Uso ativo confirmado','Uso incerto','Inativo / churn'],
-    datasets:[{data:[15,5,7],backgroundColor:[COLORS.green,COLORS.amber,COLORS.red],borderWidth:0}]
-  },
-  options:{responsive:true,maintainAspectRatio:false,cutout:'64%',plugins:{legend:{display:true,position:'right',labels:{boxWidth:10,padding:12,color:'#7d8ea8',font:{family:"'IBM Plex Mono',monospace",size:10}}},tooltip:{callbacks:{label:c=>c.label+': '+c.parsed+' ('+Math.round(c.parsed/27*100)+'%)'}}}}
-});
+function cliRender(){
+  var filtered=CLI_DATA.filter(function(r){return cliVis(r);});
+  var tot=filtered.reduce(function(s,r){return s+r.valor;},0);
+  var catTots={};CAT_CLI.forEach(function(c){catTots[c.cat]=0;});
+  filtered.forEach(function(r){catTots[r.cat]=(catTots[r.cat]||0)+r.valor;});
 
-// ── PIPELINE CHART ──
-new Chart(document.getElementById('pipeChart'),{
-  type:'doughnut',
-  data:{
-    labels:['Proposta','Apresentação','Parado','Perdido','Não iniciado'],
-    datasets:[{data:[7,2,10,10,2],backgroundColor:[COLORS.blue,COLORS.green,COLORS.amber,COLORS.red,COLORS.slate],borderWidth:0}]
-  },
-  options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+c.parsed}}}}
-});
+  cliDonut.data.datasets[0].data=CAT_CLI.map(function(c){return catTots[c.cat]||0;});
+  cliDonut.update('none');
+
+  cliBar.data.datasets[0].data=CLI_DATA.map(function(r){return cliVis(r)?r.valor:0;});
+  cliBar.data.datasets[0].backgroundColor=CLI_DATA.map(function(r){
+    if(!cliVis(r))return 'rgba(60,90,130,0.08)';
+    return r.cat==='garantido'?'#1e7e4f':r.cat==='medio'?'#b7650a':'#c0392b';
+  });
+  cliBar.update('none');
+
+  var leg=document.getElementById('cliLegend');leg.innerHTML='';
+  CAT_CLI.forEach(function(c){
+    var v=catTots[c.cat]||0,pct=tot>0?Math.round(v/tot*100):0;
+    var isSel=CLI_AC===c.cat,isDim=!!(CLI_AC&&CLI_AC!==c.cat);
+    var d=document.createElement('div');d.className='dl-item'+(isSel?' sel':isDim?' dim':'');
+    d.innerHTML='<div class="dl-dot" style="background:'+c.color+'"></div><div class="dl-name">'+c.label+'</div><div class="dl-val">'+fBRc(v)+'/mês · '+pct+'%</div>';
+    (function(cat){d.onclick=function(){CLI_AC=CLI_AC===cat?null:cat;CLI_AR=null;cliRender();};})(c.cat);
+    leg.appendChild(d);
+  });
+
+  var tbody=document.getElementById('cliTbody');tbody.innerHTML='';
+  var idx=1,tFil=0,cnt=0;
+  CLI_DATA.forEach(function(row){
+    var vis=cliVis(row);
+    if(vis){tFil+=row.valor;cnt++;}
+    var isSel=CLI_AR===row.id;
+    var bgClass=row.cat==='garantido'?'bgg':row.cat==='medio'?'bga':'bgr';
+    var catLabel=CAT_CLI.find(function(c){return c.cat===row.cat;}).label;
+    var colr=row.cat==='garantido'?'var(--green)':row.cat==='medio'?'var(--amber)':'var(--red)';
+    var abrClass=row.abr.toLowerCase()==='ativo'||row.abr==='x'?'bgg':row.abr==='—'||row.abr===''?'bgr':'bga';
+    var tr=document.createElement('tr');tr.className=isSel?'sel':(!vis?'dim':'');
+    tr.innerHTML='<td style="color:var(--t3);font-family:var(--mono)">'+String(idx++).padStart(2,'0')+'</td>'
+      +'<td class="lbl" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+row.n+'</td>'
+      +'<td><span class="bge '+bgClass+'">'+catLabel+'</span></td>'
+      +'<td class="r" style="font-weight:600;color:'+colr+'">'+fBRc(row.valor)+'</td>'
+      +'<td class="r" style="font-family:var(--mono);font-size:11px">'+Math.round(row.valor/GRAND_TOT*100)+'%</td>'
+      +'<td><span class="bge '+abrClass+'">'+row.abr+'</span></td>'
+      +'<td style="font-size:11px;color:var(--t2)">'+row.obs+'</td>';
+    (function(id){tr.onclick=function(){CLI_AR=CLI_AR===id?null:id;CLI_AC=null;cliRender();};})(row.id);
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('cliTblCount').textContent=cnt+'/'+CLI_DATA.length;
+  document.getElementById('cliTblTot').innerHTML='<div class="tot-i"><div class="tot-l">Clientes</div><div class="tot-v">'+cnt+'</div></div>'
+    +'<div class="tot-i"><div class="tot-l">Receita filtrada</div><div class="tot-v" style="color:var(--blue)">'+fBRc(tFil)+'/mês</div></div>'
+    +'<div class="tot-i"><div class="tot-l">% da receita total</div><div class="tot-v">'+Math.round(tFil/GRAND_TOT*100)+'%</div></div>';
+
+  ['gar','med','alt'].forEach(function(k){
+    var catMap={gar:'garantido',med:'medio',alt:'alto'};
+    var el=document.getElementById('ckpi-'+k);
+    el.classList.remove('sel','dim');
+    if(CLI_AC){el.classList.add(CLI_AC===catMap[k]?'sel':'dim');}
+  });
+  document.getElementById('ckv-tot').textContent=fBRc(tot);
+  document.getElementById('ckv-sub').textContent=cnt+' clientes · '+Math.round(tot/GRAND_TOT*100)+'% da receita';
+  document.getElementById('cliBarTitle').textContent=CLI_AC?(CLI_AC==='garantido'?'Garantido':CLI_AC==='medio'?'Risco Médio':'Risco Alto'):'todos';
+
+  var parts=[];
+  if(CLI_AC){var ci=CAT_CLI.find(function(c){return c.cat===CLI_AC;});if(ci)parts.push(ci.label);}
+  if(CLI_AR){var ri=CLI_DATA.find(function(r){return r.id===CLI_AR;});if(ri)parts.push(ri.n.split(' ').slice(0,2).join(' '));}
+  var lbl=document.getElementById('cliSelLbl'),btn=document.getElementById('cliResetBtn');
+  if(parts.length){lbl.textContent='🔍 '+parts.join(' · ');btn.classList.add('vis');}
+  else{lbl.textContent='';btn.classList.remove('vis');}
+}
+function cliCat(cat){CLI_AC=CLI_AC===cat?null:cat;CLI_AR=null;cliRender();}
+function cliReset(){CLI_AC=null;CLI_AR=null;cliRender();}
+cliRender();
+
+// Pipeline donut — static
+
+
+// ── CROSS FILTER RENDER ──
+function cfRender(){
+  // 1. Donut
+  var catTotals={};CF_CATS.forEach(function(c){catTotals[c.cat]=0;});
+  ROWS.filter(function(r){return cfVis(r);}).forEach(function(r){catTotals[r.cat]=(catTotals[r.cat]||0)+cfMval(r,CF_AM);});
+  var grand=Object.values(catTotals).reduce(function(s,v){return s+v;},0);
+  cfDonut.data.datasets[0].data=CF_CATS.map(function(c){return catTotals[c.cat]||0;});
+  cfDonut.update('none');
+
+  // 2. Legend
+  var leg=document.getElementById('cfLegend');leg.innerHTML='';
+  CF_CATS.forEach(function(c){
+    var v=catTotals[c.cat]||0,pct=grand>0?Math.round(v/grand*100):0;
+    var isSel=CF_AC===c.cat,isDim=!!(CF_AC&&CF_AC!==c.cat);
+    var d=document.createElement('div');d.className='dl-item'+(isSel?' sel':isDim?' dim':'');
+    d.innerHTML='<div class="dl-dot" style="background:'+c.color+'"></div><div class="dl-name">'+c.cat+'</div><div class="dl-val">'+fBR(v)+' · '+pct+'%</div>';
+    (function(cat){d.onclick=function(){CF_AC=CF_AC===cat?null:cat;CF_AR=null;cfRender();};})(c.cat);
+    leg.appendChild(d);
+  });
+
+  // 3. Stack
+  var fRows=ROWS.filter(function(r){return cfVis(r);});
+  var grps=[
+    {ids:['romulo']},{ids:['efata']},{ids:['milajanu','macedo']},
+    {ids:['ep','godoy','vtconn','victor']},{ids:['geremias']},{ids:['polar','ivy','cbyk','irpj','csll','cartao']}
+  ];
+  grps.forEach(function(g,gi){
+    cfStack.data.datasets[gi].data=CF_MONTHS.map(function(m){
+      return g.ids.reduce(function(s,id){var r=fRows.find(function(x){return x.id===id;});return s+(r?r[m]:0);},0);
+    });
+  });
+  cfStack.update('none');
+
+  // 4. Bars
+  var wv=fRows.map(function(r){return {r:r,v:cfMval(r,CF_AM)};}).filter(function(x){return x.v>0;}).sort(function(a,b){return b.v-a.v;}).slice(0,10);
+  var maxV=wv.length?wv[0].v:1,barTot=wv.reduce(function(s,x){return s+x.v;},0);
+  var barsEl=document.getElementById('cfBars');barsEl.innerHTML='';
+  wv.forEach(function(x){
+    var row=x.r,pct=Math.round(x.v/maxV*100);
+    var col=CF_CATS.find(function(c){return c.cat===row.cat;});var color=col?col.color:'#3d5a80';
+    var isSel=CF_AR===row.id,isDim=!!(CF_AR&&CF_AR!==row.id);
+    var d=document.createElement('div');d.className='bar-item'+(isSel?' sel':isDim?' dim':'');
+    d.innerHTML='<div class="bar-label" title="'+row.n+'">'+row.n+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div><div class="bar-value">'+fBR(x.v)+'</div>';
+    (function(id){d.onclick=function(){CF_AR=CF_AR===id?null:id;CF_AC=null;cfRender();};})(row.id);
+    barsEl.appendChild(d);
+  });
+  document.getElementById('cfBarTitle').textContent=CF_AM==='all'?'todos os meses':CF_AM.charAt(0).toUpperCase()+CF_AM.slice(1)+'/26';
+  document.getElementById('cfBarTot').innerHTML='<div class="tot-i"><div class="tot-l">Fornecedores</div><div class="tot-v">'+wv.length+'</div></div><div class="tot-i"><div class="tot-l">Total</div><div class="tot-v" style="color:var(--red)">'+fBR(barTot)+'</div></div>';
+
+  // 5. Table
+  var tbody=document.getElementById('cfTbody');tbody.innerHTML='';
+  var idx=1,tJ=0,tF=0,tM=0,tA=0,tT=0;
+  ROWS.forEach(function(row){
+    var isVis=cfVis(row),tot=row.jan+row.fev+row.mar+row.abr;
+    if(isVis){tJ+=row.jan;tF+=row.fev;tM+=row.mar;tA+=row.abr;tT+=tot;}
+    var tr=document.createElement('tr');tr.className=CF_AR===row.id?'sel':(!isVis?'dim':'');
+    tr.innerHTML='<td style="color:var(--t3);font-family:var(--mono)">'+String(idx++).padStart(2,'0')+'</td><td class="lbl" style="max-width:130px;overflow:hidden;text-overflow:ellipsis">'+row.n+'</td><td><span class="bge '+row.sc+'">'+row.cat+'</span></td><td class="r">'+fBR(row.jan)+'</td><td class="r">'+fBR(row.fev)+'</td><td class="r">'+fBR(row.mar)+'</td><td class="r">'+fBR(row.abr)+'</td><td class="r" style="font-weight:600">'+fBR(tot)+'</td><td><span class="bge '+row.sc+'">'+row.st+'</span></td>';
+    (function(id){tr.onclick=function(){CF_AR=CF_AR===id?null:id;CF_AC=null;cfRender();};})(row.id);
+    tbody.appendChild(tr);
+  });
+  document.getElementById('cfTblCount').textContent=ROWS.filter(function(r){return cfVis(r);}).length+'/'+ROWS.length;
+  document.getElementById('cfTblTot').innerHTML='<div class="tot-i"><div class="tot-l">Jan</div><div class="tot-v">'+fBR(tJ)+'</div></div><div class="tot-i"><div class="tot-l">Fev</div><div class="tot-v">'+fBR(tF)+'</div></div><div class="tot-i"><div class="tot-l">Mar</div><div class="tot-v">'+fBR(tM)+'</div></div><div class="tot-i"><div class="tot-l">Abr</div><div class="tot-v">'+fBR(tA)+'</div></div><div class="tot-i"><div class="tot-l">Total</div><div class="tot-v" style="color:var(--red)">'+fBR(tT)+'</div></div>';
+
+  // 6. KPIs
+  [{k:'buyout',cat:'Buy-out'},{k:'pj',cat:'Serviços PJ'},{k:'out',cat:'Outros'}].forEach(function(x){
+    var v=ROWS.filter(function(r){return cfVis(r)&&r.cat===x.cat;}).reduce(function(s,r){return s+cfMval(r,CF_AM);},0);
+    document.getElementById('kv-'+x.k).textContent=fBR(v);
+    var el=document.getElementById('kpi-'+x.k);el.classList.remove('sel','dim');
+    if(CF_AC){el.classList.add(CF_AC===x.cat?'sel':'dim');}
+  });
+  var tot=ROWS.filter(function(r){return cfVis(r);}).reduce(function(s,r){return s+cfMval(r,CF_AM);},0);
+  document.getElementById('kv-total').textContent=fBR(tot);
+  document.getElementById('kv-sub').textContent=CF_AM==='all'?'todos os meses':CF_AM.charAt(0).toUpperCase()+CF_AM.slice(1)+'/26';
+
+  // 7. Pills
+  document.querySelectorAll('#cfPills .mpill').forEach(function(p){
+    p.classList.remove('sel','dim');
+    if(p.dataset.m===CF_AM)p.classList.add('sel');
+    else if(CF_AM!=='all')p.classList.add('dim');
+  });
+
+  // 8. Filter label
+  var parts=[];
+  if(CF_AM!=='all')parts.push(CF_AM.charAt(0).toUpperCase()+CF_AM.slice(1)+'/26');
+  if(CF_AC)parts.push(CF_AC);
+  if(CF_AR){var rr=ROWS.find(function(x){return x.id===CF_AR;});if(rr)parts.push(rr.n.split(' ').slice(0,2).join(' '));}
+  var lbl=document.getElementById('selLbl'),btn=document.getElementById('resetBtn');
+  if(parts.length){lbl.textContent='🔍 '+parts.join(' · ');btn.classList.add('vis');}
+  else{lbl.textContent='';btn.classList.remove('vis');}
+}
+
+function cfCat(cat){CF_AC=CF_AC===cat?null:cat;CF_AR=null;cfRender();}
+function cfMonth(m){CF_AM=CF_AM===m?'all':m;CF_AR=null;cfRender();}
+function cfReset(){CF_AM='all';CF_AC=null;CF_AR=null;cfRender();}
 
 // ── PROJECTION ──
-const MH2=['Jul/26','Ago/26','Set/26','Out/26','Nov/26','Dez/26'];
-const M27=['Jan/27','Fev/27','Mar/27','Abr/27','Mai/27','Jun/27','Jul/27','Ago/27','Set/27','Out/27','Nov/27','Dez/27'];
-const ALL=[...MH2,...M27];
-const OP=31244,EF=35000,GSTOP=8,BO=59814,S0=48000;
-let pB=null,pL=null;
+var MH2=['Jul/26','Ago/26','Set/26','Out/26','Nov/26','Dez/26'];
+var M27=['Jan/27','Fev/27','Mar/27','Abr/27','Mai/27','Jun/27','Jul/27','Ago/27','Set/27','Out/27','Nov/27','Dez/27'];
+var ALL_M=MH2.concat(M27);
+var OP=31244,EF=35000,GSTOP=8,BO=59814,S0=48000;
+var pBar=null,pLine=null;
 
-function upd(){
-  const rev=+document.getElementById('rSel').value;
-  const atac=+document.getElementById('aSel').value;
-  const efStop=+document.getElementById('eSel').value;
-  const res=[],acums=[],resBO=[];
-  let ac=S0+atac;
-  MH2.forEach(()=>{const s=OP+EF,r=rev-s;res.push(r);resBO.push(r-BO);ac+=r;acums.push(ac);});
-  M27.forEach((_,i)=>{const g=i<GSTOP?10000:0,e=i<efStop?EF:0,r=rev-OP-e-g;res.push(r);resBO.push(r-BO);ac+=r;acums.push(ac);});
-  const tH2=res.slice(0,6).reduce((a,b)=>a+b,0);
-  const t27=res.slice(6).reduce((a,b)=>a+b,0);
-  const fin=acums[17];
+function updProj(){
+  var rev=+document.getElementById('rSel').value;
+  var atac=+document.getElementById('aSel').value;
+  var efStop=+document.getElementById('eSel').value;
+  var res=[],acums=[],resBO=[];
+  var ac=S0+atac;
+  MH2.forEach(function(){var r=rev-OP-EF;res.push(r);resBO.push(r-BO);ac+=r;acums.push(ac);});
+  M27.forEach(function(_,i){var g=i<GSTOP?10000:0,e=i<efStop?EF:0,r=rev-OP-e-g;res.push(r);resBO.push(r-BO);ac+=r;acums.push(ac);});
+  var tH2=res.slice(0,6).reduce(function(a,b){return a+b;},0);
+  var t27=res.slice(6).reduce(function(a,b){return a+b;},0);
+  var fin=acums[17];
   document.getElementById('pFinal').textContent=fBR(fin);
-  document.getElementById('pFinal').style.color=fin>=0?'var(--c-green)':'var(--c-red)';
-  document.getElementById('pMets').innerHTML=`
-    <div class="met ${tH2>=0?'green':'red'}"><div class="ml">Resultado acum. H2/26</div><div class="mv ${tH2>=0?'green':'red'}">${fBR(tH2)}</div><div class="ms">vs. ${fBR(resBO.slice(0,6).reduce((a,b)=>a+b,0))} se buy-out continuasse</div></div>
-    <div class="met ${t27>=0?'green':'red'}"><div class="ml">Resultado acum. 2027</div><div class="mv ${t27>=0?'green':'red'}">${fBR(t27)}</div><div class="ms">Média mensal: ${fBR(t27/12)}</div></div>
-    <div class="met ${fin>=0?'teal':'red'}"><div class="ml">Caixa estimado dez/27</div><div class="mv ${fin>=0?'teal':'red'}">${fBR(fin)}</div><div class="ms">Partindo de ~R$ 48 K hoje</div></div>
-  `;
-  const bc=res.map(r=>r>=0?COLORS.green+'cc':COLORS.red+'cc');
-  if(pB)pB.destroy();
-  pB=new Chart(document.getElementById('pBar'),{
-    type:'bar',
-    data:{labels:ALL,datasets:[
-      {label:'Resultado',data:res,backgroundColor:bc,borderWidth:0,order:2},
-      {label:'Se buy-out continuasse',data:resBO,type:'line',borderColor:COLORS.red,borderDash:[5,4],borderWidth:1.5,pointStyle:'triangle',pointRadius:3,fill:false,tension:0,order:1}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fBR(c.parsed.y)}}},scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:10}}},y:{ticks:{callback:fK},grid:{color:'rgba(60,90,130,0.08)'}}}}
-  });
-  const lc=acums.map(a=>a>=0?COLORS.blue:COLORS.red);
-  if(pL)pL.destroy();
-  pL=new Chart(document.getElementById('pLine'),{
-    type:'line',
-    data:{labels:ALL,datasets:[{label:'Caixa acumulado',data:acums,borderColor:COLORS.blue,backgroundColor:'rgba(74,143,196,0.08)',fill:true,tension:0.3,pointRadius:3,pointBackgroundColor:lc,borderWidth:1.5}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Caixa: '+fBR(c.parsed.y)}}},scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:10}}},y:{ticks:{callback:fK},grid:{color:'rgba(60,90,130,0.08)'}}}}
-  });
+  document.getElementById('pFinal').style.color=fin>=0?'var(--green)':'var(--red)';
+  document.getElementById('pMets').innerHTML='<div class="met '+(tH2>=0?'green':'red')+'"><div class="ml">Resultado acum. H2/26</div><div class="mv '+(tH2>=0?'green':'red')+'">'+fBR(tH2)+'</div><div class="ms">vs. '+fBR(resBO.slice(0,6).reduce(function(a,b){return a+b;},0))+' com buy-out</div></div><div class="met '+(t27>=0?'green':'red')+'"><div class="ml">Resultado acum. 2027</div><div class="mv '+(t27>=0?'green':'red')+'">'+fBR(t27)+'</div><div class="ms">Média: '+fBR(t27/12)+'/mês</div></div><div class="met '+(fin>=0?'teal':'red')+'"><div class="ml">Caixa estimado dez/27</div><div class="mv '+(fin>=0?'teal':'red')+'">'+fBR(fin)+'</div><div class="ms">Partindo de ~R$ 48 K hoje</div></div>';
+
+  var bc=res.map(function(r){return r>=0?'#1e7e4fcc':'#c0392bcc';});
+  if(!pBar){
+    pBar=new Chart(document.getElementById('pBar'),{type:'bar',data:{labels:ALL_M,datasets:[{label:'Resultado',data:res,backgroundColor:bc,borderWidth:0,order:2},{label:'Se buy-out continuasse',data:resBO,type:'line',borderColor:'#c0392b',borderDash:[5,4],borderWidth:1.5,pointStyle:'triangle',pointRadius:3,fill:false,tension:0,order:1}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:250},plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+fBR(c.parsed.y);}}}},scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:9.5}}},y:{ticks:{callback:fK},grid:{color:'rgba(60,90,130,0.08)'}}}}});
+  } else {
+    pBar.data.datasets[0].data=res;pBar.data.datasets[0].backgroundColor=bc;
+    pBar.data.datasets[1].data=resBO;pBar.update('none');
+  }
+  var lc=acums.map(function(a){return a>=0?'#1a5fa8':'#c0392b';});
+  if(!pLine){
+    pLine=new Chart(document.getElementById('pLine'),{type:'line',data:{labels:ALL_M,datasets:[{label:'Caixa acumulado',data:acums,borderColor:'#1a5fa8',backgroundColor:'rgba(26,95,168,0.07)',fill:true,tension:0.3,pointRadius:3,pointBackgroundColor:lc,borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:250},plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return 'Caixa: '+fBR(c.parsed.y);}}}},scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:9.5}}},y:{ticks:{callback:fK},grid:{color:'rgba(60,90,130,0.08)'}}}}});
+  } else {
+    pLine.data.datasets[0].data=acums;pLine.data.datasets[0].pointBackgroundColor=lc;pLine.update('none');
+  }
 }
-setTimeout(upd,150);
+
+// ── INIT ──
+cfRender();
 </script>
 </body>
 </html>
