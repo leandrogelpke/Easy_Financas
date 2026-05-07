@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Easy Analytics — Live Bling</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f6f9;--s1:#fff;--s2:#f0f3f7;--s3:#e4e9f0;
+  --bd:rgba(60,90,130,0.1);--bd2:rgba(60,90,130,0.2);
+  --t1:#1a2436;--t2:#4a5f7a;--t3:#8a9db8;
+  --red:#c0392b;--red-bg:rgba(192,57,43,0.08);--red-br:rgba(192,57,43,0.2);
+  --amber:#b7650a;--amber-bg:rgba(183,101,10,0.08);--amber-br:rgba(183,101,10,0.2);
+  --green:#1e7e4f;--green-bg:rgba(30,126,79,0.08);--green-br:rgba(30,126,79,0.2);
+  --blue:#1a5fa8;--blue-bg:rgba(26,95,168,0.08);--blue-br:rgba(26,95,168,0.2);
+  --slate:#3d5a80;--slate-bg:rgba(61,90,128,0.08);
+  --sans:'IBM Plex Sans',sans-serif;--mono:'IBM Plex Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;padding:24px}
+.wrap{max-width:1320px;margin:0 auto}
+header{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-bottom:18px;border-bottom:1px solid var(--bd);margin-bottom:24px}
+h1{font-size:22px;font-weight:600;letter-spacing:-.02em}
+.sub{font-size:11px;color:var(--t3);font-family:var(--mono);margin-top:4px}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:10px;font-weight:500;font-family:var(--mono);background:var(--blue-bg);color:var(--blue);border:1px solid var(--bd2)}
+.tag::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--blue)}
+.sl{font-family:var(--mono);font-size:9.5px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.12em;margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+.sl::after{content:'';flex:1;height:1px;background:var(--bd)}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:880px){.g4{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+.met{background:var(--s1);border:1px solid var(--bd);border-radius:11px;padding:14px 16px;box-shadow:0 1px 3px rgba(60,90,130,0.06);position:relative;overflow:hidden}
+.met::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.met.red::after{background:var(--red)}.met.amber::after{background:var(--amber)}
+.met.green::after{background:var(--green)}.met.blue::after{background:var(--blue)}
+.ml{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;font-family:var(--mono)}
+.mv{font-family:var(--mono);font-size:20px;font-weight:500;letter-spacing:-.01em;line-height:1}
+.mv.red{color:var(--red)}.mv.amber{color:var(--amber)}.mv.green{color:var(--green)}.mv.blue{color:var(--blue)}
+.ms{font-size:10.5px;color:var(--t3);margin-top:4px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;box-shadow:0 1px 3px rgba(60,90,130,0.06)}
+.ct{font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.1em;color:var(--t3);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.ct b{color:var(--t1);font-weight:500}
+.dt{width:100%;border-collapse:collapse;font-size:12px;table-layout:auto}
+.dt th{font-family:var(--mono);font-size:9px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;padding:6px 8px;border-bottom:1px solid var(--bd);text-align:left}
+.dt th.r{text-align:right}
+.dt td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.dt td.r{text-align:right;font-family:var(--mono)}
+.dt td.mono{font-family:var(--mono);font-size:11px}
+.dt tbody tr:hover{background:var(--s2)}
+.tbl-wrap{overflow-x:auto}
+.bar{height:6px;background:var(--s2);border-radius:3px;overflow:hidden;margin-top:3px}
+.bar>span{display:block;height:100%;background:var(--blue);border-radius:3px}
+.pill{display:inline-block;padding:1px 7px;border-radius:999px;font-size:10px;font-family:var(--mono);font-weight:500}
+.pill.over{background:var(--red-bg);color:var(--red);border:1px solid var(--red-br)}
+.pill.amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-br)}
+.pill.green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-br)}
+.tot{margin-top:10px;padding-top:10px;border-top:1px solid var(--bd2);font-family:var(--mono);font-size:11px;color:var(--t2);display:flex;justify-content:space-between}
+.tot b{color:var(--t1);font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Easy Analytics — Live Bling</h1>
+      <div class="sub">Snapshot 2026-05-07 · gerado em 2026-05-07 15:45:21</div>
+    </div>
+    <span class="tag">Dados Bling API v3</span>
+  </header>
+
+  <div class="g4"><div class="met red"><div class="ml">A pagar — vencidos</div><div class="mv red">R$ 0</div><div class="ms">0 lançamentos</div></div><div class="met amber"><div class="ml">A pagar — 30 dias</div><div class="mv amber">R$ 179 K</div><div class="ms">vencimento próximo</div></div><div class="met blue"><div class="ml">A receber — em aberto</div><div class="mv blue">R$ 509 K</div><div class="ms">20 parcelas</div></div><div class="met green"><div class="ml">Recebido (12m)</div><div class="mv green">R$ 1,0 M</div><div class="ms">91 parcelas</div></div></div>
+
+  <div class="sl">Contas a pagar — janela de vencimento</div>
+  <div class="g4"><div class="met red"><div class="ml">Vencidos</div><div class="mv red">R$ 0</div></div><div class="met amber"><div class="ml">≤ 30 dias</div><div class="mv amber">R$ 179 K</div></div><div class="met blue"><div class="ml">31–60 dias</div><div class="mv blue">R$ 141 K</div></div><div class="met blue"><div class="ml">61–90 dias</div><div class="mv blue">R$ 81 K</div></div></div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="ct"><b>Vencidos a pagar</b><span>0 itens · R$ 0</span></div>
+      <div class="tbl-wrap"><table class="dt">
+        <thead><tr><th>Vencimento</th><th>Fornecedor</th><th class="r">Valor</th></tr></thead>
+        <tbody><tr><td colspan=3 style='color:var(--t3);text-align:center;padding:14px'>nenhum item</td></tr></tbody></table></div>
+    </div>
+    <div class="card">
+      <div class="ct"><b>Próximos a pagar (30 itens)</b><span>30 itens · R$ 401 K em 90d</span></div>
+      <div class="tbl-wrap"><table class="dt">
+        <thead><tr><th>Vencimento</th><th>Fornecedor</th><th class="r">Valor</th></tr></thead>
+        <tbody><tr><td class="mono">07/mai/26 </td><td>TOTVS S.A.<div style="font-size:10px;color:var(--t3)">(sem categoria) · Ref. a NF nº 04420358 - Renovação anual da Parceria Easy &amp; TOTVS</div></td><td class="r">R$ 11.871,22</td></tr><tr><td class="mono">11/mai/26 </td><td>PLENTECH LTDA<div style="font-size:10px;color:var(--t3)">(sem categoria) · Ref. a NF nº 000495</div></td><td class="r">R$ 2.500,00</td></tr><tr><td class="mono">15/mai/26 </td><td>PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO<div style="font-size:10px;color:var(--t3)">Serviços contábeis · ISS S/ FATURAMENTO - XX/2025</div></td><td class="r">R$ 92,00</td></tr><tr><td class="mono">15/mai/26 </td><td>CARTAO DE CREDITO<div style="font-size:10px;color:var(--t3)">(sem categoria) · CARTÃO DE CREDITO - DÉBITO AUTOMATICO</div></td><td class="r">R$ 10.557,59</td></tr><tr><td class="mono">15/mai/26 </td><td>LWSA S/A<div style="font-size:10px;color:var(--t3)">(sem categoria) · SISTEMA BLING</div></td><td class="r">R$ 110,00</td></tr><tr><td class="mono">19/mai/26 </td><td>GEREMIAS FERREIRA LIMA 37305076805<div style="font-size:10px;color:var(--t3)">Serviços de terceiros · ACORDO TRABALHISTA - PARC. 5/20</div></td><td class="r">R$ 10.000,00</td></tr><tr><td class="mono">20/mai/26 </td><td>RECEITA FEDERAL<div style="font-size:10px;color:var(--t3)">(sem categoria) · DCTFWEB - DEZ/2025</div></td><td class="r">R$ 79,65</td></tr><tr><td class="mono">20/mai/26 </td><td>EFATA TREINAMENTO EM TECNOLOGIA LTDA<div style="font-size:10px;color:var(--t3)">(sem categoria) · PRESTAÇÃO SERVIÇOS XX/2026</div></td><td class="r">R$ 35.000,00</td></tr><tr><td class="mono">20/mai/26 </td><td>SERRANO CONTABILIDADE LIMITADA<div style="font-size:10px;color:var(--t3)">(sem categoria) · HONORÁRIOS CONTABÉS - PREVISÃO</div></td><td class="r">R$ 785,00</td></tr><tr><td class="mono">20/mai/26 </td><td>Eduardo Faria de Godoy 29853590824<div style="font-size:10px;color:var(--t3)">(sem categoria) · PREVISÃO</div></td><td class="r">R$ 6.500,00</td></tr><tr><td class="mono">20/mai/26 </td><td>M. DE Q. MACEDO - EPP<div style="font-size:10px;color:var(--t3)">Serviços de terceiros · PREVISÃO</div></td><td class="r">R$ 23.000,00</td></tr><tr><td class="mono">20/mai/26 </td><td>EFATA TREINAMENTO EM TECNOLOGIA LTDA<div style="font-size:10px;color:var(--t3)">(sem categoria) · Ref. a NF nº 000024</div></td><td class="r">R$ 17.500,00</td></tr><tr><td class="mono">24/mai/26 </td><td>CRALUS INFORMATICA LTDA<div style="font-size:10px;color:var(--t3)">(sem categoria) · Ref. a NF nº 000690</div></td><td class="r">R$ 938,50</td></tr><tr><td class="mono">25/mai/26 </td><td>ROMULO FERREIRA LIMA<div style="font-size:10px;color:var(--t3)">(sem categoria) · PAGTO QUOTAS (EASY ANALYTICS) -  PARC 17/18 - VALOR TOTAL R$ 1.076.656,77</div></td><td class="r">R$ 59.814,26</td></tr><tr><td class="mono">15/jun/26 </td><td>PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO<div style="font-size:10px;color:var(--t3)">Serviços contábeis · ISS S/ FATURAMENTO - XX/2025</div></td><td class="r">R$ 92,00</td></tr><tr><td class="mono">15/jun/26 </td><td>CARTAO DE CREDITO<div style="font-size:10px;color:var(--t3)">(sem categoria) · CARTÃO DE CREDITO - DÉBITO AUTOMATICO</div></td><td class="r">R$ 5.738,66</td></tr><tr><td class="mono">15/jun/26 </td><td>LWSA S/A<div style="font-size:10px;color:var(--t3)">(sem categoria) · SISTEMA BLING</div></td><td class="r">R$ 110,00</td></tr><tr><td class="mono">18/jun/26 </td><td>GEREMIAS FERREIRA LIMA 37305076805<div style="font-size:10px;color:var(--t3)">Serviços de terceiros · ACORDO TRABALHISTA - PARC. 6/20</div></td><td class="r">R$ 10.000,00</td></tr><tr><td class="mono">22/jun/26 </td><td>RECEITA FEDERAL<div style="font-size:10px;color:var(--t3)">(sem categoria) · DCTFWEB - DEZ/2025</div></td><td class="r">R$ 79,65</td></tr><tr><td class="mono">22/jun/26 </td><td>EFATA TREINAMENTO EM TECNOLOGIA LTDA<div style="font-size:10px;color:var(--t3)">(sem categoria) · PRESTAÇÃO SERVIÇOS XX/2026</div></td><td class="r">R$ 35.000,00</td></tr><tr><td class="mono">22/jun/26 </td><td>SERRANO CONTABILIDADE LIMITADA<div style="font-size:10px;color:var(--t3)">(sem categoria) · HONORÁRIOS CONTABÉS - PREVISÃO</div></td><td class="r">R$ 785,00</td></tr><tr><td class="mono">22/jun/26 </td><td>Eduardo Faria de Godoy 29853590824<div style="font-size:10px;color:var(--t3)">(sem categoria) · PREVISÃO</div></td><td class="r">R$ 6.500,00</td></tr><tr><td class="mono">22/jun/26 </td><td>M. DE Q. MACEDO - EPP<div style="font-size:10px;color:var(--t3)">Serviços de terceiros · PREVISÃO</div></td><td class="r">R$ 23.000,00</td></tr><tr><td class="mono">25/jun/26 </td><td>ROMULO FERREIRA LIMA<div style="font-size:10px;color:var(--t3)">(sem categoria) · PAGTO QUOTAS (EASY ANALYTICS) -  PARC 18/18 - VALOR TOTAL R$ 1.076.656,77</div></td><td class="r">R$ 59.814,26</td></tr><tr><td class="mono">15/jul/26 </td><td>PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO<div style="font-size:10px;color:var(--t3)">Serviços contábeis · ISS S/ FATURAMENTO - XX/2025</div></td><td class="r">R$ 92,00</td></tr><tr><td class="mono">15/jul/26 </td><td>CARTAO DE CREDITO<div style="font-size:10px;color:var(--t3)">(sem categoria) · CARTÃO DE CREDITO - DÉBITO AUTOMATICO</div></td><td class="r">R$ 5.738,66</td></tr><tr><td class="mono">15/jul/26 </td><td>LWSA S/A<div style="font-size:10px;color:var(--t3)">(sem categoria) · SISTEMA BLING</div></td><td class="r">R$ 110,00</td></tr><tr><td class="mono">16/jul/26 </td><td>GEREMIAS FERREIRA LIMA 37305076805<div style="font-size:10px;color:var(--t3)">Serviços de terceiros · ACORDO TRABALHISTA - PARC. 7/20</div></td><td class="r">R$ 10.000,00</td></tr><tr><td class="mono">20/jul/26 </td><td>RECEITA FEDERAL<div style="font-size:10px;color:var(--t3)">(sem categoria) · DCTFWEB - DEZ/2025</div></td><td class="r">R$ 79,65</td></tr><tr><td class="mono">20/jul/26 </td><td>EFATA TREINAMENTO EM TECNOLOGIA LTDA<div style="font-size:10px;color:var(--t3)">(sem categoria) · PRESTAÇÃO SERVIÇOS XX/2026</div></td><td class="r">R$ 35.000,00</td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="sl">Contas a receber</div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct"><b>Vencidos a receber</b><span>4 itens</span></div>
+      <div class="tbl-wrap"><table class="dt">
+        <thead><tr><th>Vencimento</th><th>Cliente</th><th class="r">Valor</th></tr></thead>
+        <tbody><tr><td class="mono">19/set/25 <span class="pill over">vencido</span></td><td>MIR IMPORTACAO E EXPORTACAO LTDA</td><td class="r">R$ 203,97</td></tr><tr><td class="mono">22/mar/26 <span class="pill over">vencido</span></td><td>ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA</td><td class="r">R$ 7.038,75</td></tr><tr><td class="mono">16/abr/26 <span class="pill over">vencido</span></td><td>TOTVS SA</td><td class="r">R$ 14.200,10</td></tr><tr><td class="mono">22/abr/26 <span class="pill over">vencido</span></td><td>ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA</td><td class="r">R$ 7.038,75</td></tr></tbody></table></div>
+    </div>
+    <div class="card">
+      <div class="ct"><b>A receber — em aberto</b><span>16 itens</span></div>
+      <div class="tbl-wrap"><table class="dt">
+        <thead><tr><th>Vencimento</th><th>Cliente</th><th class="r">Valor</th></tr></thead>
+        <tbody><tr><td class="mono">16/mai/26 </td><td>TOTVS LARGE ENTERPRISE TECNOLOGIA S.A.</td><td class="r">R$ 1.231,86</td></tr><tr><td class="mono">16/mai/26 </td><td>TOTVS S.A. SANTA CATARINA</td><td class="r">R$ 11.054,13</td></tr><tr><td class="mono">16/mai/26 </td><td>TOTVS SA</td><td class="r">R$ 15.694,53</td></tr><tr><td class="mono">16/mai/26 </td><td>TOTVS S.A.</td><td class="r">R$ 31.439,77</td></tr><tr><td class="mono">16/mai/26 </td><td>1000 MARCAS SAFETY BRASIL EIRELI</td><td class="r">R$ 2.814,56</td></tr><tr><td class="mono">21/mai/26 </td><td>SERGIO C WEISER DECORACAO LTDA</td><td class="r">R$ 5.255,60</td></tr><tr><td class="mono">22/mai/26 </td><td>ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA</td><td class="r">R$ 7.038,75</td></tr><tr><td class="mono">29/mai/26 </td><td>Usina São Francisco S/A</td><td class="r">R$ 5.631,00</td></tr><tr><td class="mono">15/jun/26 </td><td>TOTVS S.A.</td><td class="r">R$ 50.000,00</td></tr><tr><td class="mono">15/jul/26 </td><td>TOTVS S.A.</td><td class="r">R$ 50.000,00</td></tr><tr><td class="mono">15/ago/26 </td><td>TOTVS S.A.</td><td class="r">R$ 50.000,00</td></tr><tr><td class="mono">15/set/26 </td><td>TOTVS S.A.</td><td class="r">R$ 50.000,00</td></tr><tr><td class="mono">15/jan/27 </td><td>TOTVS S.A.</td><td class="r">R$ 50.000,00</td></tr><tr><td class="mono">15/fev/27 </td><td>TOTVS S.A.</td><td class="r">R$ 50.000,00</td></tr><tr><td class="mono">15/mar/27 </td><td>TOTVS S.A.</td><td class="r">R$ 50.000,00</td></tr><tr><td class="mono">15/abr/27 </td><td>TOTVS S.A.</td><td class="r">R$ 50.000,00</td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="sl">Gastos por categoria · realizados</div>
+  <div class="card">
+    <div class="ct"><b>Categorias por valor</b><span>112 pagamentos · R$ 1.190.687,45</span></div>
+    <div class="tbl-wrap"><table class="dt">
+      <thead><tr><th>Categoria</th><th class="r"># pgts</th><th class="r">Total R$</th></tr></thead>
+      <tbody><tr><td>(sem categoria)<div class="bar"><span style="width:100.0%"></span></div></td><td class="r mono">67x</td><td class="r">R$ 692.777,67</td></tr><tr><td>Serviços de terceiros<div class="bar"><span style="width:60.1%"></span></div></td><td class="r mono">28x</td><td class="r">R$ 416.650,73</td></tr><tr><td>Serviços contábeis<div class="bar"><span style="width:11.0%"></span></div></td><td class="r mono">14x</td><td class="r">R$ 75.928,14</td></tr><tr><td>Impostos sobre vendas<div class="bar"><span style="width:0.7%"></span></div></td><td class="r mono">2x</td><td class="r">R$ 4.919,27</td></tr><tr><td>Contribuição social sobre lucro líquido<div class="bar"><span style="width:0.1%"></span></div></td><td class="r mono">1x</td><td class="r">R$ 411,64</td></tr></tbody></table></div>
+  </div>
+
+  <div class="sl">Top clientes pagantes</div>
+  <div class="card">
+    <div class="ct"><b>Clientes por receita recebida</b><span>91 parcelas · R$ 1.012.457,84</span></div>
+    <div class="tbl-wrap"><table class="dt">
+      <thead><tr><th>Cliente</th><th class="r"># parc.</th><th class="r">Total R$</th></tr></thead>
+      <tbody><tr><td>TOTVS S.A.<div class="bar"><span style="width:100.0%;background:var(--green)"></span></div></td><td class="r mono">12x</td><td class="r">R$ 487.884,97</td></tr><tr><td>TOTVS SA<div class="bar"><span style="width:33.5%;background:var(--green)"></span></div></td><td class="r mono">11x</td><td class="r">R$ 163.364,23</td></tr><tr><td>TOTVS S.A. SANTA CATARINA<div class="bar"><span style="width:19.6%;background:var(--green)"></span></div></td><td class="r mono">12x</td><td class="r">R$ 95.746,74</td></tr><tr><td>HIGIMASTER DISTRIBUIDORA DE PRODUTOS DE HIGIENE LTDA<div class="bar"><span style="width:15.4%;background:var(--green)"></span></div></td><td class="r mono">6x</td><td class="r">R$ 75.308,99</td></tr><tr><td>TELE RIO ELETRO DOMESTICOS LTDA<div class="bar"><span style="width:8.8%;background:var(--green)"></span></div></td><td class="r mono">9x</td><td class="r">R$ 42.889,45</td></tr><tr><td>1000 MARCAS SAFETY BRASIL EIRELI<div class="bar"><span style="width:6.9%;background:var(--green)"></span></div></td><td class="r mono">12x</td><td class="r">R$ 33.774,72</td></tr><tr><td>INDUSTRIA ALIMENTICIA RALSTON LTDA<div class="bar"><span style="width:6.1%;background:var(--green)"></span></div></td><td class="r mono">3x</td><td class="r">R$ 29.562,75</td></tr><tr><td>SERGIO C WEISER DECORACAO LTDA<div class="bar"><span style="width:4.3%;background:var(--green)"></span></div></td><td class="r mono">4x</td><td class="r">R$ 21.022,40</td></tr><tr><td>TOTVS LARGE ENTERPRISE TECNOLOGIA S.A.<div class="bar"><span style="width:2.9%;background:var(--green)"></span></div></td><td class="r mono">12x</td><td class="r">R$ 14.234,31</td></tr><tr><td>FUELTECH LTDA<div class="bar"><span style="width:2.4%;background:var(--green)"></span></div></td><td class="r mono">2x</td><td class="r">R$ 11.731,25</td></tr><tr><td>FUNDACAO DA UNIVERSIDADE FEDERAL DO PARANA PARA O DESENVOLVIMENTO DA CIENCIA, TE<div class="bar"><span style="width:2.4%;background:var(--green)"></span></div></td><td class="r mono">2x</td><td class="r">R$ 11.731,25</td></tr><tr><td>KHRONOS INDUSTRIA COMERCIO E SERVICOS EM ELETRONICA LTDA<div class="bar"><span style="width:2.4%;background:var(--green)"></span></div></td><td class="r mono">3x</td><td class="r">R$ 11.731,25</td></tr><tr><td>ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA<div class="bar"><span style="width:1.4%;background:var(--green)"></span></div></td><td class="r mono">1x</td><td class="r">R$ 7.038,75</td></tr><tr><td>DECANTER VINHOS FINOS LTDA<div class="bar"><span style="width:1.2%;background:var(--green)"></span></div></td><td class="r mono">1x</td><td class="r">R$ 5.865,63</td></tr><tr><td>PROADEC BRASIL LTDA<div class="bar"><span style="width:0.1%;background:var(--green)"></span></div></td><td class="r mono">1x</td><td class="r">R$ 571,15</td></tr></tbody></table></div>
+  </div>
+
+  <div class="sl">Status</div>
+  <div class="card" style="font-family:var(--mono);font-size:11px;color:var(--t2)">
+    Snapshot: bling_data_2026-05-07.json<br>
+    Gerado em: 2026-05-07 15:45:21<br>
+    Hoje: 2026-05-07<br>
+    Total contas a pagar em aberto: 97 · R$ 901.468,89<br>
+    Pipeline pago (período do filtro): 112 pagamentos · R$ 1.190.687,45<br>
+    Para regerar: <code style="background:var(--s2);padding:2px 6px;border-radius:4px">python3 ~/Documents/Easy_Financas/build-html.py</code>
+  </div>
+</div>
+</body>
+</html>
