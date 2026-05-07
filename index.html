@@ -168,7 +168,11 @@ nav{position:sticky;top:0;z-index:100;background:rgba(244,246,249,0.96);backdrop
 .cw{position:relative;width:100%}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono)}
-@media(max-width:900px){.g5{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr}.g2,.g21{grid-template-columns:1fr}.ntabs{display:none}.hamb{display:flex!important}.ndate{display:none}nav{padding:0 1rem}.pg{padding:1.25rem 1rem}}
+/* SNAP TIMESTAMP BADGE */
+#snap-ts{position:fixed;top:50px;right:0;z-index:90;font-family:var(--mono);font-size:9.5px;color:var(--t3);background:rgba(244,246,249,0.94);backdrop-filter:blur(10px);border-left:1px solid var(--bd);border-bottom:1px solid var(--bd);padding:4px 12px 4px 9px;border-bottom-left-radius:8px;display:flex;align-items:center;gap:6px;white-space:nowrap;pointer-events:none}
+.snap-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;animation:snapPulse 3s ease-in-out infinite}
+@keyframes snapPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.75)}}
+@media(max-width:900px){#snap-ts{display:none}}
 @media(max-width:560px){.g5{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}.htitle{font-size:18px}}
 </style>
 </head>
@@ -236,6 +240,8 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   </button>
   <div class="ndate">02 mai 2026</div>
 </nav>
+
+<div id="snap-ts"><span class="snap-dot"></span>07/mai/26 · 16:02</div>
 
 <!-- ═══ VISÃO GERAL ═══ -->
 <div class="pg active" id="pg-overview">

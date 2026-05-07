@@ -684,9 +684,16 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     today_fmt  = f"{today.day:02d} {_MONTH_PT[today.month-1]} {today.year}"
     today_hint = f"{today.day:02d}/{_MONTH_PT[today.month-1]}/{str(today.year)[-2:]}"
     fetched_at = ""
+    updated_at = today_fmt
     try:
         meta = json.loads(snapshot.read_text())
         fetched_at = meta.get("_metadata", {}).get("fetched_at", "")
+        if fetched_at:
+            dt = datetime.strptime(fetched_at[:16], "%Y-%m-%d %H:%M")
+            updated_at = (
+                f"{dt.day:02d}/{_MONTH_PT[dt.month-1]}/{str(dt.year)[-2:]}"
+                f" · {dt.hour:02d}:{dt.minute:02d}"
+            )
     except Exception:
         pass
     snapshot_label = snapshot.stem.replace("bling_data_", "")
@@ -703,6 +710,7 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     html = html.replace("@@PAGAR_DATA@@",      js_pagar)
     html = html.replace("@@RECEBIDO_DATA@@",   js_recebido)
     html = html.replace("@@DRE_DATA@@",        js_dre)
+    html = html.replace("@@UPDATED_AT@@",      updated_at)
 
     return html
 
