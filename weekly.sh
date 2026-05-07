@@ -19,7 +19,7 @@ else
     echo "ERRO: nao consegui localizar Easy_Financas" >&2
     exit 1
 fi
-TMP="/tmp/ef-push"
+TMP=$(mktemp -d /tmp/ef-push-XXXXXX)
 
 echo "[paths] EF=$EF"
 echo "[paths] PROD=$PROD"
@@ -37,7 +37,8 @@ python3 "$EF/build-html.py" --in "$PROD" --out "$EF/bling-live.html"
 
 echo ""
 echo "=== 3. push pro GitHub Pages (via clone temporario fora do iCloud) ==="
-rm -rf "$TMP"
+# TMP ja foi criado por mktemp acima; limpa ao sair independente de erro
+trap 'rm -rf "$TMP"' EXIT
 git clone --depth 1 https://github.com/leandrogelpke/Easy_Financas.git "$TMP"
 cp "$EF/.git-token-store" "$TMP/"
 cd "$TMP"
