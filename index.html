@@ -191,17 +191,20 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
         style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:13px;user-select:none;color:var(--t3)">👁</span>
     </div>
     <button class="lbtn" onclick="unl()">Acessar</button>
-    <div class="lhint">Easy Analytics · 02/mai/2026 · confidencial</div>
+    <div class="lhint">Easy Analytics · 07/mai/26 · confidencial</div>
   </div>
 </div>
 <script>
 (function(){
-  var P='Easy1.2.3.@',K='ea_dash_v3';
+  var H='1d440828f091badb6389c03a81f1d23e77045a455257dd2db15d815b70bca22d',K='ea_dash_v3';
   if(sessionStorage.getItem(K)==='1'){document.addEventListener('DOMContentLoaded',function(){var l=document.getElementById('lock');if(l)l.style.display='none';});}
   window.unl=function(){
     var i=document.getElementById('lpwd'),e=document.getElementById('lerr');
-    if(i.value===P){sessionStorage.setItem(K,'1');var l=document.getElementById('lock');l.style.transition='opacity .3s';l.style.opacity='0';setTimeout(function(){l.style.display='none';},300);}
-    else{e.textContent='Senha incorreta.';i.value='';i.style.borderColor='var(--red)';i.focus();setTimeout(function(){i.style.borderColor='var(--bd2)';e.textContent='';},1500);}
+    crypto.subtle.digest('SHA-256',new TextEncoder().encode(i.value)).then(function(b){
+      var hex=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('');
+      if(hex===H){sessionStorage.setItem(K,'1');var l=document.getElementById('lock');l.style.transition='opacity .3s';l.style.opacity='0';setTimeout(function(){l.style.display='none';},300);}
+      else{e.textContent='Senha incorreta.';i.value='';i.style.borderColor='var(--red)';i.focus();setTimeout(function(){i.style.borderColor='var(--bd2)';e.textContent='';},1500);}
+    });
   };
 })();
 </script>
@@ -241,36 +244,28 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <!-- ═══ VISÃO GERAL ═══ -->
 <div class="pg active" id="pg-overview">
 <div class="hero">
-  <div><div class="htitle">Diagnóstico Executivo<br>Easy Analytics 2026</div><div class="hsub">jan–abr/2026 · total pago confirmado: R$ 800.401 · fonte: Bling ERP</div></div>
-  <div class="pills">
-    <span class="pill pr"><span class="pdot"></span>Gastos +390% vs. budget</span>
-    <span class="pill pa"><span class="pdot"></span>R$ 94 K Polar sem categoria</span>
-    <span class="pill pg2"><span class="pdot"></span>Buy-out encerra jun/26</span>
-  </div>
+  <div><div class="htitle">Diagnóstico Executivo<br>Easy Analytics</div><div class="hsub">Jan/26–Abr/26 · total pago: R$ 891.868 · fonte: Bling ERP</div></div>
+  <div class="pills"><span class="pill pr"><span class="pdot"></span>R$ 28.482 vencidos a receber</span>
+    <span class="pill pa"><span class="pdot"></span>R$ 511 K sem categoria</span>
+    <span class="pill pa"><span class="pdot"></span>R$ 179 K a pagar em 30d</span></div>
 </div>
 <div class="sl">KPIs executivos</div>
-<div class="g5">
-  <div class="met red"><div class="ml">Total pago (confirmado)</div><div class="mv red">R$ 800 K</div><div class="ms">excl. R$ 94 K Polar s/ classif.</div></div>
-  <div class="met red"><div class="ml">Média mensal real</div><div class="mv red">R$ 200 K</div><div class="ms">vs. R$ 30,8 K orçado</div><div class="delta d-neg">+R$ 169 K/mês acima</div></div>
-  <div class="met amber"><div class="ml">Receita estimada</div><div class="mv amber">~R$ 320 K</div><div class="ms">~R$ 80 K/mês vs. R$ 90 K orçado</div></div>
-  <div class="met red"><div class="ml">Resultado operacional</div><div class="mv red">−R$ 480 K</div><div class="ms">budget previa +R$ 217 K</div></div>
-  <div class="met amber"><div class="ml">Polar sem classificação</div><div class="mv amber">R$ 94 K</div><div class="ms">mar: R$ 65 K · abr: R$ 29 K</div></div>
-</div>
+<div class="g5"><div class="met blue"><div class="ml">Total pago (4 meses)</div><div class="mv blue">R$ 892 K</div><div class="ms">fonte: Bling · confirmados</div></div>
+  <div class="met blue"><div class="ml">Média mensal</div><div class="mv blue">R$ 223 K</div><div class="ms">últimos 4 meses</div></div>
+  <div class="met red"><div class="ml">A receber em aberto</div><div class="mv red">R$ 509 K</div><div class="ms">20 lançamentos · R$ 28.482 vencidos</div></div>
+  <div class="met amber"><div class="ml">A pagar — vencido + 30d</div><div class="mv amber">R$ 179 K</div><div class="ms">nenhum vencido</div></div>
+  <div class="met amber"><div class="ml">Sem categoria (pagar)</div><div class="mv amber">R$ 511 K</div><div class="ms">65 lançamentos s/ cat.</div></div></div>
 <div class="sl">Highlights e lowlights</div>
 <div class="g2">
   <div class="card">
     <div class="ct">Riscos e desvios</div>
-    <div class="alt alr"><div class="ats">Despesas 390% acima do budget em 4 meses</div><div class="asd">R$ 800 K pago vs. R$ 123 K orçado. 80% das saídas não existiam no orçamento original.</div></div>
-    <div class="alt alr"><div class="ats">6 fornecedores ativos não estavam no orçamento</div><div class="asd">Buy-out, Geremias, Macedo, EP Serv., IVY Group e CBYK somam R$ 424 K em 4 meses.</div></div>
-    <div class="alt ala"><div class="ats">Cartão de crédito subiu 75% em abril</div><div class="asd">R$ 5.739 em jan/fev/mar → R$ 10.031 em abril. Verificar causas.</div></div>
-    <div class="alt ala"><div class="ats">R$ 34.856 vencidos a receber</div><div class="asd">Atacadão (3 parcelas) + TOTVS SA (abr) sem recebimento. Padrão sugere inadimplência recorrente.</div></div>
+    <div class="alt alr"><div class="ats">R$ 28.482 vencidos a receber (4 lançamentos)</div><div class="asd">ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA, MIR IMPORTACAO E EXPORTACAO LTDA, TOTVS SA — acionar cobrança.</div></div>
+    <div class="alt ala"><div class="ats">R$ 511 K sem categoria (65 lançamentos)</div><div class="asd">Classifique no Bling — impacta DRE.</div></div>
+    <div class="alt ala"><div class="ats">R$ 179 K vencem em até 30 dias (14 lançamentos)</div><div class="asd">Planejar disponibilidade de caixa.</div></div>
   </div>
   <div class="card">
     <div class="ct">Pontos positivos</div>
-    <div class="alt alg"><div class="ats">Buy-out encerra 25/jun/26 — R$ 59.814/mês libres a partir de julho</div><div class="asd">Maior despesa da empresa encerra na parcela 18/18. Melhora permanente no fluxo.</div></div>
-    <div class="alt alg"><div class="ats">Vtconn e Victor Hugo aparentemente encerrados — R$ 8.400/mês liberados</div><div class="asd">Sem pagamentos em abril para ambos. Se encerrados, R$ 100 K/ano liberados.</div></div>
-    <div class="alt alg"><div class="ats">IRPJ e CSLL pagos regularmente — compliance fiscal saudável</div><div class="asd">R$ 26 K em impostos diretos em 4 meses. Sem risco de passivo tributário.</div></div>
-    <div class="alt alb"><div class="ats">Efata, Macedo e Godoy com valores estáveis</div><div class="asd">Variação inferior a 2% entre meses. Facilita projeção e controle orçamentário.</div></div>
+    <div class="alt alg"><div class="ats">Nenhum pagamento vencido</div><div class="asd">Todos os fornecedores dentro do prazo.</div></div>
   </div>
 </div>
 <div class="sl">Ações imediatas</div>
@@ -297,7 +292,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <!-- ═══ GASTOS COM CROSS FILTER ═══ -->
 <div class="pg" id="pg-gastos">
 <div class="hero">
-  <div><div class="htitle">Gastos Reais — Jan a Abr 2026</div><div class="hsub">fonte: relatório de pagamentos Bling · total bruto: R$ 894.401 · total classificado: R$ 800.401</div></div>
+  <div><div class="htitle">Gastos Reais — Jan/26 a Abr/26</div><div class="hsub">fonte: Bling ERP · total: R$ 891.868 · 17 fornecedores</div></div>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
     <span class="sel-lbl" id="selLbl"></span>
     <button class="reset-btn" id="resetBtn" onclick="cfReset()">✕ Limpar filtros</button>
@@ -352,12 +347,10 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   </div>
 </div>
 <div class="cf-hint">💡 Toque nas pills de situação, no gráfico ou em qualquer linha para filtrar</div>
-<div class="g4">
-  <div class="met amber"><div class="ml">Saldo estimado hoje</div><div class="mv amber">~R$ 48 K</div><div class="ms">Itaú + Bradesco</div></div>
-  <div class="met red"><div class="ml">A pagar mai–jun</div><div class="mv red">R$ 297 K</div><div class="ms">23 lançamentos em aberto</div></div>
-  <div class="met green"><div class="ml">A receber (filtrado)</div><div class="mv green" id="cxvRec">R$ 102 K</div><div class="ms" id="cxsRec">8 parcelas</div></div>
-  <div class="met red"><div class="ml">Gap líquido</div><div class="mv red">−R$ 194 K</div><div class="ms">Depende de aporte Polar</div></div>
-</div>
+<div class="g4"><div class="met amber"><div class="ml">A pagar em aberto</div><div class="mv amber">R$ 901 K</div><div class="ms">97 lançamentos</div></div>
+  <div class="met red"><div class="ml">A receber em aberto</div><div class="mv red" id="cxvRec">R$ 509 K</div><div class="ms" id="cxsRec">20 lançamentos</div></div>
+  <div class="met green"><div class="ml">Gap receber − pagar 30d</div><div class="mv green">+R$ 330 K</div><div class="ms">receber − (vencido + 30d)</div></div>
+  <div class="met red"><div class="ml">Total vencidos</div><div class="mv red">R$ 28.482</div><div class="ms">pagar R$ 0 + receber R$ 28.482</div></div></div>
 <div class="sl">Filtrar por situação</div>
 <div class="month-pills" id="cxPills">
   <div class="mpill sel" data-s="all" onclick="cxSit('all')">Todos</div>
