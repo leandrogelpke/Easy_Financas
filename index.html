@@ -238,7 +238,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   <button class="hamb" id="hbtn" onclick="tmob()" style="display:none" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
-  <div class="ndate"><span class="snap-dot"></span>07/mai/26 · 17:02</div>
+  <div class="ndate"><span class="snap-dot"></span>07/mai/26 · 17:41</div>
 </nav>
 
 <!-- ═══ VISÃO GERAL ═══ -->
@@ -246,22 +246,22 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <div class="hero">
   <div><div class="htitle">Diagnóstico Executivo<br>Easy Analytics</div><div class="hsub">Jan/26–Abr/26 · total pago: R$ 891.868 · fonte: Bling ERP</div></div>
   <div class="pills"><span class="pill pr"><span class="pdot"></span>R$ 28.482 vencidos a receber</span>
-    <span class="pill pa"><span class="pdot"></span>R$ 511 K sem categoria</span>
-    <span class="pill pa"><span class="pdot"></span>R$ 179 K a pagar em 30d</span></div>
+    <span class="pill pa"><span class="pdot"></span>R$ 761 K sem categoria</span>
+    <span class="pill pa"><span class="pdot"></span>R$ 144 K a pagar em 30d</span></div>
 </div>
 <div class="sl">KPIs executivos</div>
 <div class="g5"><div class="met blue"><div class="ml">Total pago (4 meses)</div><div class="mv blue">R$ 892 K</div><div class="ms">fonte: Bling · confirmados</div></div>
   <div class="met blue"><div class="ml">Média mensal</div><div class="mv blue">R$ 223 K</div><div class="ms">últimos 4 meses</div></div>
   <div class="met red"><div class="ml">A receber em aberto</div><div class="mv red">R$ 509 K</div><div class="ms">20 lançamentos · R$ 28.482 vencidos</div></div>
-  <div class="met amber"><div class="ml">A pagar — vencido + 30d</div><div class="mv amber">R$ 179 K</div><div class="ms">nenhum vencido</div></div>
-  <div class="met amber"><div class="ml">Sem categoria (pagar)</div><div class="mv amber">R$ 511 K</div><div class="ms">65 lançamentos s/ cat.</div></div></div>
+  <div class="met amber"><div class="ml">A pagar — vencido + 30d</div><div class="mv amber">R$ 144 K</div><div class="ms">nenhum vencido</div></div>
+  <div class="met amber"><div class="ml">Sem categoria (pagar)</div><div class="mv amber">R$ 761 K</div><div class="ms">85 lançamentos s/ cat.</div></div></div>
 <div class="sl">Highlights e lowlights</div>
 <div class="g2">
   <div class="card">
     <div class="ct">Riscos e desvios</div>
-    <div class="alt alr"><div class="ats">R$ 28.482 vencidos a receber (4 lançamentos)</div><div class="asd">ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA, MIR IMPORTACAO E EXPORTACAO LTDA, TOTVS SA — acionar cobrança.</div></div>
-    <div class="alt ala"><div class="ats">R$ 511 K sem categoria (65 lançamentos)</div><div class="asd">Classifique no Bling — impacta DRE.</div></div>
-    <div class="alt ala"><div class="ats">R$ 179 K vencem em até 30 dias (14 lançamentos)</div><div class="asd">Planejar disponibilidade de caixa.</div></div>
+    <div class="alt alr"><div class="ats">R$ 28.482 vencidos a receber (4 lançamentos)</div><div class="asd">MIR IMPORTACAO E EXPORTACAO LTDA, ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA, TOTVS SA — acionar cobrança.</div></div>
+    <div class="alt ala"><div class="ats">R$ 761 K sem categoria (85 lançamentos)</div><div class="asd">Classifique no Bling — impacta DRE.</div></div>
+    <div class="alt ala"><div class="ats">R$ 144 K vencem em até 30 dias (11 lançamentos)</div><div class="asd">Planejar disponibilidade de caixa.</div></div>
   </div>
   <div class="card">
     <div class="ct">Pontos positivos</div>
@@ -347,9 +347,9 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   </div>
 </div>
 <div class="cf-hint">💡 Toque nas pills de situação, no gráfico ou em qualquer linha para filtrar</div>
-<div class="g4"><div class="met amber"><div class="ml">A pagar em aberto</div><div class="mv amber">R$ 901 K</div><div class="ms">97 lançamentos</div></div>
+<div class="g4"><div class="met amber"><div class="ml">A pagar em aberto</div><div class="mv amber">R$ 761 K</div><div class="ms">85 lançamentos</div></div>
   <div class="met red"><div class="ml">A receber em aberto</div><div class="mv red" id="cxvRec">R$ 509 K</div><div class="ms" id="cxsRec">20 lançamentos</div></div>
-  <div class="met green"><div class="ml">Gap receber − pagar 30d</div><div class="mv green">+R$ 330 K</div><div class="ms">receber − (vencido + 30d)</div></div>
+  <div class="met green"><div class="ml">Gap receber − pagar 30d</div><div class="mv green">+R$ 365 K</div><div class="ms">receber − (vencido + 30d)</div></div>
   <div class="met red"><div class="ml">Total vencidos</div><div class="mv red">R$ 28.482</div><div class="ms">pagar R$ 0 + receber R$ 28.482</div></div></div>
 <div class="sl">Filtrar por situação</div>
 <div class="month-pills" id="cxPills">
@@ -952,103 +952,91 @@ function cxReset(){CX_AS='all';CX_AR=null;cxRender();}
 cxRender();
 // ── FINANCEIRO: A PAGAR EM ABERTO ──
 var PAGAR_DATA=[
-  {id:'pa020',n:'ROMULO FERREIRA LIMA',cat:'(sem categoria)',doc:'20',venc:'25/mai/26',window:'30d',val:59814},
-  {id:'pa009',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'9',venc:'20/mai/26',window:'30d',val:35000},
-  {id:'pa080',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'80',venc:'20/mai/26',window:'30d',val:23000},
-  {id:'pa097',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'000024/01',venc:'20/mai/26',window:'30d',val:17500},
-  {id:'pa094',n:'TOTVS S.A.',cat:'(sem categoria)',doc:'4420358/01',venc:'07/mai/26',window:'30d',val:11871},
-  {id:'pa023',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'23',venc:'15/mai/26',window:'30d',val:10558},
-  {id:'pa031',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/5',venc:'19/mai/26',window:'30d',val:10000},
-  {id:'pa070',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'70',venc:'20/mai/26',window:'30d',val:6500},
-  {id:'pa093',n:'PLENTECH LTDA',cat:'(sem categoria)',doc:'000495/01',venc:'11/mai/26',window:'30d',val:2500},
-  {id:'pa090',n:'CRALUS INFORMATICA LTDA',cat:'(sem categoria)',doc:'000690/01',venc:'24/mai/26',window:'30d',val:938},
-  {id:'pa060',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'60',venc:'20/mai/26',window:'30d',val:785},
-  {id:'pa049',n:'LWSA S/A',cat:'(sem categoria)',doc:'49',venc:'15/mai/26',window:'30d',val:110},
-  {id:'pa001',n:'PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO',cat:'Serviços contábeis',doc:'1',venc:'15/mai/26',window:'30d',val:92},
-  {id:'pa002',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'2',venc:'20/mai/26',window:'30d',val:80},
-  {id:'pa021',n:'ROMULO FERREIRA LIMA',cat:'(sem categoria)',doc:'21',venc:'25/jun/26',window:'60d',val:59814},
-  {id:'pa010',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'10',venc:'22/jun/26',window:'60d',val:35000},
-  {id:'pa081',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'81',venc:'22/jun/26',window:'60d',val:23000},
-  {id:'pa032',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/6',venc:'18/jun/26',window:'60d',val:10000},
-  {id:'pa071',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'71',venc:'22/jun/26',window:'60d',val:6500},
-  {id:'pa024',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'24',venc:'15/jun/26',window:'60d',val:5739},
-  {id:'pa061',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'61',venc:'22/jun/26',window:'60d',val:785},
-  {id:'pa050',n:'LWSA S/A',cat:'(sem categoria)',doc:'50',venc:'15/jun/26',window:'60d',val:110},
-  {id:'pa003',n:'PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO',cat:'Serviços contábeis',doc:'3',venc:'15/jun/26',window:'60d',val:92},
-  {id:'pa004',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'4',venc:'22/jun/26',window:'60d',val:80},
-  {id:'pa011',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'11',venc:'20/jul/26',window:'90d',val:35000},
-  {id:'pa082',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'82',venc:'20/jul/26',window:'90d',val:23000},
-  {id:'pa033',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/7',venc:'16/jul/26',window:'90d',val:10000},
-  {id:'pa072',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'72',venc:'20/jul/26',window:'90d',val:6500},
-  {id:'pa025',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'25',venc:'15/jul/26',window:'90d',val:5739},
-  {id:'pa062',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'62',venc:'20/jul/26',window:'90d',val:785},
-  {id:'pa051',n:'LWSA S/A',cat:'(sem categoria)',doc:'51',venc:'15/jul/26',window:'90d',val:110},
-  {id:'pa006',n:'PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO',cat:'Serviços contábeis',doc:'6',venc:'15/jul/26',window:'90d',val:92},
-  {id:'pa005',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'5',venc:'20/jul/26',window:'90d',val:80},
-  {id:'pa012',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'12',venc:'20/ago/26',window:'90plus',val:35000},
-  {id:'pa014',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'14',venc:'21/set/26',window:'90plus',val:35000},
-  {id:'pa017',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'17',venc:'20/out/26',window:'90plus',val:35000},
-  {id:'pa083',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'83',venc:'20/ago/26',window:'90plus',val:23000},
-  {id:'pa084',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'84',venc:'21/set/26',window:'90plus',val:23000},
-  {id:'pa085',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'85',venc:'20/out/26',window:'90plus',val:23000},
-  {id:'pa086',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'86',venc:'20/nov/26',window:'90plus',val:23000},
-  {id:'pa087',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'87',venc:'21/dez/26',window:'90plus',val:23000},
-  {id:'pa088',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'88',venc:'20/jan/27',window:'90plus',val:23000},
-  {id:'pa089',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'89',venc:'22/fev/27',window:'90plus',val:23000},
-  {id:'pa034',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/8',venc:'18/ago/26',window:'90plus',val:10000},
-  {id:'pa035',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/9',venc:'17/set/26',window:'90plus',val:10000},
-  {id:'pa036',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/10',venc:'19/out/26',window:'90plus',val:10000},
-  {id:'pa037',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/11',venc:'18/nov/26',window:'90plus',val:10000},
-  {id:'pa038',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/12',venc:'17/dez/26',window:'90plus',val:10000},
-  {id:'pa039',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/13',venc:'19/jan/27',window:'90plus',val:10000},
-  {id:'pa040',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/14',venc:'18/fev/27',window:'90plus',val:10000},
-  {id:'pa041',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/15',venc:'18/mar/27',window:'90plus',val:10000},
-  {id:'pa042',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/16',venc:'19/abr/27',window:'90plus',val:10000},
-  {id:'pa043',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/17',venc:'19/mai/27',window:'90plus',val:10000},
-  {id:'pa044',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/18',venc:'17/jun/27',window:'90plus',val:10000},
-  {id:'pa045',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/19',venc:'19/jul/27',window:'90plus',val:10000},
-  {id:'pa046',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/20',venc:'18/ago/27',window:'90plus',val:10000},
-  {id:'pa073',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'73',venc:'20/ago/26',window:'90plus',val:6500},
-  {id:'pa074',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'74',venc:'21/set/26',window:'90plus',val:6500},
-  {id:'pa075',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'75',venc:'20/out/26',window:'90plus',val:6500},
-  {id:'pa076',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'76',venc:'20/nov/26',window:'90plus',val:6500},
-  {id:'pa077',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'77',venc:'21/dez/26',window:'90plus',val:6500},
-  {id:'pa078',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'78',venc:'20/jan/27',window:'90plus',val:6500},
-  {id:'pa079',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'79',venc:'22/fev/27',window:'90plus',val:6500},
-  {id:'pa026',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'26',venc:'15/ago/26',window:'90plus',val:5739},
-  {id:'pa027',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'27',venc:'15/set/26',window:'90plus',val:5739},
-  {id:'pa028',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'28',venc:'15/out/26',window:'90plus',val:5739},
-  {id:'pa029',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'29',venc:'15/nov/26',window:'90plus',val:5739},
-  {id:'pa030',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'30',venc:'15/dez/26',window:'90plus',val:5739},
-  {id:'pa047',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'47',venc:'15/jan/27',window:'90plus',val:5739},
-  {id:'pa058',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'58',venc:'15/fev/27',window:'90plus',val:5739},
-  {id:'pa091',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'91',venc:'15/mar/27',window:'90plus',val:5739},
-  {id:'pa095',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'95',venc:'15/abr/27',window:'90plus',val:5739},
-  {id:'pa063',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'63',venc:'20/ago/26',window:'90plus',val:785},
-  {id:'pa064',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'64',venc:'21/set/26',window:'90plus',val:785},
-  {id:'pa065',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'65',venc:'20/out/26',window:'90plus',val:785},
-  {id:'pa066',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'66',venc:'20/nov/26',window:'90plus',val:785},
-  {id:'pa067',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'67',venc:'21/dez/26',window:'90plus',val:785},
-  {id:'pa068',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'68',venc:'20/jan/27',window:'90plus',val:785},
-  {id:'pa069',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'69',venc:'22/fev/27',window:'90plus',val:785},
-  {id:'pa052',n:'LWSA S/A',cat:'(sem categoria)',doc:'52',venc:'17/ago/26',window:'90plus',val:110},
-  {id:'pa053',n:'LWSA S/A',cat:'(sem categoria)',doc:'53',venc:'15/set/26',window:'90plus',val:110},
-  {id:'pa054',n:'LWSA S/A',cat:'(sem categoria)',doc:'54',venc:'15/out/26',window:'90plus',val:110},
-  {id:'pa055',n:'LWSA S/A',cat:'(sem categoria)',doc:'55',venc:'16/nov/26',window:'90plus',val:110},
-  {id:'pa056',n:'LWSA S/A',cat:'(sem categoria)',doc:'56',venc:'15/dez/26',window:'90plus',val:110},
-  {id:'pa057',n:'LWSA S/A',cat:'(sem categoria)',doc:'57',venc:'15/jan/27',window:'90plus',val:110},
-  {id:'pa007',n:'PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO',cat:'Serviços contábeis',doc:'7',venc:'17/ago/26',window:'90plus',val:92},
-  {id:'pa013',n:'PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO',cat:'Serviços contábeis',doc:'13',venc:'15/set/26',window:'90plus',val:92},
-  {id:'pa018',n:'PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO',cat:'Serviços contábeis',doc:'18',venc:'15/out/26',window:'90plus',val:92},
-  {id:'pa008',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'8',venc:'20/ago/26',window:'90plus',val:80},
-  {id:'pa015',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'15',venc:'21/set/26',window:'90plus',val:80},
-  {id:'pa016',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'16',venc:'20/out/26',window:'90plus',val:80},
-  {id:'pa019',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'19',venc:'20/nov/26',window:'90plus',val:80},
-  {id:'pa022',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'22',venc:'21/dez/26',window:'90plus',val:80},
-  {id:'pa048',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'48',venc:'20/jan/27',window:'90plus',val:80},
-  {id:'pa059',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'59',venc:'22/fev/27',window:'90plus',val:80},
-  {id:'pa092',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'92',venc:'22/mar/27',window:'90plus',val:80},
-  {id:'pa096',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'96',venc:'20/abr/27',window:'90plus',val:80}
+  {id:'pa008',n:'ROMULO FERREIRA LIMA',cat:'(sem categoria)',doc:'8',venc:'25/mai/26',window:'30d',val:59814},
+  {id:'pa068',n:'M. DE Q. MACEDO - EPP',cat:'(sem categoria)',doc:'68',venc:'20/mai/26',window:'30d',val:23000},
+  {id:'pa085',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'85',venc:'20/mai/26',window:'30d',val:17500},
+  {id:'pa082',n:'TOTVS S.A.',cat:'(sem categoria)',doc:'82',venc:'07/mai/26',window:'30d',val:11871},
+  {id:'pa011',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'11',venc:'15/mai/26',window:'30d',val:10558},
+  {id:'pa019',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'19',venc:'19/mai/26',window:'30d',val:10000},
+  {id:'pa058',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'58',venc:'20/mai/26',window:'30d',val:6500},
+  {id:'pa081',n:'PLENTECH LTDA',cat:'(sem categoria)',doc:'81',venc:'11/mai/26',window:'30d',val:2500},
+  {id:'pa078',n:'CRALUS INFORMATICA LTDA',cat:'(sem categoria)',doc:'78',venc:'24/mai/26',window:'30d',val:938},
+  {id:'pa048',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'48',venc:'20/mai/26',window:'30d',val:785},
+  {id:'pa037',n:'LWSA S/A',cat:'(sem categoria)',doc:'37',venc:'15/mai/26',window:'30d',val:110},
+  {id:'pa009',n:'ROMULO FERREIRA LIMA',cat:'(sem categoria)',doc:'9',venc:'25/jun/26',window:'60d',val:59814},
+  {id:'pa069',n:'M. DE Q. MACEDO - EPP',cat:'(sem categoria)',doc:'69',venc:'22/jun/26',window:'60d',val:23000},
+  {id:'pa020',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'20',venc:'18/jun/26',window:'60d',val:10000},
+  {id:'pa059',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'59',venc:'22/jun/26',window:'60d',val:6500},
+  {id:'pa012',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'12',venc:'15/jun/26',window:'60d',val:5739},
+  {id:'pa049',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'49',venc:'22/jun/26',window:'60d',val:785},
+  {id:'pa038',n:'LWSA S/A',cat:'(sem categoria)',doc:'38',venc:'15/jun/26',window:'60d',val:110},
+  {id:'pa070',n:'M. DE Q. MACEDO - EPP',cat:'(sem categoria)',doc:'70',venc:'20/jul/26',window:'90d',val:23000},
+  {id:'pa021',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'21',venc:'16/jul/26',window:'90d',val:10000},
+  {id:'pa060',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'60',venc:'20/jul/26',window:'90d',val:6500},
+  {id:'pa013',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'13',venc:'15/jul/26',window:'90d',val:5739},
+  {id:'pa050',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'50',venc:'20/jul/26',window:'90d',val:785},
+  {id:'pa039',n:'LWSA S/A',cat:'(sem categoria)',doc:'39',venc:'15/jul/26',window:'90d',val:110},
+  {id:'pa002',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'2',venc:'21/set/26',window:'90plus',val:35000},
+  {id:'pa005',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'5',venc:'20/out/26',window:'90plus',val:35000},
+  {id:'pa071',n:'M. DE Q. MACEDO - EPP',cat:'(sem categoria)',doc:'71',venc:'20/ago/26',window:'90plus',val:23000},
+  {id:'pa072',n:'M. DE Q. MACEDO - EPP',cat:'(sem categoria)',doc:'72',venc:'21/set/26',window:'90plus',val:23000},
+  {id:'pa073',n:'M. DE Q. MACEDO - EPP',cat:'(sem categoria)',doc:'73',venc:'20/out/26',window:'90plus',val:23000},
+  {id:'pa074',n:'M. DE Q. MACEDO - EPP',cat:'(sem categoria)',doc:'74',venc:'20/nov/26',window:'90plus',val:23000},
+  {id:'pa075',n:'M. DE Q. MACEDO - EPP',cat:'(sem categoria)',doc:'75',venc:'21/dez/26',window:'90plus',val:23000},
+  {id:'pa076',n:'M. DE Q. MACEDO - EPP',cat:'(sem categoria)',doc:'76',venc:'20/jan/27',window:'90plus',val:23000},
+  {id:'pa077',n:'M. DE Q. MACEDO - EPP',cat:'(sem categoria)',doc:'77',venc:'22/fev/27',window:'90plus',val:23000},
+  {id:'pa022',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'22',venc:'18/ago/26',window:'90plus',val:10000},
+  {id:'pa023',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'23',venc:'17/set/26',window:'90plus',val:10000},
+  {id:'pa024',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'24',venc:'19/out/26',window:'90plus',val:10000},
+  {id:'pa025',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'25',venc:'18/nov/26',window:'90plus',val:10000},
+  {id:'pa026',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'26',venc:'17/dez/26',window:'90plus',val:10000},
+  {id:'pa027',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'27',venc:'19/jan/27',window:'90plus',val:10000},
+  {id:'pa028',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'28',venc:'18/fev/27',window:'90plus',val:10000},
+  {id:'pa029',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'29',venc:'18/mar/27',window:'90plus',val:10000},
+  {id:'pa030',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'30',venc:'19/abr/27',window:'90plus',val:10000},
+  {id:'pa031',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'31',venc:'19/mai/27',window:'90plus',val:10000},
+  {id:'pa032',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'32',venc:'17/jun/27',window:'90plus',val:10000},
+  {id:'pa033',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'33',venc:'19/jul/27',window:'90plus',val:10000},
+  {id:'pa034',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'(sem categoria)',doc:'34',venc:'18/ago/27',window:'90plus',val:10000},
+  {id:'pa061',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'61',venc:'20/ago/26',window:'90plus',val:6500},
+  {id:'pa062',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'62',venc:'21/set/26',window:'90plus',val:6500},
+  {id:'pa063',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'63',venc:'20/out/26',window:'90plus',val:6500},
+  {id:'pa064',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'64',venc:'20/nov/26',window:'90plus',val:6500},
+  {id:'pa065',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'65',venc:'21/dez/26',window:'90plus',val:6500},
+  {id:'pa066',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'66',venc:'20/jan/27',window:'90plus',val:6500},
+  {id:'pa067',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'67',venc:'22/fev/27',window:'90plus',val:6500},
+  {id:'pa014',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'14',venc:'15/ago/26',window:'90plus',val:5739},
+  {id:'pa015',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'15',venc:'15/set/26',window:'90plus',val:5739},
+  {id:'pa016',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'16',venc:'15/out/26',window:'90plus',val:5739},
+  {id:'pa017',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'17',venc:'15/nov/26',window:'90plus',val:5739},
+  {id:'pa018',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'18',venc:'15/dez/26',window:'90plus',val:5739},
+  {id:'pa035',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'35',venc:'15/jan/27',window:'90plus',val:5739},
+  {id:'pa046',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'46',venc:'15/fev/27',window:'90plus',val:5739},
+  {id:'pa079',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'79',venc:'15/mar/27',window:'90plus',val:5739},
+  {id:'pa083',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'83',venc:'15/abr/27',window:'90plus',val:5739},
+  {id:'pa051',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'51',venc:'20/ago/26',window:'90plus',val:785},
+  {id:'pa052',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'52',venc:'21/set/26',window:'90plus',val:785},
+  {id:'pa053',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'53',venc:'20/out/26',window:'90plus',val:785},
+  {id:'pa054',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'54',venc:'20/nov/26',window:'90plus',val:785},
+  {id:'pa055',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'55',venc:'21/dez/26',window:'90plus',val:785},
+  {id:'pa056',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'56',venc:'20/jan/27',window:'90plus',val:785},
+  {id:'pa057',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'57',venc:'22/fev/27',window:'90plus',val:785},
+  {id:'pa040',n:'LWSA S/A',cat:'(sem categoria)',doc:'40',venc:'17/ago/26',window:'90plus',val:110},
+  {id:'pa041',n:'LWSA S/A',cat:'(sem categoria)',doc:'41',venc:'15/set/26',window:'90plus',val:110},
+  {id:'pa042',n:'LWSA S/A',cat:'(sem categoria)',doc:'42',venc:'15/out/26',window:'90plus',val:110},
+  {id:'pa043',n:'LWSA S/A',cat:'(sem categoria)',doc:'43',venc:'16/nov/26',window:'90plus',val:110},
+  {id:'pa044',n:'LWSA S/A',cat:'(sem categoria)',doc:'44',venc:'15/dez/26',window:'90plus',val:110},
+  {id:'pa045',n:'LWSA S/A',cat:'(sem categoria)',doc:'45',venc:'15/jan/27',window:'90plus',val:110},
+  {id:'pa001',n:'PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO',cat:'(sem categoria)',doc:'1',venc:'15/set/26',window:'90plus',val:92},
+  {id:'pa006',n:'PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO',cat:'(sem categoria)',doc:'6',venc:'15/out/26',window:'90plus',val:92},
+  {id:'pa003',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'3',venc:'21/set/26',window:'90plus',val:80},
+  {id:'pa004',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'4',venc:'20/out/26',window:'90plus',val:80},
+  {id:'pa007',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'7',venc:'20/nov/26',window:'90plus',val:80},
+  {id:'pa010',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'10',venc:'21/dez/26',window:'90plus',val:80},
+  {id:'pa036',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'36',venc:'20/jan/27',window:'90plus',val:80},
+  {id:'pa047',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'47',venc:'22/fev/27',window:'90plus',val:80},
+  {id:'pa080',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'80',venc:'22/mar/27',window:'90plus',val:80},
+  {id:'pa084',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'84',venc:'20/abr/27',window:'90plus',val:80}
 ];
 var RECEBIDO_DATA=[
   {id:'rc001',n:'TOTVS S.A.',val:487885,count:12},
@@ -1242,10 +1230,10 @@ var DRE_DATA=[
   {month:'2026-02',label:'Fev/26',tipo:'real',rec:62828.48,desp:198718.38},
   {month:'2026-03',label:'Mar/26',tipo:'real',rec:82963.03,desp:262953.17},
   {month:'2026-04',label:'Abr/26',tipo:'real',rec:65080.01,desp:233485.61},
-  {month:'2026-05',label:'Mai/26',tipo:'projetado',rec:80160.2,desp:178748.22},
-  {month:'2026-06',label:'Jun/26',tipo:'projetado',rec:50000,desp:141119.57},
-  {month:'2026-07',label:'Jul/26',tipo:'projetado',rec:50000,desp:81305.31},
-  {month:'2026-08',label:'Ago/26',tipo:'projetado',rec:50000,desp:81305.31},
+  {month:'2026-05',label:'Mai/26',tipo:'projetado',rec:80160.2,desp:143576.57},
+  {month:'2026-06',label:'Jun/26',tipo:'projetado',rec:50000,desp:105947.92},
+  {month:'2026-07',label:'Jul/26',tipo:'projetado',rec:50000,desp:46133.66},
+  {month:'2026-08',label:'Ago/26',tipo:'projetado',rec:50000,desp:46133.66},
   {month:'2026-09',label:'Set/26',tipo:'projetado',rec:50000,desp:81305.31},
   {month:'2026-10',label:'Out/26',tipo:'projetado',rec:0,desp:81305.31},
   {month:'2026-11',label:'Nov/26',tipo:'projetado',rec:0,desp:46213.31},
