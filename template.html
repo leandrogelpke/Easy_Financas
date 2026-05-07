@@ -634,30 +634,12 @@ function sp(id,btn,mob){
 function tmob(){document.getElementById('mmenu').classList.toggle('open');document.getElementById('hbtn').classList.toggle('open');}
 
 // ── CROSS FILTER DATA ──
-var ROWS=[
-  {id:'romulo',n:'Rômulo Ferreira Lima',cat:'Buy-out',st:'Não orçado',sc:'bgr',total:239257,jan26:59814,fev26:59814,mar26:59814,abr26:59814},
-  {id:'efata',n:'Efata Treinamento',cat:'Serviços PJ',st:'Parcial',sc:'bga',total:140698,jan26:35000,fev26:35250,mar26:35367,abr26:35082},
-  {id:'milajanu',n:'Milajanu Consultoria TI',cat:'Serviços PJ',st:'Não orçado',sc:'bgr',total:98467,jan26:28750,fev26:23000,mar26:23717,abr26:23000},
-  {id:'polar',n:'Polar Técnica Comercial',cat:'Outros',st:'Classificar',sc:'bgp',total:94000,jan26:0,fev26:0,mar26:65000,abr26:29000},
-  {id:'macedo',n:'M. de Q. Macedo',cat:'Serviços PJ',st:'Não orçado',sc:'bgr',total:92000,jan26:23000,fev26:23000,mar26:23000,abr26:23000},
-  {id:'ep',n:'EP Serviços Tecnologia',cat:'Serviços PJ',st:'Não orçado',sc:'bgr',total:42222,jan26:12025,fev26:3868,mar26:10205,abr26:16125},
-  {id:'geremias',n:'Geremias Ferreira Lima',cat:'Outros',st:'Não orçado',sc:'bgr',total:40000,jan26:10000,fev26:10000,mar26:10000,abr26:10000},
-  {id:'cartao',n:'Cartão de Crédito',cat:'Outros',st:'Não orçado',sc:'bgr',total:28144,jan26:5739,fev26:6759,mar26:5615,abr26:10031},
-  {id:'godoy',n:'Eduardo Faria de Godoy',cat:'Serviços PJ',st:'Não orçado',sc:'bgr',total:26000,jan26:6500,fev26:6500,mar26:6500,abr26:6500},
-  {id:'irpj',n:'IRPJ',cat:'Outros',st:'Não provis.',sc:'bga',total:17203,jan26:3367,fev26:6356,mar26:3367,abr26:4114},
-  {id:'_outros',n:'Outros (não classificados)',cat:'Outros',st:'Identificar',sc:'bgr',total:16229,jan26:2574,fev26:5281,mar26:3844,abr26:4530},
-  {id:'vtconn',n:'Vtconn Consultoria',cat:'Serviços PJ',st:'Encerrou?',sc:'bga',total:16229,jan26:5057,fev26:5057,mar26:6115,abr26:0},
-  {id:'ivy',n:'IVY Group Holding S/A',cat:'Outros',st:'Identificar',sc:'bgr',total:10521,jan26:0,fev26:0,mar26:0,abr26:10521},
-  {id:'victor',n:'Victor Hugo de Oliveira',cat:'Serviços PJ',st:'Encerrou?',sc:'bga',total:10000,jan26:3333,fev26:3333,mar26:3333,abr26:0},
-  {id:'csll',n:'CSLL',cat:'Outros',st:'Não provis.',sc:'bga',total:7875,jan26:1553,fev26:3001,mar26:1553,abr26:1768},
-  {id:'plentech',n:'Plentech LTDA',cat:'Serviços PJ',st:'Não orçado',sc:'bgr',total:7500,jan26:0,fev26:7500,mar26:0,abr26:0},
-  {id:'cbyk',n:'CBYK Consultoria',cat:'Outros',st:'Identificar',sc:'bgr',total:5523,jan26:0,fev26:0,mar26:5523,abr26:0}
-];
+var ROWS=@@ROWS@@;
 var CF_CATS=[{cat:'Buy-out',color:'#c0392b'},{cat:'Serviços PJ',color:'#b7650a'},{cat:'Outros',color:'#3d5a80'}];
-var CF_MONTHS=['jan26','fev26','mar26','abr26'];
-var CF_MONTH_LABELS={'jan26':'Jan/26','fev26':'Fev/26','mar26':'Mar/26','abr26':'Abr/26'};
-var CF_MONTH_NAMES={'jan26':'Janeiro','fev26':'Fevereiro','mar26':'Março','abr26':'Abril'};
-var CF_GROUPS=[{label:'Buy-out',ids:['romulo']},{label:'Efata',ids:['efata']},{label:'Mil.+Mac.',ids:['milajanu','macedo']},{label:'EP+Godoy',ids:['ep','godoy','vtconn','victor']},{label:'Geremias',ids:['geremias']},{label:'Outros',ids:['polar','ivy','cbyk','irpj','csll','cartao','plentech','_outros']}];
+var CF_MONTHS=@@CF_MONTHS@@;
+var CF_MONTH_LABELS=@@CF_MONTH_LABELS@@;
+var CF_MONTH_NAMES=@@CF_MONTH_NAMES@@;
+var CF_GROUPS=@@CF_GROUPS@@;
 var CF_GROUP_COLORS=['#c0392bcc','#b7650acc','#1a5fa8cc','#1a7a80cc','#5b4ab0cc','#3d5a80cc'];
 var CF_AM='all',CF_AC=null,CF_AR=null;
 
@@ -689,28 +671,7 @@ var cfStack=new Chart(document.getElementById('cfStack'),{
 
 // Usage donut (clientes page) — static
 // ── CAIXA CROSS FILTER ──
-var CX_DATA=[
-  {id:'rx013',c:'TOTVS SA — doc 13',venc:'16/abr/26',sit:'Atrasada',val:14200,bgc:'bgr'},
-  {id:'rx001',c:'MIR IMPORTACAO E EXPORTACAO LTDA — doc 1',venc:'19/set/25',sit:'Atrasada',val:204,bgc:'bgr'},
-  {id:'rx009',c:'ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA — doc 9',venc:'22/abr/26',sit:'Atrasada',val:7039,bgc:'bgr'},
-  {id:'rx008',c:'ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA — doc 8',venc:'22/mar/26',sit:'Atrasada',val:7039,bgc:'bgr'},
-  {id:'rx002',c:'TOTVS S.A. — doc 2',venc:'15/jun/26',sit:'Em aberto',val:50000,bgc:'bgb'},
-  {id:'rx016',c:'TOTVS LARGE ENTERPRISE TECNOLOGIA S.A. — doc 16',venc:'16/mai/26',sit:'Em aberto',val:1232,bgc:'bgb'},
-  {id:'rx017',c:'TOTVS S.A. SANTA CATARINA — doc 17',venc:'16/mai/26',sit:'Em aberto',val:11054,bgc:'bgb'},
-  {id:'rx018',c:'TOTVS SA — doc 18',venc:'16/mai/26',sit:'Em aberto',val:15695,bgc:'bgb'},
-  {id:'rx019',c:'TOTVS S.A. — doc 19',venc:'16/mai/26',sit:'Em aberto',val:31440,bgc:'bgb'},
-  {id:'rx020',c:'1000 MARCAS SAFETY BRASIL EIRELI — doc 20',venc:'16/mai/26',sit:'Em aberto',val:2815,bgc:'bgb'},
-  {id:'rx007',c:'SERGIO C WEISER DECORACAO LTDA — doc 7',venc:'21/mai/26',sit:'Em aberto',val:5256,bgc:'bgb'},
-  {id:'rx010',c:'ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA — doc 10',venc:'22/mai/26',sit:'Em aberto',val:7039,bgc:'bgb'},
-  {id:'rx011',c:'Usina São Francisco S/A — doc 11',venc:'29/mai/26',sit:'Em aberto',val:5631,bgc:'bgb'},
-  {id:'rx015',c:'TOTVS S.A. — doc 15',venc:'15/abr/27',sit:'Previsto',val:50000,bgc:'bgg'},
-  {id:'rx004',c:'TOTVS S.A. — doc 4',venc:'15/ago/26',sit:'Previsto',val:50000,bgc:'bgg'},
-  {id:'rx012',c:'TOTVS S.A. — doc 12',venc:'15/fev/27',sit:'Previsto',val:50000,bgc:'bgg'},
-  {id:'rx006',c:'TOTVS S.A. — doc 6',venc:'15/jan/27',sit:'Previsto',val:50000,bgc:'bgg'},
-  {id:'rx003',c:'TOTVS S.A. — doc 3',venc:'15/jul/26',sit:'Previsto',val:50000,bgc:'bgg'},
-  {id:'rx014',c:'TOTVS S.A. — doc 14',venc:'15/mar/27',sit:'Previsto',val:50000,bgc:'bgg'},
-  {id:'rx005',c:'TOTVS S.A. — doc 5',venc:'15/set/26',sit:'Previsto',val:50000,bgc:'bgg'}
-];
+var CX_DATA=@@CX_DATA@@;
 var CX_SITS=[
   {sit:'Atrasada', color:'#c0392b'},
   {sit:'Parcial',  color:'#b7650a'},

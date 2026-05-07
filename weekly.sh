@@ -32,8 +32,8 @@ python3 "$EF/fetch-bling.py" \
     --no-detail-receber
 
 echo ""
-echo "=== 2. regenerando bling-live.html ==="
-python3 "$EF/build-html.py" --in "$PROD" --out "$EF/bling-live.html"
+echo "=== 2. regenerando index.html ==="
+python3 "$EF/build-html.py" --in "$PROD" --out "$EF/index.html"
 
 echo ""
 echo "=== 3. push pro GitHub Pages (via clone temporario fora do iCloud) ==="
@@ -54,6 +54,7 @@ cp "$EF/NEXT-SESSION-CONTEXT.md" . 2>/dev/null || true
 cp "$EF/weekly.sh" . 2>/dev/null || true
 cp "$EF/fetch-bling.py" . 2>/dev/null || true
 cp "$EF/build-html.py" . 2>/dev/null || true
+cp "$EF/template.html" . 2>/dev/null || true
 cp "$EF/bling-auth.py" . 2>/dev/null || true
 git add .
 if git diff-index --quiet HEAD --; then
@@ -64,4 +65,4 @@ else
     echo "[ok] pushed"
 fi
 echo ""
-echo "[done] dashboard atualizado em https://leandrogelpke.github.io/Easy_Financas/bling-live.html"
+echo "[done] dashboard atualizado em https://leandrogelpke.github.io/Easy_Financas/"
