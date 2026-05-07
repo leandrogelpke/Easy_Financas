@@ -205,6 +205,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   <button class="mobtab" onclick="sp('clientes',this,1)">Clientes</button>
   <button class="mobtab" onclick="sp('pipeline',this,1)">Pipeline</button>
   <button class="mobtab" onclick="sp('projecao',this,1)">Projeção</button>
+  <button class="mobtab" onclick="sp('financeiro',this,1)">Financeiro</button>
 </div>
 
 <!-- NAV -->
@@ -218,6 +219,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
     <button class="ntab" onclick="sp('clientes',this)">Clientes</button>
     <button class="ntab" onclick="sp('pipeline',this)">Pipeline</button>
     <button class="ntab" onclick="sp('projecao',this)">Projeção</button>
+    <button class="ntab" onclick="sp('financeiro',this)">Financeiro</button>
   </div>
   <button class="hamb" id="hbtn" onclick="tmob()" style="display:none" aria-label="Menu">
     <span></span><span></span><span></span>
@@ -411,6 +413,87 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   </div>
 </div>
 </div>
+<!-- ═══ FINANCEIRO ═══ -->
+<div class="pg" id="pg-financeiro">
+
+<!-- ─── A PAGAR EM ABERTO ─── -->
+<div class="hero">
+  <div>
+    <div class="htitle">💸 A Pagar em Aberto</div>
+    <div class="hsub" id="paHsub">Carregando...</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span class="sel-lbl" id="paSelLbl"></span>
+    <button class="reset-btn" id="paResetBtn" onclick="paReset()">✕ Limpar</button>
+  </div>
+</div>
+
+<!-- KPI cards -->
+<div class="kv-row" id="paKvRow"></div>
+
+<!-- Filter pills -->
+<div class="cf-hint">💡 Clique em um card ou barra para filtrar</div>
+<div class="mpills" id="paPills">
+  <div class="mpill active" data-w="all" onclick="paWin('all')">Todos</div>
+  <div class="mpill venc" data-w="vencido" onclick="paWin('vencido')">Vencido</div>
+  <div class="mpill" data-w="30d" onclick="paWin('30d')">≤ 30d</div>
+  <div class="mpill" data-w="60d" onclick="paWin('60d')">31–60d</div>
+  <div class="mpill" data-w="90d" onclick="paWin('90d')">61–90d</div>
+  <div class="mpill" data-w="90plus" onclick="paWin('90plus')">+90d</div>
+</div>
+
+<!-- Charts row -->
+<div class="charts-row">
+  <div class="chart-box" style="flex:0 0 260px">
+    <div class="chart-title">Por Vencimento</div>
+    <canvas id="paDonut" height="220"></canvas>
+  </div>
+  <div class="chart-box" style="flex:1 1 0">
+    <div class="chart-title">Por Fornecedor <span style="font-weight:400;font-size:11px">(top 15)</span></div>
+    <canvas id="paBar" height="300"></canvas>
+  </div>
+</div>
+
+<!-- Table -->
+<div class="cf-tbl-wrap">
+  <table class="cf-tbl">
+    <thead><tr>
+      <th>#</th><th>Fornecedor</th><th>Categoria</th><th>Vcto</th><th>Doc.</th><th class="r">Saldo</th><th>Janela</th>
+    </tr></thead>
+    <tbody id="paTbody"></tbody>
+  </table>
+</div>
+
+<!-- ─── RECEITA POR CLIENTE ─── -->
+<div class="hero" style="margin-top:32px">
+  <div>
+    <div class="htitle">💰 Receita por Cliente (Recebida)</div>
+    <div class="hsub" id="recHsub">Carregando...</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span class="sel-lbl" id="recSelLbl"></span>
+    <button class="reset-btn" id="recResetBtn" onclick="recReset()">✕ Limpar</button>
+  </div>
+</div>
+
+<div class="charts-row">
+  <div class="chart-box" style="flex:1 1 0">
+    <div class="chart-title">Top Clientes por Receita Recebida</div>
+    <canvas id="recBar" height="320"></canvas>
+  </div>
+</div>
+
+<div class="cf-tbl-wrap">
+  <table class="cf-tbl">
+    <thead><tr>
+      <th>#</th><th>Cliente</th><th class="r">Receita Total</th><th class="r">Qtd. Lançamentos</th><th class="r">Ticket Médio</th>
+    </tr></thead>
+    <tbody id="recTbody"></tbody>
+  </table>
+</div>
+
+</div><!-- /pg-financeiro -->
+
 <!-- ═══ CLIENTES ═══ -->
 <div class="pg" id="pg-clientes">
 <div class="hero">
@@ -616,7 +699,7 @@ Chart.defaults.font.size=11;
 
 var fBR=function(v){return v===0?'—':'R$\u00a0'+Math.round(v).toLocaleString('pt-BR');};
 var fK=function(v){return (v>=0?'':'-')+'R$\u00a0'+Math.abs(Math.round(v/1000))+'K';};
-var PAGES=['overview','gastos','cashflow','clientes','pipeline','projecao'];
+var PAGES=['overview','gastos','cashflow','clientes','pipeline','projecao','financeiro'];
 
 // ── NAV ──
 function sp(id,btn,mob){
@@ -765,6 +848,154 @@ function cxRender(){
 function cxSit(s){CX_AS=CX_AS===s?'all':s;CX_AR=null;cxRender();}
 function cxReset(){CX_AS='all';CX_AR=null;cxRender();}
 cxRender();
+// ── FINANCEIRO: A PAGAR EM ABERTO ──
+var PAGAR_DATA=@@PAGAR_DATA@@;
+var RECEBIDO_DATA=@@RECEBIDO_DATA@@;
+
+// window labels
+var PA_WINS={all:'Todos',vencido:'Vencido','30d':'≤30d','60d':'31–60d','90d':'61–90d','90plus':'+90d'};
+var PA_COLORS={all:'#6366f1',vencido:'#ef4444','30d':'#f59e0b','60d':'#3b82f6','90d':'#10b981','90plus':'#8b5cf6'};
+
+// state
+var PA_AW='all', PA_AR=null;
+
+// chart instances (deferred — page may not be visible on init)
+var paDonutChart=null, paBarChart=null, recBarChart=null;
+
+function _paRows(){
+  return PAGAR_DATA.filter(function(r){
+    if(PA_AW!=='all'&&r.window!==PA_AW)return false;
+    if(PA_AR&&r.id!==PA_AR)return false;
+    return true;
+  });
+}
+
+function paRender(){
+  if(!document.getElementById('paTbody'))return;
+
+  var rows=_paRows();
+  var tot=rows.reduce(function(s,r){return s+r.val;},0);
+
+  // hsub
+  var totalAll=PAGAR_DATA.reduce(function(s,r){return s+r.val;},0);
+  document.getElementById('paHsub').textContent=rows.length+' lançamentos · R$ '+_fmt(tot)+
+    (PA_AW!=='all'||PA_AR?' (filtrado de R$ '+_fmt(totalAll)+')':'');
+
+  // KV cards
+  var windows=['vencido','30d','60d','90d','90plus'];
+  var wlabels={vencido:'Vencido','30d':'≤ 30d','60d':'31–60d','90d':'61–90d','90plus':'+90d'};
+  var kvHtml='<div class="kv-card" onclick="paWin('all')" style="cursor:pointer"><div class="kv-val">R$ '+_fmt(totalAll)+'</div><div class="kv-sub">Total em Aberto</div></div>';
+  windows.forEach(function(w){
+    var wrows=PAGAR_DATA.filter(function(r){return r.window===w;});
+    var wval=wrows.reduce(function(s,r){return s+r.val;},0);
+    var isActive=PA_AW===w;
+    kvHtml+='<div class="kv-card'+(isActive?' kv-sel':'')+'" onclick="paWin(''+w+'')" style="cursor:pointer;border-color:'+PA_COLORS[w]+'"><div class="kv-val" style="color:'+PA_COLORS[w]+'">R$ '+_fmt(wval)+'</div><div class="kv-sub">'+wlabels[w]+'</div></div>';
+  });
+  document.getElementById('paKvRow').innerHTML=kvHtml;
+
+  // pills active state
+  document.querySelectorAll('#paPills .mpill').forEach(function(p){
+    p.classList.toggle('active', p.dataset.w===PA_AW);
+  });
+
+  // donut chart
+  var winData=windows.map(function(w){
+    return PAGAR_DATA.filter(function(r){return r.window===w;}).reduce(function(s,r){return s+r.val;},0);
+  });
+  var donutColors=windows.map(function(w){return PA_COLORS[w];});
+  if(!paDonutChart){
+    var ctx=document.getElementById('paDonut').getContext('2d');
+    paDonutChart=new Chart(ctx,{type:'doughnut',data:{labels:windows.map(function(w){return wlabels[w];}),datasets:[{data:winData,backgroundColor:donutColors,borderWidth:2,borderColor:'#1a1b2e'}]},options:{plugins:{legend:{position:'bottom',labels:{color:'#ccc',font:{size:11}}}},onClick:function(_,els){if(els&&els.length>0){var w=windows[els[0].index];paWin(PA_AW===w?'all':w);}}}});
+  } else {
+    paDonutChart.data.datasets[0].data=winData;
+    paDonutChart.update('none');
+  }
+
+  // bar chart — top 15 fornecedores
+  var byForn={};
+  var filtered=PA_AW==='all'?PAGAR_DATA:PAGAR_DATA.filter(function(r){return r.window===PA_AW;});
+  filtered.forEach(function(r){
+    if(!byForn[r.n])byForn[r.n]={n:r.n,val:0,id:r.id};
+    byForn[r.n].val+=r.val;
+  });
+  var fornList=Object.values(byForn).sort(function(a,b){return b.val-a.val;}).slice(0,15);
+  var barLabels=fornList.map(function(x){return x.n.length>22?x.n.substring(0,22)+'…':x.n;});
+  var barVals=fornList.map(function(x){return x.val;});
+  var barColors=fornList.map(function(x){return PA_AR&&x.id===PA_AR?'#f59e0b':'#6366f1';});
+  if(!paBarChart){
+    var ctx2=document.getElementById('paBar').getContext('2d');
+    paBarChart=new Chart(ctx2,{type:'bar',data:{labels:barLabels,datasets:[{data:barVals,backgroundColor:barColors,borderRadius:3}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',callback:function(v){return 'R$'+_fmtK(v);}},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#ccc',font:{size:10}},grid:{display:false}}},onClick:function(_,els){if(els&&els.length>0){var item=fornList[els[0].index];PA_AR=PA_AR===item.id?null:item.id;paRender();}}}});
+  } else {
+    paBarChart.data.labels=barLabels;
+    paBarChart.data.datasets[0].data=barVals;
+    paBarChart.data.datasets[0].backgroundColor=barColors;
+    paBarChart.update('none');
+  }
+
+  // table
+  var tbHtml='';
+  var sorted=rows.slice().sort(function(a,b){return b.val-a.val;});
+  sorted.forEach(function(r,i){
+    var sel=PA_AR===r.id;
+    tbHtml+='<tr class="cf-tr'+(sel?' cf-sel':'')+'" onclick="(function(){PA_AR=PA_AR===''+r.id+''?null:''+r.id+'';paRender();})()">'+
+      '<td>'+(i+1)+'</td><td>'+r.n+'</td><td>'+r.cat+'</td><td>'+r.venc+'</td><td>'+r.doc+'</td>'+
+      '<td class="r"><b>R$ '+_fmt(r.val)+'</b></td>'+
+      '<td><span class="bg-pill '+PA_COLORS[r.window].replace('#','bg_')+'" style="background:'+PA_COLORS[r.window]+'22;color:'+PA_COLORS[r.window]+';padding:2px 7px;border-radius:9px;font-size:11px">'+PA_WINS[r.window]+'</span></td>'+
+      '</tr>';
+  });
+  document.getElementById('paTbody').innerHTML=tbHtml;
+
+  // sel label
+  var parts=[];
+  if(PA_AW!=='all')parts.push(PA_WINS[PA_AW]);
+  if(PA_AR){var rr=PAGAR_DATA.find(function(x){return x.id===PA_AR;});if(rr)parts.push(rr.n.split(' ')[0]);}
+  var lbl=document.getElementById('paSelLbl'),btn=document.getElementById('paResetBtn');
+  if(parts.length){lbl.textContent='🔍 '+parts.join(' · ');btn.classList.add('vis');}
+  else{lbl.textContent='';btn.classList.remove('vis');}
+}
+
+function paWin(w){PA_AW=w;PA_AR=null;paRender();}
+function paReset(){PA_AW='all';PA_AR=null;paRender();}
+
+// ── FINANCEIRO: RECEITA POR CLIENTE ──
+function recRender(){
+  if(!document.getElementById('recTbody'))return;
+
+  var tot=RECEBIDO_DATA.reduce(function(s,r){return s+r.val;},0);
+  document.getElementById('recHsub').textContent=RECEBIDO_DATA.length+' clientes · R$ '+_fmt(tot)+' total recebido';
+
+  // bar chart
+  var top=RECEBIDO_DATA.slice(0,20);
+  var barLabels=top.map(function(x){return x.n.length>28?x.n.substring(0,28)+'…':x.n;});
+  var barVals=top.map(function(x){return x.val;});
+  if(!recBarChart){
+    var ctx=document.getElementById('recBar').getContext('2d');
+    recBarChart=new Chart(ctx,{type:'bar',data:{labels:barLabels,datasets:[{data:barVals,backgroundColor:'#10b981',borderRadius:3}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',callback:function(v){return 'R$'+_fmtK(v);}},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#ccc',font:{size:10}},grid:{display:false}}}}});
+  } else {
+    recBarChart.data.labels=barLabels;
+    recBarChart.data.datasets[0].data=barVals;
+    recBarChart.update('none');
+  }
+
+  // table
+  var tbHtml='';
+  RECEBIDO_DATA.forEach(function(r,i){
+    var ticket=r.count>0?r.val/r.count:0;
+    tbHtml+='<tr class="cf-tr">'+
+      '<td>'+(i+1)+'</td><td>'+r.n+'</td>'+
+      '<td class="r"><b>R$ '+_fmt(r.val)+'</b></td>'+
+      '<td class="r">'+r.count+'</td>'+
+      '<td class="r">R$ '+_fmt(ticket)+'</td>'+
+      '</tr>';
+  });
+  document.getElementById('recTbody').innerHTML=tbHtml;
+}
+
+function recReset(){recRender();}
+
+function _fmt(v){return Math.round(v).toLocaleString('pt-BR');}
+function _fmtK(v){return v>=1000?(v/1000).toFixed(0)+'k':v;}
+
 
 // ── PIPELINE CROSS FILTER ──
 var PP_DATA=[
@@ -1178,6 +1409,8 @@ CF_MONTHS.forEach(function(m){
 // Populate gastos table header dynamically
 document.getElementById('cfThead').innerHTML='<tr><th>#</th><th>Fornecedor</th><th>Categoria</th>'+CF_MONTHS.map(function(m){return '<th class="r">'+CF_MONTH_NAMES[m].substring(0,3)+'</th>';}).join('')+'<th class="r">Total</th><th>Status</th></tr>';
 cfRender();
+paRender();
+recRender();
 </script>
 </body>
 </html>

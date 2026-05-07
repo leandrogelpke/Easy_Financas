@@ -205,6 +205,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   <button class="mobtab" onclick="sp('clientes',this,1)">Clientes</button>
   <button class="mobtab" onclick="sp('pipeline',this,1)">Pipeline</button>
   <button class="mobtab" onclick="sp('projecao',this,1)">Projeção</button>
+  <button class="mobtab" onclick="sp('financeiro',this,1)">Financeiro</button>
 </div>
 
 <!-- NAV -->
@@ -218,6 +219,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
     <button class="ntab" onclick="sp('clientes',this)">Clientes</button>
     <button class="ntab" onclick="sp('pipeline',this)">Pipeline</button>
     <button class="ntab" onclick="sp('projecao',this)">Projeção</button>
+    <button class="ntab" onclick="sp('financeiro',this)">Financeiro</button>
   </div>
   <button class="hamb" id="hbtn" onclick="tmob()" style="display:none" aria-label="Menu">
     <span></span><span></span><span></span>
@@ -411,6 +413,87 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   </div>
 </div>
 </div>
+<!-- ═══ FINANCEIRO ═══ -->
+<div class="pg" id="pg-financeiro">
+
+<!-- ─── A PAGAR EM ABERTO ─── -->
+<div class="hero">
+  <div>
+    <div class="htitle">💸 A Pagar em Aberto</div>
+    <div class="hsub" id="paHsub">Carregando...</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span class="sel-lbl" id="paSelLbl"></span>
+    <button class="reset-btn" id="paResetBtn" onclick="paReset()">✕ Limpar</button>
+  </div>
+</div>
+
+<!-- KPI cards -->
+<div class="kv-row" id="paKvRow"></div>
+
+<!-- Filter pills -->
+<div class="cf-hint">💡 Clique em um card ou barra para filtrar</div>
+<div class="mpills" id="paPills">
+  <div class="mpill active" data-w="all" onclick="paWin('all')">Todos</div>
+  <div class="mpill venc" data-w="vencido" onclick="paWin('vencido')">Vencido</div>
+  <div class="mpill" data-w="30d" onclick="paWin('30d')">≤ 30d</div>
+  <div class="mpill" data-w="60d" onclick="paWin('60d')">31–60d</div>
+  <div class="mpill" data-w="90d" onclick="paWin('90d')">61–90d</div>
+  <div class="mpill" data-w="90plus" onclick="paWin('90plus')">+90d</div>
+</div>
+
+<!-- Charts row -->
+<div class="charts-row">
+  <div class="chart-box" style="flex:0 0 260px">
+    <div class="chart-title">Por Vencimento</div>
+    <canvas id="paDonut" height="220"></canvas>
+  </div>
+  <div class="chart-box" style="flex:1 1 0">
+    <div class="chart-title">Por Fornecedor <span style="font-weight:400;font-size:11px">(top 15)</span></div>
+    <canvas id="paBar" height="300"></canvas>
+  </div>
+</div>
+
+<!-- Table -->
+<div class="cf-tbl-wrap">
+  <table class="cf-tbl">
+    <thead><tr>
+      <th>#</th><th>Fornecedor</th><th>Categoria</th><th>Vcto</th><th>Doc.</th><th class="r">Saldo</th><th>Janela</th>
+    </tr></thead>
+    <tbody id="paTbody"></tbody>
+  </table>
+</div>
+
+<!-- ─── RECEITA POR CLIENTE ─── -->
+<div class="hero" style="margin-top:32px">
+  <div>
+    <div class="htitle">💰 Receita por Cliente (Recebida)</div>
+    <div class="hsub" id="recHsub">Carregando...</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span class="sel-lbl" id="recSelLbl"></span>
+    <button class="reset-btn" id="recResetBtn" onclick="recReset()">✕ Limpar</button>
+  </div>
+</div>
+
+<div class="charts-row">
+  <div class="chart-box" style="flex:1 1 0">
+    <div class="chart-title">Top Clientes por Receita Recebida</div>
+    <canvas id="recBar" height="320"></canvas>
+  </div>
+</div>
+
+<div class="cf-tbl-wrap">
+  <table class="cf-tbl">
+    <thead><tr>
+      <th>#</th><th>Cliente</th><th class="r">Receita Total</th><th class="r">Qtd. Lançamentos</th><th class="r">Ticket Médio</th>
+    </tr></thead>
+    <tbody id="recTbody"></tbody>
+  </table>
+</div>
+
+</div><!-- /pg-financeiro -->
+
 <!-- ═══ CLIENTES ═══ -->
 <div class="pg" id="pg-clientes">
 <div class="hero">
@@ -616,7 +699,7 @@ Chart.defaults.font.size=11;
 
 var fBR=function(v){return v===0?'—':'R$\u00a0'+Math.round(v).toLocaleString('pt-BR');};
 var fK=function(v){return (v>=0?'':'-')+'R$\u00a0'+Math.abs(Math.round(v/1000))+'K';};
-var PAGES=['overview','gastos','cashflow','clientes','pipeline','projecao'];
+var PAGES=['overview','gastos','cashflow','clientes','pipeline','projecao','financeiro'];
 
 // ── NAV ──
 function sp(id,btn,mob){
@@ -804,6 +887,268 @@ function cxRender(){
 function cxSit(s){CX_AS=CX_AS===s?'all':s;CX_AR=null;cxRender();}
 function cxReset(){CX_AS='all';CX_AR=null;cxRender();}
 cxRender();
+// ── FINANCEIRO: A PAGAR EM ABERTO ──
+var PAGAR_DATA=[
+  {id:'pa020',n:'ROMULO FERREIRA LIMA',cat:'(sem categoria)',doc:'20',venc:'25/mai/26',window:'30d',val:59814},
+  {id:'pa009',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'9',venc:'20/mai/26',window:'30d',val:35000},
+  {id:'pa080',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'80',venc:'20/mai/26',window:'30d',val:23000},
+  {id:'pa097',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'000024/01',venc:'20/mai/26',window:'30d',val:17500},
+  {id:'pa094',n:'TOTVS S.A.',cat:'(sem categoria)',doc:'4420358/01',venc:'07/mai/26',window:'30d',val:11871},
+  {id:'pa023',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'23',venc:'15/mai/26',window:'30d',val:10558},
+  {id:'pa031',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/5',venc:'19/mai/26',window:'30d',val:10000},
+  {id:'pa070',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'70',venc:'20/mai/26',window:'30d',val:6500},
+  {id:'pa093',n:'PLENTECH LTDA',cat:'(sem categoria)',doc:'000495/01',venc:'11/mai/26',window:'30d',val:2500},
+  {id:'pa090',n:'CRALUS INFORMATICA LTDA',cat:'(sem categoria)',doc:'000690/01',venc:'24/mai/26',window:'30d',val:938},
+  {id:'pa060',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'60',venc:'20/mai/26',window:'30d',val:785},
+  {id:'pa049',n:'LWSA S/A',cat:'(sem categoria)',doc:'49',venc:'15/mai/26',window:'30d',val:110},
+  {id:'pa001',n:'PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO',cat:'Serviços contábeis',doc:'1',venc:'15/mai/26',window:'30d',val:92},
+  {id:'pa002',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'2',venc:'20/mai/26',window:'30d',val:80},
+  {id:'pa021',n:'ROMULO FERREIRA LIMA',cat:'(sem categoria)',doc:'21',venc:'25/jun/26',window:'60d',val:59814},
+  {id:'pa010',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'10',venc:'22/jun/26',window:'60d',val:35000},
+  {id:'pa081',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'81',venc:'22/jun/26',window:'60d',val:23000},
+  {id:'pa032',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/6',venc:'18/jun/26',window:'60d',val:10000},
+  {id:'pa071',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'71',venc:'22/jun/26',window:'60d',val:6500},
+  {id:'pa024',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'24',venc:'15/jun/26',window:'60d',val:5739},
+  {id:'pa061',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'61',venc:'22/jun/26',window:'60d',val:785},
+  {id:'pa050',n:'LWSA S/A',cat:'(sem categoria)',doc:'50',venc:'15/jun/26',window:'60d',val:110},
+  {id:'pa003',n:'PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO',cat:'Serviços contábeis',doc:'3',venc:'15/jun/26',window:'60d',val:92},
+  {id:'pa004',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'4',venc:'22/jun/26',window:'60d',val:80},
+  {id:'pa011',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'11',venc:'20/jul/26',window:'90d',val:35000},
+  {id:'pa082',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'82',venc:'20/jul/26',window:'90d',val:23000},
+  {id:'pa033',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/7',venc:'16/jul/26',window:'90d',val:10000},
+  {id:'pa072',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'72',venc:'20/jul/26',window:'90d',val:6500},
+  {id:'pa025',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'25',venc:'15/jul/26',window:'90d',val:5739},
+  {id:'pa062',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'62',venc:'20/jul/26',window:'90d',val:785},
+  {id:'pa051',n:'LWSA S/A',cat:'(sem categoria)',doc:'51',venc:'15/jul/26',window:'90d',val:110},
+  {id:'pa006',n:'PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO',cat:'Serviços contábeis',doc:'6',venc:'15/jul/26',window:'90d',val:92},
+  {id:'pa005',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'5',venc:'20/jul/26',window:'90d',val:80},
+  {id:'pa012',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'12',venc:'20/ago/26',window:'90plus',val:35000},
+  {id:'pa014',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'14',venc:'21/set/26',window:'90plus',val:35000},
+  {id:'pa017',n:'EFATA TREINAMENTO EM TECNOLOGIA LTDA',cat:'(sem categoria)',doc:'17',venc:'20/out/26',window:'90plus',val:35000},
+  {id:'pa083',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'83',venc:'20/ago/26',window:'90plus',val:23000},
+  {id:'pa084',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'84',venc:'21/set/26',window:'90plus',val:23000},
+  {id:'pa085',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'85',venc:'20/out/26',window:'90plus',val:23000},
+  {id:'pa086',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'86',venc:'20/nov/26',window:'90plus',val:23000},
+  {id:'pa087',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'87',venc:'21/dez/26',window:'90plus',val:23000},
+  {id:'pa088',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'88',venc:'20/jan/27',window:'90plus',val:23000},
+  {id:'pa089',n:'M. DE Q. MACEDO - EPP',cat:'Serviços de terceiros',doc:'89',venc:'22/fev/27',window:'90plus',val:23000},
+  {id:'pa034',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/8',venc:'18/ago/26',window:'90plus',val:10000},
+  {id:'pa035',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/9',venc:'17/set/26',window:'90plus',val:10000},
+  {id:'pa036',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/10',venc:'19/out/26',window:'90plus',val:10000},
+  {id:'pa037',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/11',venc:'18/nov/26',window:'90plus',val:10000},
+  {id:'pa038',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/12',venc:'17/dez/26',window:'90plus',val:10000},
+  {id:'pa039',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/13',venc:'19/jan/27',window:'90plus',val:10000},
+  {id:'pa040',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/14',venc:'18/fev/27',window:'90plus',val:10000},
+  {id:'pa041',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/15',venc:'18/mar/27',window:'90plus',val:10000},
+  {id:'pa042',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/16',venc:'19/abr/27',window:'90plus',val:10000},
+  {id:'pa043',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/17',venc:'19/mai/27',window:'90plus',val:10000},
+  {id:'pa044',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/18',venc:'17/jun/27',window:'90plus',val:10000},
+  {id:'pa045',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/19',venc:'19/jul/27',window:'90plus',val:10000},
+  {id:'pa046',n:'GEREMIAS FERREIRA LIMA 37305076805',cat:'Serviços de terceiros',doc:'401/20',venc:'18/ago/27',window:'90plus',val:10000},
+  {id:'pa073',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'73',venc:'20/ago/26',window:'90plus',val:6500},
+  {id:'pa074',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'74',venc:'21/set/26',window:'90plus',val:6500},
+  {id:'pa075',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'75',venc:'20/out/26',window:'90plus',val:6500},
+  {id:'pa076',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'76',venc:'20/nov/26',window:'90plus',val:6500},
+  {id:'pa077',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'77',venc:'21/dez/26',window:'90plus',val:6500},
+  {id:'pa078',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'78',venc:'20/jan/27',window:'90plus',val:6500},
+  {id:'pa079',n:'Eduardo Faria de Godoy 29853590824',cat:'(sem categoria)',doc:'79',venc:'22/fev/27',window:'90plus',val:6500},
+  {id:'pa026',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'26',venc:'15/ago/26',window:'90plus',val:5739},
+  {id:'pa027',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'27',venc:'15/set/26',window:'90plus',val:5739},
+  {id:'pa028',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'28',venc:'15/out/26',window:'90plus',val:5739},
+  {id:'pa029',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'29',venc:'15/nov/26',window:'90plus',val:5739},
+  {id:'pa030',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'30',venc:'15/dez/26',window:'90plus',val:5739},
+  {id:'pa047',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'47',venc:'15/jan/27',window:'90plus',val:5739},
+  {id:'pa058',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'58',venc:'15/fev/27',window:'90plus',val:5739},
+  {id:'pa091',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'91',venc:'15/mar/27',window:'90plus',val:5739},
+  {id:'pa095',n:'CARTAO DE CREDITO',cat:'(sem categoria)',doc:'95',venc:'15/abr/27',window:'90plus',val:5739},
+  {id:'pa063',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'63',venc:'20/ago/26',window:'90plus',val:785},
+  {id:'pa064',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'64',venc:'21/set/26',window:'90plus',val:785},
+  {id:'pa065',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'65',venc:'20/out/26',window:'90plus',val:785},
+  {id:'pa066',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'66',venc:'20/nov/26',window:'90plus',val:785},
+  {id:'pa067',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'67',venc:'21/dez/26',window:'90plus',val:785},
+  {id:'pa068',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'68',venc:'20/jan/27',window:'90plus',val:785},
+  {id:'pa069',n:'SERRANO CONTABILIDADE LIMITADA',cat:'(sem categoria)',doc:'69',venc:'22/fev/27',window:'90plus',val:785},
+  {id:'pa052',n:'LWSA S/A',cat:'(sem categoria)',doc:'52',venc:'17/ago/26',window:'90plus',val:110},
+  {id:'pa053',n:'LWSA S/A',cat:'(sem categoria)',doc:'53',venc:'15/set/26',window:'90plus',val:110},
+  {id:'pa054',n:'LWSA S/A',cat:'(sem categoria)',doc:'54',venc:'15/out/26',window:'90plus',val:110},
+  {id:'pa055',n:'LWSA S/A',cat:'(sem categoria)',doc:'55',venc:'16/nov/26',window:'90plus',val:110},
+  {id:'pa056',n:'LWSA S/A',cat:'(sem categoria)',doc:'56',venc:'15/dez/26',window:'90plus',val:110},
+  {id:'pa057',n:'LWSA S/A',cat:'(sem categoria)',doc:'57',venc:'15/jan/27',window:'90plus',val:110},
+  {id:'pa007',n:'PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO',cat:'Serviços contábeis',doc:'7',venc:'17/ago/26',window:'90plus',val:92},
+  {id:'pa013',n:'PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO',cat:'Serviços contábeis',doc:'13',venc:'15/set/26',window:'90plus',val:92},
+  {id:'pa018',n:'PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO',cat:'Serviços contábeis',doc:'18',venc:'15/out/26',window:'90plus',val:92},
+  {id:'pa008',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'8',venc:'20/ago/26',window:'90plus',val:80},
+  {id:'pa015',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'15',venc:'21/set/26',window:'90plus',val:80},
+  {id:'pa016',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'16',venc:'20/out/26',window:'90plus',val:80},
+  {id:'pa019',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'19',venc:'20/nov/26',window:'90plus',val:80},
+  {id:'pa022',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'22',venc:'21/dez/26',window:'90plus',val:80},
+  {id:'pa048',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'48',venc:'20/jan/27',window:'90plus',val:80},
+  {id:'pa059',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'59',venc:'22/fev/27',window:'90plus',val:80},
+  {id:'pa092',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'92',venc:'22/mar/27',window:'90plus',val:80},
+  {id:'pa096',n:'RECEITA FEDERAL',cat:'(sem categoria)',doc:'96',venc:'20/abr/27',window:'90plus',val:80}
+];
+var RECEBIDO_DATA=[
+  {id:'rc001',n:'TOTVS S.A.',val:487885,count:12},
+  {id:'rc002',n:'TOTVS SA',val:163364,count:11},
+  {id:'rc003',n:'TOTVS S.A. SANTA CATARINA',val:95747,count:12},
+  {id:'rc004',n:'HIGIMASTER DISTRIBUIDORA DE PRODUTOS DE HIGIENE LTDA',val:75309,count:6},
+  {id:'rc005',n:'TELE RIO ELETRO DOMESTICOS LTDA',val:42889,count:9},
+  {id:'rc006',n:'1000 MARCAS SAFETY BRASIL EIRELI',val:33775,count:12},
+  {id:'rc007',n:'INDUSTRIA ALIMENTICIA RALSTON LTDA',val:29563,count:3},
+  {id:'rc008',n:'SERGIO C WEISER DECORACAO LTDA',val:21022,count:4},
+  {id:'rc009',n:'TOTVS LARGE ENTERPRISE TECNOLOGIA S.A.',val:14234,count:12},
+  {id:'rc010',n:'FUELTECH LTDA',val:11731,count:2},
+  {id:'rc011',n:'FUNDACAO DA UNIVERSIDADE FEDERAL DO PARANA PARA O DESENVOLVIMENTO DA CIENCIA, TE',val:11731,count:2},
+  {id:'rc012',n:'KHRONOS INDUSTRIA COMERCIO E SERVICOS EM ELETRONICA LTDA',val:11731,count:3},
+  {id:'rc013',n:'ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA',val:7039,count:1},
+  {id:'rc014',n:'DECANTER VINHOS FINOS LTDA',val:5866,count:1},
+  {id:'rc015',n:'PROADEC BRASIL LTDA',val:571,count:1}
+];
+
+// window labels
+var PA_WINS={all:'Todos',vencido:'Vencido','30d':'≤30d','60d':'31–60d','90d':'61–90d','90plus':'+90d'};
+var PA_COLORS={all:'#6366f1',vencido:'#ef4444','30d':'#f59e0b','60d':'#3b82f6','90d':'#10b981','90plus':'#8b5cf6'};
+
+// state
+var PA_AW='all', PA_AR=null;
+
+// chart instances (deferred — page may not be visible on init)
+var paDonutChart=null, paBarChart=null, recBarChart=null;
+
+function _paRows(){
+  return PAGAR_DATA.filter(function(r){
+    if(PA_AW!=='all'&&r.window!==PA_AW)return false;
+    if(PA_AR&&r.id!==PA_AR)return false;
+    return true;
+  });
+}
+
+function paRender(){
+  if(!document.getElementById('paTbody'))return;
+
+  var rows=_paRows();
+  var tot=rows.reduce(function(s,r){return s+r.val;},0);
+
+  // hsub
+  var totalAll=PAGAR_DATA.reduce(function(s,r){return s+r.val;},0);
+  document.getElementById('paHsub').textContent=rows.length+' lançamentos · R$ '+_fmt(tot)+
+    (PA_AW!=='all'||PA_AR?' (filtrado de R$ '+_fmt(totalAll)+')':'');
+
+  // KV cards
+  var windows=['vencido','30d','60d','90d','90plus'];
+  var wlabels={vencido:'Vencido','30d':'≤ 30d','60d':'31–60d','90d':'61–90d','90plus':'+90d'};
+  var kvHtml='<div class="kv-card" onclick="paWin('all')" style="cursor:pointer"><div class="kv-val">R$ '+_fmt(totalAll)+'</div><div class="kv-sub">Total em Aberto</div></div>';
+  windows.forEach(function(w){
+    var wrows=PAGAR_DATA.filter(function(r){return r.window===w;});
+    var wval=wrows.reduce(function(s,r){return s+r.val;},0);
+    var isActive=PA_AW===w;
+    kvHtml+='<div class="kv-card'+(isActive?' kv-sel':'')+'" onclick="paWin(''+w+'')" style="cursor:pointer;border-color:'+PA_COLORS[w]+'"><div class="kv-val" style="color:'+PA_COLORS[w]+'">R$ '+_fmt(wval)+'</div><div class="kv-sub">'+wlabels[w]+'</div></div>';
+  });
+  document.getElementById('paKvRow').innerHTML=kvHtml;
+
+  // pills active state
+  document.querySelectorAll('#paPills .mpill').forEach(function(p){
+    p.classList.toggle('active', p.dataset.w===PA_AW);
+  });
+
+  // donut chart
+  var winData=windows.map(function(w){
+    return PAGAR_DATA.filter(function(r){return r.window===w;}).reduce(function(s,r){return s+r.val;},0);
+  });
+  var donutColors=windows.map(function(w){return PA_COLORS[w];});
+  if(!paDonutChart){
+    var ctx=document.getElementById('paDonut').getContext('2d');
+    paDonutChart=new Chart(ctx,{type:'doughnut',data:{labels:windows.map(function(w){return wlabels[w];}),datasets:[{data:winData,backgroundColor:donutColors,borderWidth:2,borderColor:'#1a1b2e'}]},options:{plugins:{legend:{position:'bottom',labels:{color:'#ccc',font:{size:11}}}},onClick:function(_,els){if(els&&els.length>0){var w=windows[els[0].index];paWin(PA_AW===w?'all':w);}}}});
+  } else {
+    paDonutChart.data.datasets[0].data=winData;
+    paDonutChart.update('none');
+  }
+
+  // bar chart — top 15 fornecedores
+  var byForn={};
+  var filtered=PA_AW==='all'?PAGAR_DATA:PAGAR_DATA.filter(function(r){return r.window===PA_AW;});
+  filtered.forEach(function(r){
+    if(!byForn[r.n])byForn[r.n]={n:r.n,val:0,id:r.id};
+    byForn[r.n].val+=r.val;
+  });
+  var fornList=Object.values(byForn).sort(function(a,b){return b.val-a.val;}).slice(0,15);
+  var barLabels=fornList.map(function(x){return x.n.length>22?x.n.substring(0,22)+'…':x.n;});
+  var barVals=fornList.map(function(x){return x.val;});
+  var barColors=fornList.map(function(x){return PA_AR&&x.id===PA_AR?'#f59e0b':'#6366f1';});
+  if(!paBarChart){
+    var ctx2=document.getElementById('paBar').getContext('2d');
+    paBarChart=new Chart(ctx2,{type:'bar',data:{labels:barLabels,datasets:[{data:barVals,backgroundColor:barColors,borderRadius:3}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',callback:function(v){return 'R$'+_fmtK(v);}},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#ccc',font:{size:10}},grid:{display:false}}},onClick:function(_,els){if(els&&els.length>0){var item=fornList[els[0].index];PA_AR=PA_AR===item.id?null:item.id;paRender();}}}});
+  } else {
+    paBarChart.data.labels=barLabels;
+    paBarChart.data.datasets[0].data=barVals;
+    paBarChart.data.datasets[0].backgroundColor=barColors;
+    paBarChart.update('none');
+  }
+
+  // table
+  var tbHtml='';
+  var sorted=rows.slice().sort(function(a,b){return b.val-a.val;});
+  sorted.forEach(function(r,i){
+    var sel=PA_AR===r.id;
+    tbHtml+='<tr class="cf-tr'+(sel?' cf-sel':'')+'" onclick="(function(){PA_AR=PA_AR===''+r.id+''?null:''+r.id+'';paRender();})()">'+
+      '<td>'+(i+1)+'</td><td>'+r.n+'</td><td>'+r.cat+'</td><td>'+r.venc+'</td><td>'+r.doc+'</td>'+
+      '<td class="r"><b>R$ '+_fmt(r.val)+'</b></td>'+
+      '<td><span class="bg-pill '+PA_COLORS[r.window].replace('#','bg_')+'" style="background:'+PA_COLORS[r.window]+'22;color:'+PA_COLORS[r.window]+';padding:2px 7px;border-radius:9px;font-size:11px">'+PA_WINS[r.window]+'</span></td>'+
+      '</tr>';
+  });
+  document.getElementById('paTbody').innerHTML=tbHtml;
+
+  // sel label
+  var parts=[];
+  if(PA_AW!=='all')parts.push(PA_WINS[PA_AW]);
+  if(PA_AR){var rr=PAGAR_DATA.find(function(x){return x.id===PA_AR;});if(rr)parts.push(rr.n.split(' ')[0]);}
+  var lbl=document.getElementById('paSelLbl'),btn=document.getElementById('paResetBtn');
+  if(parts.length){lbl.textContent='🔍 '+parts.join(' · ');btn.classList.add('vis');}
+  else{lbl.textContent='';btn.classList.remove('vis');}
+}
+
+function paWin(w){PA_AW=w;PA_AR=null;paRender();}
+function paReset(){PA_AW='all';PA_AR=null;paRender();}
+
+// ── FINANCEIRO: RECEITA POR CLIENTE ──
+function recRender(){
+  if(!document.getElementById('recTbody'))return;
+
+  var tot=RECEBIDO_DATA.reduce(function(s,r){return s+r.val;},0);
+  document.getElementById('recHsub').textContent=RECEBIDO_DATA.length+' clientes · R$ '+_fmt(tot)+' total recebido';
+
+  // bar chart
+  var top=RECEBIDO_DATA.slice(0,20);
+  var barLabels=top.map(function(x){return x.n.length>28?x.n.substring(0,28)+'…':x.n;});
+  var barVals=top.map(function(x){return x.val;});
+  if(!recBarChart){
+    var ctx=document.getElementById('recBar').getContext('2d');
+    recBarChart=new Chart(ctx,{type:'bar',data:{labels:barLabels,datasets:[{data:barVals,backgroundColor:'#10b981',borderRadius:3}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',callback:function(v){return 'R$'+_fmtK(v);}},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#ccc',font:{size:10}},grid:{display:false}}}}});
+  } else {
+    recBarChart.data.labels=barLabels;
+    recBarChart.data.datasets[0].data=barVals;
+    recBarChart.update('none');
+  }
+
+  // table
+  var tbHtml='';
+  RECEBIDO_DATA.forEach(function(r,i){
+    var ticket=r.count>0?r.val/r.count:0;
+    tbHtml+='<tr class="cf-tr">'+
+      '<td>'+(i+1)+'</td><td>'+r.n+'</td>'+
+      '<td class="r"><b>R$ '+_fmt(r.val)+'</b></td>'+
+      '<td class="r">'+r.count+'</td>'+
+      '<td class="r">R$ '+_fmt(ticket)+'</td>'+
+      '</tr>';
+  });
+  document.getElementById('recTbody').innerHTML=tbHtml;
+}
+
+function recReset(){recRender();}
+
+function _fmt(v){return Math.round(v).toLocaleString('pt-BR');}
+function _fmtK(v){return v>=1000?(v/1000).toFixed(0)+'k':v;}
+
 
 // ── PIPELINE CROSS FILTER ──
 var PP_DATA=[
@@ -1217,6 +1562,8 @@ CF_MONTHS.forEach(function(m){
 // Populate gastos table header dynamically
 document.getElementById('cfThead').innerHTML='<tr><th>#</th><th>Fornecedor</th><th>Categoria</th>'+CF_MONTHS.map(function(m){return '<th class="r">'+CF_MONTH_NAMES[m].substring(0,3)+'</th>';}).join('')+'<th class="r">Total</th><th>Status</th></tr>';
 cfRender();
+paRender();
+recRender();
 </script>
 </body>
 </html>

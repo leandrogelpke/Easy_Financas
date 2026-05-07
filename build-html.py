@@ -416,6 +416,120 @@ def groups_to_js(groups: list[dict]) -> str:
 
 
 # ──────────────────────────────────────────────
+# PAGAR EM ABERTO  (tab Financeiro)
+# ──────────────────────────────────────────────
+
+def _pagar_window(venc: date | None, today: date) -> str:
+    """Classifica o vencimento em janelas de risco."""
+    if venc is None:
+        return "90plus"
+    delta = (venc - today).days
+    if delta < 0:
+        return "vencido"
+    if delta <= 30:
+        return "30d"
+    if delta <= 60:
+        return "60d"
+    if delta <= 90:
+        return "90d"
+    return "90plus"
+
+
+def compute_pagar_data(em_aberto: list[dict], today: date) -> list[dict]:
+    """Converte contas_pagar_em_aberto → PAGAR_DATA."""
+    items = []
+    for i, c in enumerate(em_aberto):
+        nome = (c.get("contato_nome") or c.get("nomeContato") or "(sem fornecedor)").strip()
+        # Usar saldo quando disponível, senão valor
+        valor = parse_money(c.get("saldo") or c.get("valor"))
+        if valor <= 0:
+            continue
+
+        doc = (c.get("numero_documento") or c.get("numeroDocumento") or
+               c.get("documento") or str(i + 1))
+        cat = (c.get("categoria_descricao") or c.get("categoriaDescricao") or
+               c.get("categoria") or "(sem categoria)").strip()
+        venc = parse_date(c.get("vencimento") or c.get("dataVencimento") or "")
+        window = _pagar_window(venc, today)
+        item_id = f"pa{i+1:03d}"
+
+        items.append({
+            "id":     item_id,
+            "n":      nome,
+            "cat":    cat,
+            "doc":    str(doc)[:20],
+            "venc":   fmt_date_br(venc) if venc else "—",
+            "window": window,
+            "val":    round(valor),
+        })
+
+    # Ordenar: vencido primeiro, depois por valor desc
+    win_order = {"vencido": 0, "30d": 1, "60d": 2, "90d": 3, "90plus": 4}
+    items.sort(key=lambda r: (win_order.get(r["window"], 9), -r["val"]))
+    return items
+
+
+def pagar_to_js(items: list[dict]) -> str:
+    parts = []
+    for it in items:
+        parts.append(
+            "{" +
+            f"id:'{js_str(it['id'])}'," +
+            f"n:'{js_str(it['n'])}'," +
+            f"cat:'{js_str(it['cat'])}'," +
+            f"doc:'{js_str(it['doc'])}'," +
+            f"venc:'{js_str(it['venc'])}'," +
+            f"window:'{js_str(it['window'])}'," +
+            f"val:{_js_num(it['val'])}" +
+            "}"
+        )
+    return "[\n  " + ",\n  ".join(parts) + "\n]"
+
+
+# ──────────────────────────────────────────────
+# RECEITA POR CLIENTE  (tab Financeiro)
+# ──────────────────────────────────────────────
+
+def compute_recebido_data(recebidas: list[dict]) -> list[dict]:
+    """Agrega contas_receber_recebidas por cliente → RECEBIDO_DATA."""
+    from collections import defaultdict
+    by_client: dict[str, dict] = defaultdict(lambda: {"val": 0.0, "count": 0})
+    for c in recebidas:
+        nome = (c.get("contato_nome") or c.get("nomeContato") or "(sem cliente)").strip()
+        valor = parse_money(c.get("valor"))
+        if valor <= 0:
+            continue
+        by_client[nome]["val"] += valor
+        by_client[nome]["count"] += 1
+
+    items = []
+    for i, (nome, agg) in enumerate(
+        sorted(by_client.items(), key=lambda x: -x[1]["val"])
+    ):
+        items.append({
+            "id":    f"rc{i+1:03d}",
+            "n":     nome,
+            "val":   round(agg["val"]),
+            "count": agg["count"],
+        })
+    return items
+
+
+def recebido_to_js(items: list[dict]) -> str:
+    parts = []
+    for it in items:
+        parts.append(
+            "{" +
+            f"id:'{js_str(it['id'])}'," +
+            f"n:'{js_str(it['n'])}'," +
+            f"val:{_js_num(it['val'])}," +
+            f"count:{it['count']}" +
+            "}"
+        )
+    return "[\n  " + ",\n  ".join(parts) + "\n]"
+
+
+# ──────────────────────────────────────────────
 # RENDER PRINCIPAL
 # ──────────────────────────────────────────────
 
@@ -428,8 +542,10 @@ def find_latest_snapshot(in_dir: Path) -> Path:
 
 def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     """Lê template.html e substitui todos os marcadores @@...@@ com dados ao vivo."""
-    pagas = data.get("contas_pagar_pagas", [])
-    receber = data.get("contas_receber_em_aberto", [])
+    pagas      = data.get("contas_pagar_pagas", [])
+    receber    = data.get("contas_receber_em_aberto", [])
+    em_aberto  = data.get("contas_pagar_em_aberto", [])
+    recebidas  = data.get("contas_receber_recebidas", [])
 
     # ── Computar dados ──
     months = compute_last_4_months(pagas)
@@ -447,12 +563,16 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     month_lbls  = {month_key(d): month_label(d) for d in months}
     month_names = {month_key(d): month_full_name(d) for d in months}
 
-    rows    = compute_rows(pagas, months)
-    cx_data = compute_cx_data(receber, today)
+    rows        = compute_rows(pagas, months)
+    cx_data     = compute_cx_data(receber, today)
+    pagar_data  = compute_pagar_data(em_aberto, today)
+    recebido    = compute_recebido_data(recebidas)
 
     # ── Serializar para JS ──
     js_rows       = rows_to_js(rows, month_keys)
     js_cx         = cx_data_to_js(cx_data)
+    js_pagar      = pagar_to_js(pagar_data)
+    js_recebido   = recebido_to_js(recebido)
     js_months     = "[" + ",".join(f"'{k}'" for k in month_keys) + "]"
     js_month_lbls = "{" + ",".join(f"'{k}':'{v}'" for k, v in month_lbls.items()) + "}"
     js_month_nms  = "{" + ",".join(f"'{k}':'{v}'" for k, v in month_names.items()) + "}"
@@ -482,6 +602,8 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     html = html.replace("@@CF_MONTH_NAMES@@",  js_month_nms)
     html = html.replace("@@CF_GROUPS@@",       js_groups)
     html = html.replace("@@CX_DATA@@",         js_cx)
+    html = html.replace("@@PAGAR_DATA@@",      js_pagar)
+    html = html.replace("@@RECEBIDO_DATA@@",   js_recebido)
 
     return html
 
@@ -521,17 +643,22 @@ def main() -> int:
     print(f"[ok] lendo snapshot: {snapshot.name}")
     data = json.loads(snapshot.read_text(encoding="utf-8"))
 
-    pagas = data.get("contas_pagar_pagas", [])
-    receber = data.get("contas_receber_em_aberto", [])
+    pagas      = data.get("contas_pagar_pagas", [])
+    receber    = data.get("contas_receber_em_aberto", [])
+    em_aberto  = data.get("contas_pagar_em_aberto", [])
+    recebidas  = data.get("contas_receber_recebidas", [])
     print(f"[ok] contas_pagar_pagas: {len(pagas)} registros")
     print(f"[ok] contas_receber_em_aberto: {len(receber)} registros")
+    print(f"[ok] contas_pagar_em_aberto: {len(em_aberto)} registros")
+    print(f"[ok] contas_receber_recebidas: {len(recebidas)} registros")
 
     today = date.today()
     html_out = render(data, snapshot, args.template, today)
 
     # Verificar se todos os marcadores foram substituídos
     remaining = [m for m in ["@@ROWS@@", "@@CF_MONTHS@@", "@@CX_DATA@@",
-                              "@@CF_GROUPS@@", "@@CF_MONTH_LABELS@@", "@@CF_MONTH_NAMES@@"]
+                              "@@CF_GROUPS@@", "@@CF_MONTH_LABELS@@", "@@CF_MONTH_NAMES@@",
+                              "@@PAGAR_DATA@@", "@@RECEBIDO_DATA@@"]
                  if m in html_out]
     if remaining:
         print(f"[warn] marcadores não substituídos: {remaining}", file=sys.stderr)
