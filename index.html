@@ -1037,12 +1037,12 @@ function paRender(){
   // KV cards
   var windows=['vencido','30d','60d','90d','90plus'];
   var wlabels={vencido:'Vencido','30d':'≤ 30d','60d':'31–60d','90d':'61–90d','90plus':'+90d'};
-  var kvHtml='<div class="kv-card" onclick="paWin('all')" style="cursor:pointer"><div class="kv-val">R$ '+_fmt(totalAll)+'</div><div class="kv-sub">Total em Aberto</div></div>';
+  var kvHtml='<div class="kv-card" data-w="all" onclick="paWin(this.dataset.w)" style="cursor:pointer"><div class="kv-val">R$ '+_fmt(totalAll)+'</div><div class="kv-sub">Total em Aberto</div></div>';
   windows.forEach(function(w){
     var wrows=PAGAR_DATA.filter(function(r){return r.window===w;});
     var wval=wrows.reduce(function(s,r){return s+r.val;},0);
     var isActive=PA_AW===w;
-    kvHtml+='<div class="kv-card'+(isActive?' kv-sel':'')+'" onclick="paWin(''+w+'')" style="cursor:pointer;border-color:'+PA_COLORS[w]+'"><div class="kv-val" style="color:'+PA_COLORS[w]+'">R$ '+_fmt(wval)+'</div><div class="kv-sub">'+wlabels[w]+'</div></div>';
+    kvHtml+='<div class="kv-card'+(isActive?' kv-sel':'')+'" data-w="'+w+'" onclick="paWin(this.dataset.w)" style="cursor:pointer;border-color:'+PA_COLORS[w]+'"><div class="kv-val" style="color:'+PA_COLORS[w]+'">R$ '+_fmt(wval)+'</div><div class="kv-sub">'+wlabels[w]+'</div></div>';
   });
   document.getElementById('paKvRow').innerHTML=kvHtml;
 
