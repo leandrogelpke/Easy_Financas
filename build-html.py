@@ -530,6 +530,102 @@ def recebido_to_js(items: list[dict]) -> str:
 
 
 # ──────────────────────────────────────────────
+# DRE — RECEITA VS DESPESAS (REAL + PROJETADO)
+# ──────────────────────────────────────────────
+
+def compute_dre_data(
+    pagas: list[dict],
+    recebidas: list[dict],
+    em_aberto: list[dict],
+    receber_em_aberto: list[dict],
+    today: date,
+) -> list[dict]:
+    """
+    Monta o DRE mês a mês misturando real (pagos/recebidos) com projetado (em aberto).
+    Meses passados completos → tipo 'real'. Mês atual + futuros → tipo 'projetado'.
+    Retorna lista de dicts ordenados por mês.
+    """
+    # ── Acumuladores por mês (chave: 'YYYY-MM') ──
+    desp_real: dict[str, float] = defaultdict(float)
+    rec_real:  dict[str, float] = defaultdict(float)
+    desp_plan: dict[str, float] = defaultdict(float)
+    rec_plan:  dict[str, float] = defaultdict(float)
+
+    cutoff = today.strftime("%Y-%m")   # mês atual não é "real" ainda
+
+    for r in pagas:
+        m = (r.get("vencimento") or "")[:7]
+        if m:
+            desp_real[m] += parse_money(r.get("valor", 0))
+
+    for r in recebidas:
+        m = (r.get("vencimento") or "")[:7]
+        if m:
+            rec_real[m] += parse_money(r.get("valor", 0))
+
+    for r in em_aberto:
+        m = (r.get("vencimento") or "")[:7]
+        if m:
+            v = parse_money(r.get("saldo") or r.get("valor", 0))
+            desp_plan[m] += v
+
+    for r in receber_em_aberto:
+        m = (r.get("vencimento") or "")[:7]
+        if m:
+            v = parse_money(r.get("saldo") or r.get("valor", 0))
+            rec_plan[m] += v
+
+    # ── Conjunto de meses com algum dado ──
+    all_months = sorted(
+        set(desp_real) | set(rec_real) | set(desp_plan) | set(rec_plan)
+    )
+
+    MN = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]
+
+    result = []
+    for m in all_months:
+        try:
+            yr, mo = int(m[:4]), int(m[5:7])
+        except ValueError:
+            continue
+        label = MN[mo - 1] + "/" + str(yr)[-2:]
+        is_real = m < cutoff
+        if is_real:
+            desp = desp_real.get(m, 0)
+            rec  = rec_real.get(m, 0)
+        else:
+            desp = desp_plan.get(m, 0)
+            rec  = rec_plan.get(m, 0)
+        if desp == 0 and rec == 0:
+            continue
+        result.append({
+            "month": m,
+            "label": label,
+            "tipo":  "real" if is_real else "projetado",
+            "rec":   round(rec, 2),
+            "desp":  round(desp, 2),
+        })
+
+    return result
+
+
+def dre_to_js(items: list[dict]) -> str:
+    """Serializa DRE_DATA para JS."""
+    parts = []
+    for it in items:
+        parts.append(
+            "{"
+            + f"month:'{it['month']}',"
+            + f"label:'{it['label']}',"
+            + f"tipo:'{it['tipo']}',"
+            + f"rec:{_js_num(it['rec'])},"
+            + f"desp:{_js_num(it['desp'])}"
+            + "}"
+        )
+    return "[\n  " + ",\n  ".join(parts) + "\n]"
+
+
+# ──────────────────────────────────────────────
 # RENDER PRINCIPAL
 # ──────────────────────────────────────────────
 
@@ -567,12 +663,14 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     cx_data     = compute_cx_data(receber, today)
     pagar_data  = compute_pagar_data(em_aberto, today)
     recebido    = compute_recebido_data(recebidas)
+    dre_data    = compute_dre_data(pagas, recebidas, em_aberto, receber, today)
 
     # ── Serializar para JS ──
     js_rows       = rows_to_js(rows, month_keys)
     js_cx         = cx_data_to_js(cx_data)
     js_pagar      = pagar_to_js(pagar_data)
     js_recebido   = recebido_to_js(recebido)
+    js_dre        = dre_to_js(dre_data)
     js_months     = "[" + ",".join(f"'{k}'" for k in month_keys) + "]"
     js_month_lbls = "{" + ",".join(f"'{k}':'{v}'" for k, v in month_lbls.items()) + "}"
     js_month_nms  = "{" + ",".join(f"'{k}':'{v}'" for k, v in month_names.items()) + "}"
@@ -604,6 +702,7 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     html = html.replace("@@CX_DATA@@",         js_cx)
     html = html.replace("@@PAGAR_DATA@@",      js_pagar)
     html = html.replace("@@RECEBIDO_DATA@@",   js_recebido)
+    html = html.replace("@@DRE_DATA@@",        js_dre)
 
     return html
 
@@ -651,6 +750,9 @@ def main() -> int:
     print(f"[ok] contas_receber_em_aberto: {len(receber)} registros")
     print(f"[ok] contas_pagar_em_aberto: {len(em_aberto)} registros")
     print(f"[ok] contas_receber_recebidas: {len(recebidas)} registros")
+    # log DRE months preview
+    dre_preview = compute_dre_data(pagas, recebidas, em_aberto, receber, date.today())
+    print(f"[ok] dre_data: {len(dre_preview)} meses ({dre_preview[0]['label'] if dre_preview else '—'} → {dre_preview[-1]['label'] if dre_preview else '—'})")
 
     today = date.today()
     html_out = render(data, snapshot, args.template, today)

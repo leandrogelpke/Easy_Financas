@@ -214,6 +214,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   <button class="mobtab" onclick="sp('pipeline',this,1)">Pipeline</button>
   <button class="mobtab" onclick="sp('projecao',this,1)">Projeção</button>
   <button class="mobtab" onclick="sp('financeiro',this,1)">Financeiro</button>
+  <button class="mobtab" onclick="sp('dre',this,1)">DRE</button>
 </div>
 
 <!-- NAV -->
@@ -228,6 +229,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
     <button class="ntab" onclick="sp('pipeline',this)">Pipeline</button>
     <button class="ntab" onclick="sp('projecao',this)">Projeção</button>
     <button class="ntab" onclick="sp('financeiro',this)">Financeiro</button>
+    <button class="ntab" onclick="sp('dre',this)">DRE</button>
   </div>
   <button class="hamb" id="hbtn" onclick="tmob()" style="display:none" aria-label="Menu">
     <span></span><span></span><span></span>
@@ -496,6 +498,48 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 
 </div><!-- /pg-financeiro -->
 
+<!-- ═══ DRE ═══ -->
+<div class="pg" id="pg-dre">
+
+<div class="hero">
+  <div>
+    <div class="htitle">DRE — Receita vs Despesas</div>
+    <div class="hsub" id="dreHsub">Real (meses fechados) + Projetado Bling (meses futuros) · atualiza semanalmente</div>
+  </div>
+</div>
+
+<div class="sl">KPIs do período</div>
+<div class="g4" id="dreKpis" style="margin-bottom:12px"></div>
+
+<div class="sl">Receita vs Despesas — mês a mês</div>
+<div class="card" style="margin-bottom:12px">
+  <div class="ct">Barras: real <span class="ct-tag">opaco = real · translúcido = projetado</span></div>
+  <div class="cw" style="height:300px"><canvas id="dreBar"></canvas></div>
+  <div id="dreLegend" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:12px;font-size:10.5px;color:var(--t2)"></div>
+</div>
+
+<div class="card" style="margin-bottom:12px">
+  <div class="ct">Resultado mensal — Receita − Despesas</div>
+  <div class="cw" style="height:180px"><canvas id="dreResult"></canvas></div>
+</div>
+
+<div class="card">
+  <div class="ct">Detalhamento mensal completo</div>
+  <div class="tbl-wrap">
+    <table class="dt">
+      <thead><tr>
+        <th>Mês</th><th>Tipo</th>
+        <th class="r">Receita</th><th class="r">Despesas</th>
+        <th class="r">Resultado</th><th class="r">Acumulado</th>
+      </tr></thead>
+      <tbody id="dreTbody"></tbody>
+    </table>
+  </div>
+  <div class="totals" id="dreTotals" style="margin-top:10px"></div>
+</div>
+
+</div><!-- /pg-dre -->
+
 <!-- ═══ CLIENTES ═══ -->
 <div class="pg" id="pg-clientes">
 <div class="hero">
@@ -675,6 +719,28 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   </div>
 </div>
 <div class="g3" id="pMets" style="margin-bottom:12px"></div>
+
+<div class="sl">Receita vs Despesas — Histórico + Bling (real e projetado)</div>
+<div class="card" style="margin-bottom:12px">
+  <div class="ct">Mês a mês: receita (↑) vs despesas (↓) <span class="ct-tag">real + projetado Bling</span></div>
+  <div class="cw" style="height:280px"><canvas id="projDreBar"></canvas></div>
+  <div id="projDreLegend" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:12px;font-size:10.5px;color:var(--t2)"></div>
+</div>
+<div class="card" style="margin-bottom:12px">
+  <div class="ct">Detalhamento — Receita vs Despesas por mês</div>
+  <div class="tbl-wrap">
+    <table class="dt">
+      <thead><tr>
+        <th>Mês</th><th>Tipo</th>
+        <th class="r">Receita</th><th class="r">Despesas</th>
+        <th class="r">Resultado</th>
+      </tr></thead>
+      <tbody id="projDreTbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sl">Modelo de projeção de caixa</div>
 <div class="card" style="margin-bottom:12px">
   <div class="ct">Resultado mensal — H2/2026 + 2027</div>
   <div class="cw" style="height:255px"><canvas id="pBar"></canvas></div>
@@ -701,7 +767,7 @@ Chart.defaults.font.size=11;
 
 var fBR=function(v){return v===0?'—':'R$\u00a0'+Math.round(v).toLocaleString('pt-BR');};
 var fK=function(v){return (v>=0?'':'-')+'R$\u00a0'+Math.abs(Math.round(v/1000))+'K';};
-var PAGES=['overview','gastos','cashflow','clientes','pipeline','projecao','financeiro'];
+var PAGES=['overview','gastos','cashflow','clientes','pipeline','projecao','financeiro','dre'];
 
 // ── NAV ──
 function sp(id,btn,mob){
@@ -714,7 +780,8 @@ function sp(id,btn,mob){
   if(idx>=0&&other[idx])other[idx].classList.add('active');
   if(mob){document.getElementById('mmenu').classList.remove('open');document.getElementById('hbtn').classList.remove('open');}
   window.scrollTo({top:0,behavior:'smooth'});
-  if(id==='projecao')updProj();
+  if(id==='projecao'){updProj();projDreRender();}
+  if(id==='dre')dreRender();
 }
 function tmob(){document.getElementById('mmenu').classList.toggle('open');document.getElementById('hbtn').classList.toggle('open');}
 
@@ -1013,6 +1080,174 @@ function recReset(){recRender();}
 
 function _fmt(v){return Math.round(v).toLocaleString('pt-BR');}
 function _fmtK(v){return v>=1000?(v/1000).toFixed(0)+'k':v;}
+
+// ── DRE: RECEITA VS DESPESAS (real + projetado) ──
+var DRE_DATA=@@DRE_DATA@@;
+var dreBarChart=null, dreResChart=null;
+var projDreBarChart=null;
+
+function dreRender(){
+  if(!document.getElementById('dreTbody'))return;
+
+  var realM=DRE_DATA.filter(function(m){return m.tipo==='real';});
+  var planM=DRE_DATA.filter(function(m){return m.tipo==='projetado';});
+  var totRealRec=realM.reduce(function(s,m){return s+m.rec;},0);
+  var totRealDesp=realM.reduce(function(s,m){return s+m.desp;},0);
+  var totPlanRec=planM.reduce(function(s,m){return s+m.rec;},0);
+  var totPlanDesp=planM.reduce(function(s,m){return s+m.desp;},0);
+  var totRealRes=totRealRec-totRealDesp;
+  var totAnoRes=(totRealRec+totPlanRec)-(totRealDesp+totPlanDesp);
+
+  // KPIs
+  var kHtml=
+    '<div class="met green"><div class="ml">Receita Confirmada</div>'+
+      '<div class="mv green">R$ '+_fmt(totRealRec)+'</div>'+
+      '<div class="ms">'+realM.length+' meses · real Bling</div></div>'+
+    '<div class="met red"><div class="ml">Despesas Confirmadas</div>'+
+      '<div class="mv red">R$ '+_fmt(totRealDesp)+'</div>'+
+      '<div class="ms">média R$ '+_fmt(realM.length?Math.round(totRealDesp/realM.length):0)+'/mês</div></div>'+
+    '<div class="met '+(totRealRes>=0?'green':'red')+'"><div class="ml">Resultado Real</div>'+
+      '<div class="mv '+(totRealRes>=0?'green':'red')+'">R$ '+_fmt(totRealRes)+'</div>'+
+      '<div class="ms">'+(totRealRes<0?'déficit acumulado':'superávit acumulado')+'</div></div>'+
+    '<div class="met blue"><div class="ml">Resultado Projetado (ano)</div>'+
+      '<div class="mv blue">R$ '+_fmt(totAnoRes)+'</div>'+
+      '<div class="ms">real + projetado Bling</div></div>';
+  document.getElementById('dreKpis').innerHTML=kHtml;
+
+  // Atualiza hsub com período
+  if(DRE_DATA.length){
+    document.getElementById('dreHsub').textContent=
+      DRE_DATA[0].label+' → '+DRE_DATA[DRE_DATA.length-1].label+
+      ' · '+realM.length+' meses reais · '+planM.length+' meses projetados';
+  }
+
+  var labels=DRE_DATA.map(function(m){return m.label;});
+  var recVals=DRE_DATA.map(function(m){return m.rec;});
+  var despVals=DRE_DATA.map(function(m){return m.desp;});
+  var recColors=DRE_DATA.map(function(m){return m.tipo==='real'?'#1e7e4f':'rgba(30,126,79,0.35)';});
+  var despColors=DRE_DATA.map(function(m){return m.tipo==='real'?'#c0392b':'rgba(192,57,43,0.35)';});
+  var resVals=DRE_DATA.map(function(m){return m.rec-m.desp;});
+
+  if(!dreBarChart){
+    var ctx=document.getElementById('dreBar').getContext('2d');
+    dreBarChart=new Chart(ctx,{type:'bar',
+      data:{labels:labels,datasets:[
+        {label:'Receita',data:recVals,backgroundColor:recColors,borderRadius:3,borderSkipped:false},
+        {label:'Despesas',data:despVals,backgroundColor:despColors,borderRadius:3,borderSkipped:false}
+      ]},
+      options:{maintainAspectRatio:false,animation:{duration:300},
+        plugins:{legend:{display:false},tooltip:{mode:'index',callbacks:{
+          label:function(c){return c.dataset.label+': R$ '+_fmt(c.parsed.y);}
+        }}},
+        scales:{x:{ticks:{font:{size:10}}},y:{ticks:{callback:function(v){return 'R$'+_fmtK(v);}},
+          grid:{color:'rgba(60,90,130,0.08)'}}}}});
+  } else {
+    dreBarChart.data.datasets[0].data=recVals;
+    dreBarChart.data.datasets[0].backgroundColor=recColors;
+    dreBarChart.data.datasets[1].data=despVals;
+    dreBarChart.data.datasets[1].backgroundColor=despColors;
+    dreBarChart.update('none');
+  }
+
+  if(!dreResChart){
+    var ctx2=document.getElementById('dreResult').getContext('2d');
+    dreResChart=new Chart(ctx2,{type:'bar',
+      data:{labels:labels,datasets:[
+        {label:'Resultado',data:resVals,
+          backgroundColor:resVals.map(function(v){return v>=0?'#1e7e4fcc':'#c0392bcc';}),
+          borderRadius:3}
+      ]},
+      options:{maintainAspectRatio:false,animation:{duration:300},
+        plugins:{legend:{display:false},tooltip:{callbacks:{
+          label:function(c){return 'Resultado: R$ '+_fmt(c.parsed.y);}
+        }}},
+        scales:{x:{ticks:{font:{size:10}}},y:{ticks:{callback:function(v){return 'R$'+_fmtK(v);}},
+          grid:{color:'rgba(60,90,130,0.08)'},beginAtZero:false}}}});
+  } else {
+    dreResChart.data.datasets[0].data=resVals;
+    dreResChart.data.datasets[0].backgroundColor=resVals.map(function(v){return v>=0?'#1e7e4fcc':'#c0392bcc';});
+    dreResChart.update('none');
+  }
+
+  // Legenda
+  document.getElementById('dreLegend').innerHTML=
+    '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#1e7e4f;display:inline-block"></span>Receita real</span>'+
+    '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:rgba(30,126,79,0.35);display:inline-block"></span>Receita projetada</span>'+
+    '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#c0392b;display:inline-block"></span>Despesas reais</span>'+
+    '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:rgba(192,57,43,0.35);display:inline-block"></span>Despesas projetadas</span>';
+
+  // Tabela detalhe
+  var tbHtml='';
+  var acum=0;
+  DRE_DATA.forEach(function(m){
+    var res=m.rec-m.desp;
+    acum+=res;
+    var isReal=m.tipo==='real';
+    tbHtml+='<tr>'+
+      '<td class="lbl">'+m.label+'</td>'+
+      '<td><span class="bge '+(isReal?'bgg':'bgb')+'">'+(isReal?'Real':'Projetado')+'</span></td>'+
+      '<td class="r" style="color:var(--green)">R$ '+_fmt(m.rec)+'</td>'+
+      '<td class="r" style="color:var(--red)">R$ '+_fmt(m.desp)+'</td>'+
+      '<td class="r" style="color:'+(res>=0?'var(--green)':'var(--red)')+'">R$ '+_fmt(res)+'</td>'+
+      '<td class="r" style="color:'+(acum>=0?'var(--green)':'var(--red)')+'">R$ '+_fmt(acum)+'</td>'+
+      '</tr>';
+  });
+  document.getElementById('dreTbody').innerHTML=tbHtml;
+
+  // Totais
+  var totRec=DRE_DATA.reduce(function(s,m){return s+m.rec;},0);
+  var totDesp=DRE_DATA.reduce(function(s,m){return s+m.desp;},0);
+  var totRes=totRec-totDesp;
+  document.getElementById('dreTotals').innerHTML=
+    '<div class="tot-i"><div class="tot-l">Receita Total</div><div class="tot-v" style="color:var(--green)">R$ '+_fmt(totRec)+'</div></div>'+
+    '<div class="tot-i"><div class="tot-l">Despesas Total</div><div class="tot-v" style="color:var(--red)">R$ '+_fmt(totDesp)+'</div></div>'+
+    '<div class="tot-i"><div class="tot-l">Resultado</div><div class="tot-v" style="color:'+(totRes>=0?'var(--green)':'var(--red)')+'">R$ '+_fmt(totRes)+'</div></div>'+
+    '<div class="tot-i"><div class="tot-l">Meses reais</div><div class="tot-v">'+realM.length+'</div></div>'+
+    '<div class="tot-i"><div class="tot-l">Meses projetados</div><div class="tot-v">'+planM.length+'</div></div>';
+}
+
+// ── PROJEÇÃO: gráfico DRE integrado (reutiliza DRE_DATA) ──
+function projDreRender(){
+  if(!document.getElementById('projDreTbody'))return;
+  var labels=DRE_DATA.map(function(m){return m.label;});
+  var recVals=DRE_DATA.map(function(m){return m.rec;});
+  var despVals=DRE_DATA.map(function(m){return m.desp;});
+  var recColors=DRE_DATA.map(function(m){return m.tipo==='real'?'#1e7e4f':'rgba(30,126,79,0.35)';});
+  var despColors=DRE_DATA.map(function(m){return m.tipo==='real'?'#c0392b':'rgba(192,57,43,0.35)';});
+  if(!projDreBarChart){
+    var ctx=document.getElementById('projDreBar').getContext('2d');
+    projDreBarChart=new Chart(ctx,{type:'bar',
+      data:{labels:labels,datasets:[
+        {label:'Receita',data:recVals,backgroundColor:recColors,borderRadius:3,borderSkipped:false},
+        {label:'Despesas',data:despVals,backgroundColor:despColors,borderRadius:3,borderSkipped:false}
+      ]},
+      options:{maintainAspectRatio:false,animation:{duration:300},
+        plugins:{legend:{display:false},tooltip:{mode:'index',callbacks:{
+          label:function(c){return c.dataset.label+': R$ '+_fmt(c.parsed.y);}
+        }}},
+        scales:{x:{ticks:{font:{size:10}}},y:{ticks:{callback:function(v){return 'R$'+_fmtK(v);}},
+          grid:{color:'rgba(60,90,130,0.08)'}}}}});
+  }
+  document.getElementById('projDreLegend').innerHTML=
+    '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#1e7e4f;display:inline-block"></span>Receita real</span>'+
+    '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:rgba(30,126,79,0.35);display:inline-block"></span>Receita projetada</span>'+
+    '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#c0392b;display:inline-block"></span>Despesas reais</span>'+
+    '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:rgba(192,57,43,0.35);display:inline-block"></span>Despesas projetadas</span>';
+  // tabela compacta
+  var tbHtml='';
+  DRE_DATA.forEach(function(m){
+    var res=m.rec-m.desp;
+    var isReal=m.tipo==='real';
+    tbHtml+='<tr>'+
+      '<td class="lbl">'+m.label+'</td>'+
+      '<td><span class="bge '+(isReal?'bgg':'bgb')+'">'+(isReal?'Real':'Proj.')+'</span></td>'+
+      '<td class="r" style="color:var(--green)">R$ '+_fmt(m.rec)+'</td>'+
+      '<td class="r" style="color:var(--red)">R$ '+_fmt(m.desp)+'</td>'+
+      '<td class="r" style="color:'+(res>=0?'var(--green)':'var(--red)')+'">R$ '+_fmt(res)+'</td>'+
+      '</tr>';
+  });
+  document.getElementById('projDreTbody').innerHTML=tbHtml;
+}
 
 
 // ── PIPELINE CROSS FILTER ──
@@ -1429,6 +1664,8 @@ document.getElementById('cfThead').innerHTML='<tr><th>#</th><th>Fornecedor</th><
 cfRender();
 paRender();
 recRender();
+dreRender();
+projDreRender();
 </script>
 </body>
 </html>
