@@ -42,7 +42,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(244,246,249,0.96);backdrop
 .ntabs::-webkit-scrollbar{display:none}
 .ntab{padding:5px 11px;border-radius:6px;font-size:12px;font-weight:400;color:var(--t3);cursor:pointer;border:none;background:none;font-family:var(--sans);transition:all .15s;white-space:nowrap;flex-shrink:0}
 .ntab:hover{color:var(--t1)}.ntab.active{color:var(--t1);background:var(--s2)}
-.ndate{font-family:var(--mono);font-size:10px;color:var(--t3);white-space:nowrap}
+.ndate{font-family:var(--mono);font-size:10px;color:var(--t3);white-space:nowrap;display:flex;align-items:center;gap:5px;flex-shrink:0}
 .hamb{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:7px;border:none;background:none;flex-shrink:0}
 .hamb span{display:block;width:18px;height:1.5px;background:var(--t2);border-radius:2px;transition:all .22s}
 .hamb.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg)}
@@ -168,11 +168,8 @@ nav{position:sticky;top:0;z-index:100;background:rgba(244,246,249,0.96);backdrop
 .cw{position:relative;width:100%}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono)}
-/* SNAP TIMESTAMP BADGE */
-#snap-ts{position:fixed;top:50px;right:0;z-index:90;font-family:var(--mono);font-size:9.5px;color:var(--t3);background:rgba(244,246,249,0.94);backdrop-filter:blur(10px);border-left:1px solid var(--bd);border-bottom:1px solid var(--bd);padding:4px 12px 4px 9px;border-bottom-left-radius:8px;display:flex;align-items:center;gap:6px;white-space:nowrap;pointer-events:none}
 .snap-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;animation:snapPulse 3s ease-in-out infinite}
 @keyframes snapPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.75)}}
-@media(max-width:900px){#snap-ts{display:none}}
 @media(max-width:560px){.g5{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}.htitle{font-size:18px}}
 </style>
 </head>
@@ -238,10 +235,8 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   <button class="hamb" id="hbtn" onclick="tmob()" style="display:none" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
-  <div class="ndate">07/mai/26 · 19:50</div>
+  <div class="ndate"><span class="snap-dot"></span>07/mai/26 · 19:50</div>
 </nav>
-
-<div id="snap-ts"><span class="snap-dot"></span>07/mai/26 · 19:50</div>
 
 <!-- ═══ VISÃO GERAL ═══ -->
 <div class="pg active" id="pg-overview">

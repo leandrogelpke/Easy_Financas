@@ -32,7 +32,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import date
+from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
@@ -442,7 +442,7 @@ def main() -> int:
     # 4) enriquecer e exportar CSVs por dataset
     json_snapshot: Dict[str, Any] = {
         "_metadata": {
-            "fetched_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "fetched_at": datetime.now(timezone(timedelta(hours=-3))).strftime("%Y-%m-%d %H:%M:%S"),
             "today": today,
         },
         "categorias": categorias,
