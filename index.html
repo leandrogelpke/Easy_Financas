@@ -1090,7 +1090,7 @@ function paRender(){
   var sorted=rows.slice().sort(function(a,b){return b.val-a.val;});
   sorted.forEach(function(r,i){
     var sel=PA_AR===r.id;
-    tbHtml+='<tr class="cf-tr'+(sel?' cf-sel':'')+'" onclick="(function(){PA_AR=PA_AR===''+r.id+''?null:''+r.id+'';paRender();})()">'+
+    tbHtml+='<tr class="cf-tr'+(sel?' cf-sel':'')+'" data-id="'+r.id+'" onclick="paToggle(this.dataset.id)">'+
       '<td>'+(i+1)+'</td><td>'+r.n+'</td><td>'+r.cat+'</td><td>'+r.venc+'</td><td>'+r.doc+'</td>'+
       '<td class="r"><b>R$ '+_fmt(r.val)+'</b></td>'+
       '<td><span class="bg-pill '+PA_COLORS[r.window].replace('#','bg_')+'" style="background:'+PA_COLORS[r.window]+'22;color:'+PA_COLORS[r.window]+';padding:2px 7px;border-radius:9px;font-size:11px">'+PA_WINS[r.window]+'</span></td>'+
@@ -1109,6 +1109,7 @@ function paRender(){
 
 function paWin(w){PA_AW=w;PA_AR=null;paRender();}
 function paReset(){PA_AW='all';PA_AR=null;paRender();}
+function paToggle(id){PA_AR=PA_AR===id?null:id;paRender();}
 
 // ── FINANCEIRO: RECEITA POR CLIENTE ──
 function recRender(){
