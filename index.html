@@ -124,7 +124,15 @@ nav{position:sticky;top:0;z-index:100;background:rgba(244,246,249,0.96);backdrop
 .cf-hint{background:var(--blue-bg);border:1px solid var(--blue-br);border-radius:9px;padding:8px 13px;font-size:11px;color:var(--blue);margin-bottom:12px;font-family:var(--mono);display:flex;align-items:center;gap:7px}
 .month-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .mpill{padding:4px 12px;border-radius:999px;font-size:11px;font-family:var(--mono);font-weight:500;cursor:pointer;border:1px solid var(--bd);background:var(--s2);color:var(--t2);transition:all .15s;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
-.mpill.sel{background:var(--blue);border-color:var(--blue);color:#fff}.mpill.dim{opacity:.3}
+.mpill.sel,.mpill.active{background:var(--blue);border-color:var(--blue);color:#fff}.mpill.dim{opacity:.3}.mpills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.kv-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.kv-card{background:var(--s1);border:1px solid var(--bd);border-radius:11px;padding:14px 18px;cursor:pointer;transition:all .18s;min-width:130px;flex:1 1 130px}
+.kv-card.kv-sel{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-bg)}
+.kv-val{font-family:var(--mono);font-size:1.45rem;font-weight:700;color:var(--t1);line-height:1.1}
+.kv-sub{font-size:10.5px;color:var(--t2);margin-top:4px}
+.charts-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px}
+.chart-box{background:var(--s1);border:1px solid var(--bd);border-radius:11px;padding:14px 16px;min-width:200px}
+.chart-title{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
 .dl-item{display:flex;align-items:center;gap:8px;cursor:pointer;padding:5px 7px;border-radius:7px;border:1px solid transparent;margin-bottom:4px;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;transition:all .15s}
 .dl-item.sel{background:var(--blue-bg);border-color:var(--blue-br)}.dl-item.dim{opacity:.3}
 .dl-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
