@@ -452,13 +452,13 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 
 <!-- Charts row -->
 <div class="charts-row">
-  <div class="chart-box" style="flex:0 0 260px">
+  <div class="chart-box" style="flex:0 0 280px">
     <div class="chart-title">Por Vencimento</div>
-    <canvas id="paDonut" height="220"></canvas>
+    <div style="position:relative;height:240px"><canvas id="paDonut"></canvas></div>
   </div>
-  <div class="chart-box" style="flex:1 1 0">
+  <div class="chart-box" style="flex:1 1 0;min-width:300px">
     <div class="chart-title">Por Fornecedor <span style="font-weight:400;font-size:11px">(top 15)</span></div>
-    <canvas id="paBar" height="300"></canvas>
+    <div style="position:relative;height:340px"><canvas id="paBar"></canvas></div>
   </div>
 </div>
 
@@ -487,7 +487,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <div class="charts-row">
   <div class="chart-box" style="flex:1 1 0">
     <div class="chart-title">Top Clientes por Receita Recebida</div>
-    <canvas id="recBar" height="320"></canvas>
+    <div style="position:relative;height:380px"><canvas id="recBar"></canvas></div>
   </div>
 </div>
 
@@ -913,7 +913,7 @@ function paRender(){
   var donutColors=windows.map(function(w){return PA_COLORS[w];});
   if(!paDonutChart){
     var ctx=document.getElementById('paDonut').getContext('2d');
-    paDonutChart=new Chart(ctx,{type:'doughnut',data:{labels:windows.map(function(w){return wlabels[w];}),datasets:[{data:winData,backgroundColor:donutColors,borderWidth:2,borderColor:'#1a1b2e'}]},options:{plugins:{legend:{position:'bottom',labels:{color:'#ccc',font:{size:11}}}},onClick:function(_,els){if(els&&els.length>0){var w=windows[els[0].index];paWin(PA_AW===w?'all':w);}}}});
+    paDonutChart=new Chart(ctx,{type:'doughnut',data:{labels:windows.map(function(w){return wlabels[w];}),datasets:[{data:winData,backgroundColor:donutColors,borderWidth:2,borderColor:'#1a1b2e'}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#ccc',font:{size:11}}}},onClick:function(_,els){if(els&&els.length>0){var w=windows[els[0].index];paWin(PA_AW===w?'all':w);}}}});
   } else {
     paDonutChart.data.datasets[0].data=winData;
     paDonutChart.update('none');
@@ -932,7 +932,7 @@ function paRender(){
   var barColors=fornList.map(function(x){return PA_AR&&x.id===PA_AR?'#f59e0b':'#6366f1';});
   if(!paBarChart){
     var ctx2=document.getElementById('paBar').getContext('2d');
-    paBarChart=new Chart(ctx2,{type:'bar',data:{labels:barLabels,datasets:[{data:barVals,backgroundColor:barColors,borderRadius:3}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',callback:function(v){return 'R$'+_fmtK(v);}},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#ccc',font:{size:10}},grid:{display:false}}},onClick:function(_,els){if(els&&els.length>0){var item=fornList[els[0].index];PA_AR=PA_AR===item.id?null:item.id;paRender();}}}});
+    paBarChart=new Chart(ctx2,{type:'bar',data:{labels:barLabels,datasets:[{data:barVals,backgroundColor:barColors,borderRadius:3}]},options:{maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',callback:function(v){return 'R$'+_fmtK(v);}},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#ccc',font:{size:10}},grid:{display:false}}},onClick:function(_,els){if(els&&els.length>0){var item=fornList[els[0].index];PA_AR=PA_AR===item.id?null:item.id;paRender();}}}});
   } else {
     paBarChart.data.labels=barLabels;
     paBarChart.data.datasets[0].data=barVals;
@@ -979,7 +979,7 @@ function recRender(){
   var barVals=top.map(function(x){return x.val;});
   if(!recBarChart){
     var ctx=document.getElementById('recBar').getContext('2d');
-    recBarChart=new Chart(ctx,{type:'bar',data:{labels:barLabels,datasets:[{data:barVals,backgroundColor:'#10b981',borderRadius:3}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',callback:function(v){return 'R$'+_fmtK(v);}},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#ccc',font:{size:10}},grid:{display:false}}}}});
+    recBarChart=new Chart(ctx,{type:'bar',data:{labels:barLabels,datasets:[{data:barVals,backgroundColor:'#10b981',borderRadius:3}]},options:{maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',callback:function(v){return 'R$'+_fmtK(v);}},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#ccc',font:{size:10}},grid:{display:false}}}}});
   } else {
     recBarChart.data.labels=barLabels;
     recBarChart.data.datasets[0].data=barVals;
