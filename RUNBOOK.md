@@ -21,23 +21,38 @@ A versão 1 fazia download manual de 4 arquivos no UI do Bling. Esta versão lê
 
 ## Fluxo semanal — comando único
 
-Numa conversa Cowork, basta pedir: **"rode o runbook semanal"**.
+Numa conversa Cowork, basta pedir: **"rode o runbook semanal"**. 100% online — não precisa do Terminal nativo.
 
-Os 3 comandos abaixo são o que precisa rodar:
+Os comandos abaixo são o que rodam (em sandbox bash):
 
 ```bash
+# 1. pull dos dados Bling (com retomada incremental)
 python3 ~/Documents/Easy_Financas/fetch-bling.py \
   --data-inicial 2025-10-01 \
   --no-detail-receber
 
+# 2. regenera bling-live.html
 python3 ~/Documents/Easy_Financas/build-html.py
 
-cd ~/Documents/Easy_Financas \
-  && git pull \
-  && git add . \
-  && git commit -m "weekly snapshot $(date +%Y-%m-%d)" \
-  && git push
+# 3. push pro GitHub Pages — usa clone temporario em /tmp porque
+#    o iCloud Drive bloqueia .git/index.lock (Operation not permitted)
+TMP=/tmp/ef-push
+rm -rf "$TMP"
+git clone https://github.com/leandrogelpke/Easy_Financas.git "$TMP"
+cp ~/Documents/Easy_Financas/.git-token-store "$TMP/"
+cd "$TMP"
+git config credential.helper "store --file=$TMP/.git-token-store"
+git config user.email "leandrogelpke@gmail.com"
+git config user.name "Leandro Gelpke"
+cp ~/Documents/Easy_Financas/bling-live.html .
+cp ~/Documents/Easy_Financas/index.html . 2>/dev/null || true
+cp ~/Documents/Easy_Financas/DRE_Projetado_Realizado.html . 2>/dev/null || true
+git add .
+git commit -m "weekly snapshot $(date +%Y-%m-%d)"
+git push origin main
 ```
+
+> **Por que o clone temporário?** A pasta `~/Documents/Easy_Financas/` está em iCloud Drive. Locks como `.git/index.lock` ficam com flag de "Operation not permitted" para o usuário do sandbox, então `git commit` direto na pasta sincronizada falha. O workaround é commitar de uma cópia em `/tmp/` (fora do iCloud) e push.
 
 ## O que cada script faz
 
