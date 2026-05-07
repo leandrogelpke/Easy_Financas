@@ -424,80 +424,74 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <!-- ═══ FINANCEIRO ═══ -->
 <div class="pg" id="pg-financeiro">
 
-<!-- ─── A PAGAR EM ABERTO ─── -->
 <div class="hero">
-  <div>
-    <div class="htitle">💸 A Pagar em Aberto</div>
-    <div class="hsub" id="paHsub">Carregando...</div>
-  </div>
+  <div><div class="htitle">Financeiro — Contas e Receita</div><div class="hsub" id="paHsub">Carregando...</div></div>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
     <span class="sel-lbl" id="paSelLbl"></span>
     <button class="reset-btn" id="paResetBtn" onclick="paReset()">✕ Limpar</button>
   </div>
 </div>
 
-<!-- KPI cards -->
-<div class="kv-row" id="paKvRow"></div>
+<div class="sl">A Pagar em Aberto — por janela de vencimento</div>
+<div class="g5" id="paKvRow" style="margin-bottom:12px"></div>
 
-<!-- Filter pills -->
-<div class="cf-hint">💡 Clique em um card ou barra para filtrar</div>
+<div class="cf-hint">💡 Clique nos cards ou no gráfico para filtrar · clique novamente para remover filtro</div>
 <div class="mpills" id="paPills">
-  <div class="mpill active" data-w="all" onclick="paWin('all')">Todos</div>
-  <div class="mpill venc" data-w="vencido" onclick="paWin('vencido')">Vencido</div>
-  <div class="mpill" data-w="30d" onclick="paWin('30d')">≤ 30d</div>
-  <div class="mpill" data-w="60d" onclick="paWin('60d')">31–60d</div>
-  <div class="mpill" data-w="90d" onclick="paWin('90d')">61–90d</div>
-  <div class="mpill" data-w="90plus" onclick="paWin('90plus')">+90d</div>
+  <div class="mpill active" data-w="all" onclick="paWin(this.dataset.w)">Todos</div>
+  <div class="mpill" data-w="vencido" onclick="paWin(this.dataset.w)">Vencido</div>
+  <div class="mpill" data-w="30d" onclick="paWin(this.dataset.w)">≤ 30d</div>
+  <div class="mpill" data-w="60d" onclick="paWin(this.dataset.w)">31–60d</div>
+  <div class="mpill" data-w="90d" onclick="paWin(this.dataset.w)">61–90d</div>
+  <div class="mpill" data-w="90plus" onclick="paWin(this.dataset.w)">+90d</div>
 </div>
 
-<!-- Charts row -->
-<div class="charts-row">
-  <div class="chart-box" style="flex:0 0 280px">
-    <div class="chart-title">Por Vencimento</div>
-    <div style="position:relative;height:240px"><canvas id="paDonut"></canvas></div>
+<div class="g2" style="margin-bottom:12px">
+  <div class="card">
+    <div class="ct">Por Vencimento <span class="ct-tag">toque para filtrar</span></div>
+    <div class="cw" style="height:240px"><canvas id="paDonut"></canvas></div>
   </div>
-  <div class="chart-box" style="flex:1 1 0;min-width:300px">
-    <div class="chart-title">Por Fornecedor <span style="font-weight:400;font-size:11px">(top 15)</span></div>
-    <div style="position:relative;height:340px"><canvas id="paBar"></canvas></div>
+  <div class="card">
+    <div class="ct">Por Fornecedor <span class="ct-tag">top 15 · toque para filtrar</span></div>
+    <div class="cw" style="height:340px"><canvas id="paBar"></canvas></div>
   </div>
 </div>
 
-<!-- Table -->
-<div class="cf-tbl-wrap">
-  <table class="cf-tbl">
-    <thead><tr>
-      <th>#</th><th>Fornecedor</th><th>Categoria</th><th>Vcto</th><th>Doc.</th><th class="r">Saldo</th><th>Janela</th>
-    </tr></thead>
-    <tbody id="paTbody"></tbody>
-  </table>
+<div class="card" style="margin-bottom:32px">
+  <div class="ct">Lançamentos a pagar <span id="paTblCount" style="color:var(--t2)"></span></div>
+  <div class="tbl-wrap">
+    <table class="dt">
+      <thead><tr>
+        <th>#</th><th>Fornecedor</th><th>Categoria</th><th>Vcto</th><th>Doc.</th><th class="r">Saldo</th><th>Janela</th>
+      </tr></thead>
+      <tbody id="paTbody"></tbody>
+    </table>
+  </div>
 </div>
 
-<!-- ─── RECEITA POR CLIENTE ─── -->
-<div class="hero" style="margin-top:32px">
-  <div>
-    <div class="htitle">💰 Receita por Cliente (Recebida)</div>
-    <div class="hsub" id="recHsub">Carregando...</div>
-  </div>
-  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+<div class="sl">Receita por Cliente — recebida no período</div>
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:12px">
+  <div class="hsub" id="recHsub" style="font-family:var(--mono);font-size:11px;color:var(--t3)">Carregando...</div>
+  <div style="display:flex;align-items:center;gap:8px">
     <span class="sel-lbl" id="recSelLbl"></span>
     <button class="reset-btn" id="recResetBtn" onclick="recReset()">✕ Limpar</button>
   </div>
 </div>
 
-<div class="charts-row">
-  <div class="chart-box" style="flex:1 1 0">
-    <div class="chart-title">Top Clientes por Receita Recebida</div>
-    <div style="position:relative;height:380px"><canvas id="recBar"></canvas></div>
-  </div>
+<div class="card" style="margin-bottom:12px">
+  <div class="ct">Top clientes por receita recebida</div>
+  <div class="cw" style="height:380px"><canvas id="recBar"></canvas></div>
 </div>
 
-<div class="cf-tbl-wrap">
-  <table class="cf-tbl">
-    <thead><tr>
-      <th>#</th><th>Cliente</th><th class="r">Receita Total</th><th class="r">Qtd. Lançamentos</th><th class="r">Ticket Médio</th>
-    </tr></thead>
-    <tbody id="recTbody"></tbody>
-  </table>
+<div class="card">
+  <div class="ct">Todos os clientes — receita recebida <span id="recTblCount" style="color:var(--t2)"></span></div>
+  <div class="tbl-wrap">
+    <table class="dt">
+      <thead><tr>
+        <th>#</th><th>Cliente</th><th class="r">Receita Total</th><th class="r">Lançamentos</th><th class="r">Ticket Médio</th>
+      </tr></thead>
+      <tbody id="recTbody"></tbody>
+    </table>
+  </div>
 </div>
 
 </div><!-- /pg-financeiro -->
@@ -862,7 +856,7 @@ var RECEBIDO_DATA=@@RECEBIDO_DATA@@;
 
 // window labels
 var PA_WINS={all:'Todos',vencido:'Vencido','30d':'≤30d','60d':'31–60d','90d':'61–90d','90plus':'+90d'};
-var PA_COLORS={all:'#6366f1',vencido:'#ef4444','30d':'#f59e0b','60d':'#3b82f6','90d':'#10b981','90plus':'#8b5cf6'};
+var PA_COLORS={all:'#1a5fa8',vencido:'#c0392b','30d':'#b7650a','60d':'#1a5fa8','90d':'#1e7e4f','90plus':'#5b4ab0'};
 
 // state
 var PA_AW='all', PA_AR=null;
@@ -889,15 +883,22 @@ function paRender(){
   document.getElementById('paHsub').textContent=rows.length+' lançamentos · R$ '+_fmt(tot)+
     (PA_AW!=='all'||PA_AR?' (filtrado de R$ '+_fmt(totalAll)+')':'');
 
-  // KV cards
+  // KV cards — usa classe .met igual às outras abas
   var windows=['vencido','30d','60d','90d','90plus'];
   var wlabels={vencido:'Vencido','30d':'≤ 30d','60d':'31–60d','90d':'61–90d','90plus':'+90d'};
-  var kvHtml='<div class="kv-card" data-w="all" onclick="paWin(this.dataset.w)" style="cursor:pointer"><div class="kv-val">R$ '+_fmt(totalAll)+'</div><div class="kv-sub">Total em Aberto</div></div>';
+  var wclasses={vencido:'red','30d':'amber','60d':'blue','90d':'green','90plus':'purple'};
+  var kvHtml='';
   windows.forEach(function(w){
     var wrows=PAGAR_DATA.filter(function(r){return r.window===w;});
     var wval=wrows.reduce(function(s,r){return s+r.val;},0);
+    var cls=wclasses[w]||'slate';
     var isActive=PA_AW===w;
-    kvHtml+='<div class="kv-card'+(isActive?' kv-sel':'')+'" data-w="'+w+'" onclick="paWin(this.dataset.w)" style="cursor:pointer;border-color:'+PA_COLORS[w]+'"><div class="kv-val" style="color:'+PA_COLORS[w]+'">R$ '+_fmt(wval)+'</div><div class="kv-sub">'+wlabels[w]+'</div></div>';
+    var isDim=PA_AW!=='all'&&!isActive;
+    kvHtml+='<div class="met '+cls+(isActive?' sel':'')+(isDim?' dim':'')+'" data-w="'+w+'" onclick="paWin(this.dataset.w)">'+
+      '<div class="ml">'+wlabels[w]+'</div>'+
+      '<div class="mv '+cls+'">R$ '+_fmt(wval)+'</div>'+
+      '<div class="ms">'+wrows.length+' lançamentos</div>'+
+      '</div>';
   });
   document.getElementById('paKvRow').innerHTML=kvHtml;
 
@@ -913,7 +914,7 @@ function paRender(){
   var donutColors=windows.map(function(w){return PA_COLORS[w];});
   if(!paDonutChart){
     var ctx=document.getElementById('paDonut').getContext('2d');
-    paDonutChart=new Chart(ctx,{type:'doughnut',data:{labels:windows.map(function(w){return wlabels[w];}),datasets:[{data:winData,backgroundColor:donutColors,borderWidth:2,borderColor:'#1a1b2e'}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#ccc',font:{size:11}}}},onClick:function(_,els){if(els&&els.length>0){var w=windows[els[0].index];paWin(PA_AW===w?'all':w);}}}});
+    paDonutChart=new Chart(ctx,{type:'doughnut',data:{labels:windows.map(function(w){return wlabels[w];}),datasets:[{data:winData,backgroundColor:donutColors,borderWidth:2,borderColor:'#fff'}]},options:{maintainAspectRatio:false,cutout:'64%',animation:{duration:250},plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:10,font:{size:10}}},tooltip:{callbacks:{label:function(c){return c.label+': '+fBR(c.parsed);}}}},onClick:function(_,els){if(els&&els.length>0){var w=windows[els[0].index];paWin(PA_AW===w?'all':w);}}}});
   } else {
     paDonutChart.data.datasets[0].data=winData;
     paDonutChart.update('none');
@@ -929,10 +930,10 @@ function paRender(){
   var fornList=Object.values(byForn).sort(function(a,b){return b.val-a.val;}).slice(0,15);
   var barLabels=fornList.map(function(x){return x.n.length>22?x.n.substring(0,22)+'…':x.n;});
   var barVals=fornList.map(function(x){return x.val;});
-  var barColors=fornList.map(function(x){return PA_AR&&x.id===PA_AR?'#f59e0b':'#6366f1';});
+  var barColors=fornList.map(function(x){return PA_AR&&x.id===PA_AR?'#b7650a':'#1a5fa8cc';});
   if(!paBarChart){
     var ctx2=document.getElementById('paBar').getContext('2d');
-    paBarChart=new Chart(ctx2,{type:'bar',data:{labels:barLabels,datasets:[{data:barVals,backgroundColor:barColors,borderRadius:3}]},options:{maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',callback:function(v){return 'R$'+_fmtK(v);}},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#ccc',font:{size:10}},grid:{display:false}}},onClick:function(_,els){if(els&&els.length>0){var item=fornList[els[0].index];PA_AR=PA_AR===item.id?null:item.id;paRender();}}}});
+    paBarChart=new Chart(ctx2,{type:'bar',data:{labels:barLabels,datasets:[{data:barVals,backgroundColor:barColors,borderRadius:3}]},options:{maintainAspectRatio:false,indexAxis:'y',animation:{duration:250},plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fBR(c.parsed.x);}}}},scales:{x:{ticks:{callback:function(v){return 'R$'+_fmtK(v);}},grid:{color:'rgba(60,90,130,0.08)'}},y:{ticks:{font:{size:10}},grid:{display:false}}},onClick:function(_,els){if(els&&els.length>0){var item=fornList[els[0].index];PA_AR=PA_AR===item.id?null:item.id;paRender();}}}});
   } else {
     paBarChart.data.labels=barLabels;
     paBarChart.data.datasets[0].data=barVals;
@@ -941,17 +942,23 @@ function paRender(){
   }
 
   // table
+  var wbadge={vencido:'bgr','30d':'bga','60d':'bgb','90d':'bgg','90plus':'bgp'};
   var tbHtml='';
   var sorted=rows.slice().sort(function(a,b){return b.val-a.val;});
+  var anyRowSel=PA_AR!==null;
   sorted.forEach(function(r,i){
-    var sel=PA_AR===r.id;
-    tbHtml+='<tr class="cf-tr'+(sel?' cf-sel':'')+'" data-id="'+r.id+'" onclick="paToggle(this.dataset.id)">'+
-      '<td>'+(i+1)+'</td><td>'+r.n+'</td><td>'+r.cat+'</td><td>'+r.venc+'</td><td>'+r.doc+'</td>'+
-      '<td class="r"><b>R$ '+_fmt(r.val)+'</b></td>'+
-      '<td><span class="bg-pill '+PA_COLORS[r.window].replace('#','bg_')+'" style="background:'+PA_COLORS[r.window]+'22;color:'+PA_COLORS[r.window]+';padding:2px 7px;border-radius:9px;font-size:11px">'+PA_WINS[r.window]+'</span></td>'+
+    var isSel=PA_AR===r.id;
+    tbHtml+='<tr class="'+(isSel?'sel':anyRowSel?'dim':'')+'" data-id="'+r.id+'" onclick="paToggle(this.dataset.id)">'+
+      '<td>'+(i+1)+'</td><td class="lbl">'+r.n+'</td><td>'+r.cat+'</td>'+
+      '<td style="font-family:var(--mono);font-size:11px">'+r.venc+'</td>'+
+      '<td style="font-family:var(--mono);font-size:11px">'+r.doc+'</td>'+
+      '<td class="r">R$ '+_fmt(r.val)+'</td>'+
+      '<td><span class="bge '+(wbadge[r.window]||'bgn')+'">'+PA_WINS[r.window]+'</span></td>'+
       '</tr>';
   });
   document.getElementById('paTbody').innerHTML=tbHtml;
+  var paTblEl=document.getElementById('paTblCount');
+  if(paTblEl)paTblEl.textContent=sorted.length+' de '+PAGAR_DATA.length+' lançamentos';
 
   // sel label
   var parts=[];
@@ -979,7 +986,7 @@ function recRender(){
   var barVals=top.map(function(x){return x.val;});
   if(!recBarChart){
     var ctx=document.getElementById('recBar').getContext('2d');
-    recBarChart=new Chart(ctx,{type:'bar',data:{labels:barLabels,datasets:[{data:barVals,backgroundColor:'#10b981',borderRadius:3}]},options:{maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',callback:function(v){return 'R$'+_fmtK(v);}},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#ccc',font:{size:10}},grid:{display:false}}}}});
+    recBarChart=new Chart(ctx,{type:'bar',data:{labels:barLabels,datasets:[{data:barVals,backgroundColor:'#1e7e4fcc',borderRadius:3}]},options:{maintainAspectRatio:false,indexAxis:'y',animation:{duration:250},plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fBR(c.parsed.x);}}}},scales:{x:{ticks:{callback:function(v){return 'R$'+_fmtK(v);}},grid:{color:'rgba(60,90,130,0.08)'}},y:{ticks:{font:{size:10}},grid:{display:false}}}}});
   } else {
     recBarChart.data.labels=barLabels;
     recBarChart.data.datasets[0].data=barVals;
@@ -990,14 +997,16 @@ function recRender(){
   var tbHtml='';
   RECEBIDO_DATA.forEach(function(r,i){
     var ticket=r.count>0?r.val/r.count:0;
-    tbHtml+='<tr class="cf-tr">'+
-      '<td>'+(i+1)+'</td><td>'+r.n+'</td>'+
-      '<td class="r"><b>R$ '+_fmt(r.val)+'</b></td>'+
+    tbHtml+='<tr>'+
+      '<td>'+(i+1)+'</td><td class="lbl">'+r.n+'</td>'+
+      '<td class="r">R$ '+_fmt(r.val)+'</td>'+
       '<td class="r">'+r.count+'</td>'+
       '<td class="r">R$ '+_fmt(ticket)+'</td>'+
       '</tr>';
   });
   document.getElementById('recTbody').innerHTML=tbHtml;
+  var recTblEl=document.getElementById('recTblCount');
+  if(recTblEl)recTblEl.textContent=RECEBIDO_DATA.length+' clientes';
 }
 
 function recReset(){recRender();}
