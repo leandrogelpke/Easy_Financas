@@ -271,7 +271,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <div class="g2">
   <div class="card">
     <div class="ct">Riscos e desvios</div>
-    <div class="alt alr"><div class="ats">R$ 19.913 vencidos a receber (4 lançamentos)</div><div class="asd">Usina São Francisco S/A, ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA, MIR IMPORTACAO E EXPORTACAO LTDA — acionar cobrança.</div></div>
+    <div class="alt alr"><div class="ats">R$ 19.913 vencidos a receber (4 lançamentos)</div><div class="asd">ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA, Usina São Francisco S/A, MIR IMPORTACAO E EXPORTACAO LTDA — acionar cobrança.</div></div>
     <div class="alt ala"><div class="ats">R$ 621 K sem categoria (83 lançamentos)</div><div class="asd">Classifique no Bling — impacta DRE.</div></div>
     <div class="alt ala"><div class="ats">R$ 118 K vencem em até 30 dias (10 lançamentos)</div><div class="asd">Planejar disponibilidade de caixa.</div></div>
   </div>
@@ -807,7 +807,7 @@ function dreToggleRow(k){
 <!-- ═══ CLIENTES ═══ -->
 <div class="pg" id="pg-clientes">
 <div class="hero">
-  <div><div class="htitle">Base de Clientes & Retenção</div><div class="hsub">27 pagantes · R$ 196.687/mês total mapeado · out/25–abr/26</div></div>
+  <div><div class="htitle">Base de Clientes & Retenção</div><div class="hsub">11 clientes ativos · R$ 121.035/mês mapeado · janela: últimos 12 meses fechados (rolling)</div></div>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
     <span class="sel-lbl" id="cliSelLbl"></span>
     <button class="reset-btn" id="cliResetBtn" onclick="cliReset()">✕ Limpar</button>
@@ -821,26 +821,26 @@ function dreToggleRow(k){
 <div class="g4">
   <div class="met green" id="ckpi-gar" onclick="cliCat('garantido')">
     <div class="ml">✅ Garantido</div>
-    <div class="mv green">R$ 79.741</div>
-    <div class="ms">15 clientes · uso ativo abr/26</div>
-    <div class="delta d-pos">41% da receita</div>
+    <div class="mv green">R$ 75.290</div>
+    <div class="ms">5 clientes · uso ativo</div>
+    <div class="delta d-pos">62% da receita</div>
   </div>
   <div class="met amber" id="ckpi-med" onclick="cliCat('medio')">
     <div class="ml">🟡 Risco médio</div>
-    <div class="mv amber">R$ 26.769</div>
-    <div class="ms">6 clientes · paga mas não usa</div>
-    <div class="delta d-neg">14% da receita</div>
+    <div class="mv amber">R$ 35.187</div>
+    <div class="ms">5 clientes · paga mas não usa</div>
+    <div class="delta d-neg">29% da receita</div>
   </div>
   <div class="met red" id="ckpi-alt" onclick="cliCat('alto')">
     <div class="ml">🔴 Risco alto</div>
-    <div class="mv red">R$ 45.580</div>
-    <div class="ms">6 clientes · churn flagged</div>
-    <div class="delta d-neg">23% da receita</div>
+    <div class="mv red">R$ 10.558</div>
+    <div class="ms">1 clientes · churn flagged</div>
+    <div class="delta d-neg">9% da receita</div>
   </div>
   <div class="met blue" id="ckpi-tot">
     <div class="ml">Total mapeado</div>
-    <div class="mv blue" id="ckv-tot">R$ 196.687</div>
-    <div class="ms" id="ckv-sub">27 clientes ativos</div>
+    <div class="mv blue" id="ckv-tot">R$ 121.035</div>
+    <div class="ms" id="ckv-sub">11 clientes ativos</div>
   </div>
 </div>
 
@@ -851,36 +851,30 @@ function dreToggleRow(k){
     <div style="display:flex;flex-direction:column;gap:10px;padding:2px 0">
       <div>
         <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
-          <span style="color:var(--t2)">Base histórica total</span><span style="color:var(--blue)">68 clientes</span>
+          <span style="color:var(--t2)">Pagamento ativo</span><span style="color:var(--green)">11 clientes · R$ 121.035/mês</span>
         </div>
-        <div class="pbar"><div class="pbi" style="width:100%;background:var(--blue)"></div></div>
+        <div class="pbar"><div class="pbi" style="width:100%;background:var(--green)"></div></div>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
-          <span style="color:var(--t2)">Pagamento ativo</span><span style="color:var(--green)">27 (40%) · R$ 196.687/mês</span>
+          <span style="color:var(--t2)">✅ Garantido (uso ativo)</span><span style="color:var(--green)">5 clientes · R$ 75.290/mês</span>
         </div>
-        <div class="pbar"><div class="pbi" style="width:40%;background:var(--green)"></div></div>
+        <div class="pbar"><div class="pbi" style="width:62%;background:var(--green)"></div></div>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
-          <span style="color:var(--t2)">✅ Garantido (uso ativo)</span><span style="color:var(--green)">15 clientes · R$ 79.741/mês</span>
+          <span style="color:var(--t2)">🟡 Risco médio (não usa)</span><span style="color:var(--amber)">5 clientes · R$ 35.187/mês</span>
         </div>
-        <div class="pbar"><div class="pbi" style="width:29%;background:var(--green)"></div></div>
+        <div class="pbar"><div class="pbi" style="width:29%;background:var(--amber)"></div></div>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
-          <span style="color:var(--t2)">🟡 Risco médio (não usa)</span><span style="color:var(--amber)">6 clientes · R$ 26.769/mês</span>
+          <span style="color:var(--t2)">🔴 Risco alto (churn)</span><span style="color:var(--red)">1 clientes · R$ 10.558/mês</span>
         </div>
-        <div class="pbar"><div class="pbi" style="width:14%;background:var(--amber)"></div></div>
-      </div>
-      <div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
-          <span style="color:var(--t2)">🔴 Risco alto (churn)</span><span style="color:var(--red)">6 clientes · R$ 45.580/mês</span>
-        </div>
-        <div class="pbar"><div class="pbi" style="width:23%;background:var(--red)"></div></div>
+        <div class="pbar"><div class="pbi" style="width:9%;background:var(--red)"></div></div>
       </div>
       <div style="background:var(--red-bg);border-radius:8px;padding:8px 10px;font-size:11px;font-family:var(--mono);color:var(--red);margin-top:4px">
-        ⚠️ Se risco alto cancelar: −R$ 45.580/mês &nbsp;|&nbsp; Se tudo cancelar: −R$ 72.349/mês
+        ⚠️ Se risco alto cancelar: −R$ 10.558/mês &nbsp;|&nbsp; Se médio + alto cancelar: −R$ 45.745/mês
       </div>
     </div>
   </div>
@@ -1937,33 +1931,17 @@ ppRender();
 
 // ── CLIENTES CROSS FILTER ──
 var CLI_DATA=[
-  {id:'cantu',   n:'Cantu Importação',        cat:'garantido',valor:11535,uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'telerio', n:'Tele Rio Eletro',          cat:'garantido',valor:10978,uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'pia',     n:'Pia Sociedade SP',         cat:'garantido',valor:10205,uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'masp',    n:'MASP',                     cat:'garantido',valor:8883, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'mir',     n:'MIR (Ramsons)',            cat:'garantido',valor:6445, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'usina',   n:'Usina São Francisco',      cat:'garantido',valor:5271, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'khronos', n:'Khronos Eletrônica',       cat:'garantido',valor:5264, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'atacadao',n:'Atacadão Autopecas',       cat:'garantido',valor:4232, uso:'Ativo',  abr:'Ativo',obs:'Parcela parcial'},
-  {id:'lord',    n:'Org. Lord (Conbral)',      cat:'garantido',valor:4154, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'decanter',n:'Decanter Vinhos Finos',    cat:'garantido',valor:2640, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'hsr',     n:'HSR Shopping Lustres',     cat:'garantido',valor:2625, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'fueltech',n:'Fueltech LTDA',            cat:'garantido',valor:2338, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'higi',    n:'Higimaster',               cat:'garantido',valor:2322, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'manole',  n:'Editora Manole',           cat:'garantido',valor:1809, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'ralston', n:'Ind. Alim. Ralston',       cat:'garantido',valor:1041, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'polar_s', n:'Polar Store LTDA',         cat:'medio',    valor:6754, uso:'Inativo',abr:'—',   obs:'Vínculo sócio Polar'},
-  {id:'congr',   n:'Congregação SS Redentor',  cat:'medio',    valor:6147, uso:'Ativo',  abr:'?',   obs:'Uso incerto'},
-  {id:'dorel',   n:'Dorel Comércio',           cat:'medio',    valor:4735, uso:'Ativo',  abr:'não', obs:'Não usou abr'},
-  {id:'weiser',  n:'Sérgio Weiser Decoração',  cat:'medio',    valor:4643, uso:'Ativo',  abr:'não', obs:'Não usou abr'},
-  {id:'funpar',  n:'FUNPAR',                   cat:'medio',    valor:2366, uso:'Ativo',  abr:'não', obs:'Não usou abr'},
-  {id:'elshadai',n:'Elshadai Alimentos',       cat:'medio',    valor:2123, uso:'Ativo',  abr:'não', obs:'Não usou abr'},
-  {id:'editora', n:'Editora do Brasil SA',     cat:'alto',     valor:17739,uso:'Inativo',abr:'—',   obs:'Uso inativo · set/2021'},
-  {id:'guaraves',n:'Guaraves Guarabira Aves',  cat:'alto',     valor:10584,uso:'Inativo',abr:'—',   obs:'Uso inativo · ago/2022'},
-  {id:'dux',     n:'Dux Company SA',           cat:'alto',     valor:9863, uso:'Ativo',  abr:'não', obs:'Solicitou cancelamento'},
-  {id:'jdk',     n:'JDK Presentes (Dryzum)',   cat:'alto',     valor:3829, uso:'Inativo',abr:'—',   obs:'Fase de cancelamento'},
-  {id:'lab',     n:'Lab. Florais Joel Aleixo', cat:'alto',     valor:2120, uso:'Inativo',abr:'—',   obs:'Parou de usar fev/26'},
-  {id:'sky',     n:'Sky Cranes & Hoists',      cat:'alto',     valor:1446, uso:'Inativo',abr:'—',   obs:'Nunca ativou'}
+  {id:'totvs',n:'TOTVS S.A.',cat:'garantido',valor:56306,uso:'Ativo',abr:'Ativo',obs:'Cliente âncora — múltiplas entidades do grupo'},
+  {id:'totvs_sc',n:'TOTVS S.A. Santa Catarina',cat:'garantido',valor:9064,uso:'Ativo',abr:'Ativo',obs:'Filial SC'},
+  {id:'telerio',n:'Tele Rio Eletro',cat:'garantido',valor:5537,uso:'Ativo',abr:'Ativo',obs:''},
+  {id:'marcas1000',n:'1000 Marcas Safety Brasil',cat:'garantido',valor:3070,uso:'Ativo',abr:'Ativo',obs:''},
+  {id:'totvs_large',n:'TOTVS Large Enterprise',cat:'garantido',valor:1313,uso:'Ativo',abr:'Ativo',obs:'Tickets menores, mensais'},
+  {id:'fueltech',n:'Fueltech LTDA',cat:'medio',valor:11731,uso:'Inativo',abr:'—',obs:'Último pagamento ago/2025'},
+  {id:'weiser',n:'Sérgio Weiser Decoração',cat:'medio',valor:8759,uso:'Intermitente',abr:'Ativo',obs:'Pagamentos irregulares'},
+  {id:'funpar',n:'FUNPAR',cat:'medio',valor:5866,uso:'Inativo',abr:'—',obs:'Último pagamento nov/2025 — Bling trunca nome em 80 chars'},
+  {id:'higi',n:'Higimaster',cat:'medio',valor:4921,uso:'Inativo',abr:'—',obs:'Último pagamento nov/2025'},
+  {id:'khronos',n:'Khronos Eletrônica',cat:'medio',valor:3910,uso:'Inativo',abr:'—',obs:'Último pagamento dez/2025'},
+  {id:'atacadao',n:'Atacadão Autopeças',cat:'alto',valor:10558,uso:'Ativo',abr:'Ativo',obs:'Parcelas vencidas — cobrança em curso'}
 ];
 var CAT_CLI=[
   {cat:'garantido',label:'Garantido',  color:'#1e7e4f'},
@@ -1978,7 +1956,7 @@ function fBRc(v){return 'R$ '+Math.round(v).toLocaleString('pt-BR');}
 var cliDonut=new Chart(document.getElementById('cliDonut'),{
   type:'doughnut',
   data:{labels:CAT_CLI.map(function(c){return c.label;}),
-    datasets:[{data:[79741,26769,45580],backgroundColor:CAT_CLI.map(function(c){return c.color;}),borderWidth:2,borderColor:'#fff'}]},
+    datasets:[{data:[75290,35187,10558],backgroundColor:CAT_CLI.map(function(c){return c.color;}),borderWidth:2,borderColor:'#fff'}]},
   options:{responsive:true,maintainAspectRatio:false,cutout:'64%',animation:{duration:250},
     plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.label+': '+fBRc(c.parsed)+'/mês';}}}},
     onClick:function(_,els){if(els&&els.length>0){var cat=CAT_CLI[els[0].index].cat;CLI_AC=CLI_AC===cat?null:cat;CLI_AR=null;cliRender();}}
