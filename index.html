@@ -218,6 +218,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   <button class="mobtab active" onclick="sp('overview',this,1)">Visão Geral</button>
   <button class="mobtab" onclick="sp('gastos',this,1)">Gastos</button>
   <button class="mobtab" onclick="sp('cashflow',this,1)">Caixa</button>
+  <button class="mobtab" onclick="sp('cartao',this,1)">Cartão</button>
   <button class="mobtab" onclick="sp('clientes',this,1)">Clientes</button>
   <button class="mobtab" onclick="sp('totvs',this,1)">Comissões Totvs</button>
   <button class="mobtab" onclick="sp('pipeline',this,1)">Pipeline</button>
@@ -237,6 +238,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
     <button class="ntab active" onclick="sp('overview',this)">Visão Geral</button>
     <button class="ntab" onclick="sp('gastos',this)">Gastos</button>
     <button class="ntab" onclick="sp('cashflow',this)">Caixa</button>
+    <button class="ntab" onclick="sp('cartao',this)">Cartão</button>
     <button class="ntab" onclick="sp('clientes',this)">Clientes</button>
     <button class="ntab" onclick="sp('totvs',this)">Comissões Totvs</button>
     <button class="ntab" onclick="sp('pipeline',this)">Pipeline</button>
@@ -271,8 +273,8 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <div class="g2">
   <div class="card">
     <div class="ct">Riscos e desvios</div>
-    <div class="alt alr"><div class="ats">R$ 28.482 vencidos a receber (4 lançamentos)</div><div class="asd">ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA, MIR IMPORTACAO E EXPORTACAO LTDA, TOTVS SA — acionar cobrança.</div></div>
-    <div class="alt alr"><div class="ats">R$ 178.748 a pagar vencidos (14 lançamentos)</div><div class="asd">CRALUS INFORMATICA LTDA, RECEITA FEDERAL, M. DE Q. MACEDO - EPP</div></div>
+    <div class="alt alr"><div class="ats">R$ 28.482 vencidos a receber (4 lançamentos)</div><div class="asd">TOTVS SA, MIR IMPORTACAO E EXPORTACAO LTDA, ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA — acionar cobrança.</div></div>
+    <div class="alt alr"><div class="ats">R$ 178.748 a pagar vencidos (14 lançamentos)</div><div class="asd">PREFEITURA DO MUNICIPIO DE S, M. DE Q. MACEDO - EPP, LWSA S/A</div></div>
     <div class="alt ala"><div class="ats">R$ 574 K sem categoria (82 lançamentos)</div><div class="asd">Classifique no Bling — impacta DRE.</div></div>
     <div class="alt ala"><div class="ats">R$ 207 K vencem em até 30 dias (16 lançamentos)</div><div class="asd">Planejar disponibilidade de caixa.</div></div>
   </div>
@@ -477,6 +479,32 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 </div>
 </div>
 <!-- fim bloco hardcoded antigo (oculto) -->
+</div>
+<!-- ═══ CARTÃO DE CRÉDITO ═══ -->
+<div class="pg" id="pg-cartao">
+<div class="hero">
+  <div>
+    <div class="htitle">Cartão de Crédito<br><span style="font-size:14px;color:var(--t2);font-weight:400">Bradesco · análise de gastos por fornecedor e cartão</span></div>
+    <div class="hsub">12 faturas · Jan/26–Jun/26 · 2 cartões (Bradesco VISA)</div>
+  </div>
+  <div class="pills">
+    <span class="pill pb2"><span class="pdot"></span>Total R$ 51,4K</span>
+    <span class="pill pg2"><span class="pdot"></span>US$ 8,4K no exterior</span>
+    <span class="pill pa"><span class="pdot"></span>AWS 88% do gasto</span>
+  </div>
+</div>
+<div class="g4"><div class="met blue"><div class="ml">Total no período</div><div class="mv blue">R$ 51.424</div><div class="ms">44 lançamentos · US$ 8.404 em moeda estrangeira</div></div><div class="met teal"><div class="ml">Média mensal</div><div class="mv teal">R$ 8.571</div><div class="ms">6 meses (Jan/26–Jun/26)</div></div><div class="met amber"><div class="ml">Último mês (Jun/26)</div><div class="mv amber">R$ 12.362</div><div class="ms">+115% vs Jan/26</div></div><div class="met red"><div class="ml">IOF / impostos</div><div class="mv red">R$ 1.717</div><div class="ms">3% do total · custo de compras no exterior</div></div></div>
+<div class="sl">Visão geral</div>
+<div class="card" style="margin-bottom:12px"><div class="ct">Evolução mensal <span class="ct-tag">por cartão</span></div><div style="margin-top:10px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:7px"><div style="width:54px;font-family:var(--mono);font-size:11px;color:var(--t2)">Jan/26</div><div style="flex:1;height:18px;background:var(--s2);border-radius:4px;overflow:hidden;display:flex"><div title="Easy Analytics: R$ 190" style="width:1.54%;background:var(--amber);height:100%"></div><div title="Paulo V. Andrade: R$ 5.549" style="width:44.89%;background:var(--blue);height:100%"></div></div><div style="width:90px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--t1)">R$ 5.739</div></div><div style="display:flex;align-items:center;gap:10px;margin-bottom:7px"><div style="width:54px;font-family:var(--mono);font-size:11px;color:var(--t2)">Fev/26</div><div style="flex:1;height:18px;background:var(--s2);border-radius:4px;overflow:hidden;display:flex"><div title="Easy Analytics: R$ 225" style="width:1.82%;background:var(--amber);height:100%"></div><div title="Paulo V. Andrade: R$ 6.534" style="width:52.86%;background:var(--blue);height:100%"></div></div><div style="width:90px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--t1)">R$ 6.759</div></div><div style="display:flex;align-items:center;gap:10px;margin-bottom:7px"><div style="width:54px;font-family:var(--mono);font-size:11px;color:var(--t2)">Mar/26</div><div style="flex:1;height:18px;background:var(--s2);border-radius:4px;overflow:hidden;display:flex"><div title="Easy Analytics: R$ 186" style="width:1.51%;background:var(--amber);height:100%"></div><div title="Paulo V. Andrade: R$ 5.429" style="width:43.92%;background:var(--blue);height:100%"></div></div><div style="width:90px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--t1)">R$ 5.615</div></div><div style="display:flex;align-items:center;gap:10px;margin-bottom:7px"><div style="width:54px;font-family:var(--mono);font-size:11px;color:var(--t2)">Abr/26</div><div style="flex:1;height:18px;background:var(--s2);border-radius:4px;overflow:hidden;display:flex"><div title="Easy Analytics: R$ 338" style="width:2.74%;background:var(--amber);height:100%"></div><div title="Paulo V. Andrade: R$ 9.693" style="width:78.41%;background:var(--blue);height:100%"></div></div><div style="width:90px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--t1)">R$ 10.031</div></div><div style="display:flex;align-items:center;gap:10px;margin-bottom:7px"><div style="width:54px;font-family:var(--mono);font-size:11px;color:var(--t2)">Mai/26</div><div style="flex:1;height:18px;background:var(--s2);border-radius:4px;overflow:hidden;display:flex"><div title="Easy Analytics: R$ 361" style="width:2.92%;background:var(--amber);height:100%"></div><div title="Paulo V. Andrade: R$ 10.558" style="width:85.41%;background:var(--blue);height:100%"></div></div><div style="width:90px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--t1)">R$ 10.918</div></div><div style="display:flex;align-items:center;gap:10px;margin-bottom:7px"><div style="width:54px;font-family:var(--mono);font-size:11px;color:var(--t2)">Jun/26</div><div style="flex:1;height:18px;background:var(--s2);border-radius:4px;overflow:hidden;display:flex"><div title="Easy Analytics: R$ 417" style="width:3.37%;background:var(--amber);height:100%"></div><div title="Paulo V. Andrade: R$ 11.945" style="width:96.63%;background:var(--blue);height:100%"></div></div><div style="width:90px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--t1)">R$ 12.362</div></div></div><div style="margin-top:8px;font-size:10.5px;color:var(--t2)"><span style="display:inline-flex;align-items:center;gap:4px;margin-right:14px"><span style="width:9px;height:9px;border-radius:2px;background:var(--amber)"></span>Easy Analytics</span><span style="display:inline-flex;align-items:center;gap:4px;margin-right:14px"><span style="width:9px;height:9px;border-radius:2px;background:var(--blue)"></span>Paulo V. Andrade</span></div></div>
+<div class="card" style="margin-bottom:12px"><div class="ct">Gasto por fornecedor <span class="ct-tag">período todo</span></div><div style="margin-top:10px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:7px"><div style="width:110px;font-size:11.5px;color:var(--t1)">AWS</div><div style="flex:1;height:18px;background:var(--s2);border-radius:4px;overflow:hidden"><div style="width:100.00%;height:100%;background:#e8821f"></div></div><div style="width:120px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--t1)">R$ 45.409 <span style="color:var(--t3)">88%</span></div></div><div style="display:flex;align-items:center;gap:10px;margin-bottom:7px"><div style="width:110px;font-size:11.5px;color:var(--t1)">OpenAI</div><div style="flex:1;height:18px;background:var(--s2);border-radius:4px;overflow:hidden"><div style="width:6.25%;height:100%;background:#1a7a80"></div></div><div style="width:120px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--t1)">R$ 2.839 <span style="color:var(--t3)">6%</span></div></div><div style="display:flex;align-items:center;gap:10px;margin-bottom:7px"><div style="width:110px;font-size:11.5px;color:var(--t1)">IOF / impostos</div><div style="flex:1;height:18px;background:var(--s2);border-radius:4px;overflow:hidden"><div style="width:3.78%;height:100%;background:#c0392b"></div></div><div style="width:120px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--t1)">R$ 1.717 <span style="color:var(--t3)">3%</span></div></div><div style="display:flex;align-items:center;gap:10px;margin-bottom:7px"><div style="width:110px;font-size:11.5px;color:var(--t1)">Miro</div><div style="flex:1;height:18px;background:var(--s2);border-radius:4px;overflow:hidden"><div style="width:1.57%;height:100%;background:#f2c037"></div></div><div style="width:120px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--t1)">R$ 711 <span style="color:var(--t3)">1%</span></div></div><div style="display:flex;align-items:center;gap:10px;margin-bottom:7px"><div style="width:110px;font-size:11.5px;color:var(--t1)">GitHub</div><div style="flex:1;height:18px;background:var(--s2);border-radius:4px;overflow:hidden"><div style="width:1.45%;height:100%;background:#3d3d4e"></div></div><div style="width:120px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--t1)">R$ 657 <span style="color:var(--t3)">1%</span></div></div><div style="display:flex;align-items:center;gap:10px;margin-bottom:7px"><div style="width:110px;font-size:11.5px;color:var(--t1)">Anuidade</div><div style="flex:1;height:18px;background:var(--s2);border-radius:4px;overflow:hidden"><div style="width:0.20%;height:100%;background:#8a6d3b"></div></div><div style="width:120px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--t1)">R$ 92 <span style="color:var(--t3)">0%</span></div></div></div></div>
+<div class="sl">Detalhamento por mês <span style="color:var(--t3);font-size:11px;text-transform:none;letter-spacing:0">— toque no mês para expandir</span></div><div class="card" style="margin-bottom:10px"><div class="ct" style="cursor:pointer" onclick="cartToggle('202606')"><span id="cic-202606">▸</span> Jun/26 <span class="ct-tag">7 lançamentos</span> <span style="float:right;font-family:var(--mono);color:var(--t1)">R$ 12.362</span></div><div id="cd-202606" style="display:none;margin-top:8px"><table class="dt"><thead><tr><th>Data</th><th>Histórico</th><th>Cartão</th><th>Fornecedor</th><th class="r">US$</th><th class="r">R$</th></tr></thead><tbody><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">11/05</td><td>OPENAI *CHATGPT SUBSCR</td><td style="color:var(--t3)">5564</td><td>OpenAI</td><td class="r">—</td><td class="r">R$ 520</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">13/05</td><td>GITHUB, INC.</td><td style="color:var(--t3)">5564</td><td>GitHub</td><td class="r">20,00</td><td class="r">R$ 103</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">01/06</td><td>ANUIDADE 03/04</td><td style="color:var(--t3)">5564</td><td>Anuidade</td><td class="r">—</td><td class="r">R$ 30</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">01/06</td><td>Amazon web services</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">5,24</td><td class="r">R$ 28</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">01/06</td><td>Amazon web services</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">2.125,09</td><td class="r">R$ 11.263</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">02/06</td><td>IOF S/ TRANS INTER REAIS</td><td style="color:var(--t3)">8691</td><td>IOF / impostos</td><td class="r">—</td><td class="r">R$ 18</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">02/06</td><td>CUSTO TRANS. EXTERIOR-IOF</td><td style="color:var(--t3)">8691</td><td>IOF / impostos</td><td class="r">—</td><td class="r">R$ 399</td></tr></tbody></table></div></div><div class="card" style="margin-bottom:10px"><div class="ct" style="cursor:pointer" onclick="cartToggle('202605')"><span id="cic-202605">▸</span> Mai/26 <span class="ct-tag">10 lançamentos</span> <span style="float:right;font-family:var(--mono);color:var(--t1)">R$ 10.918</span></div><div id="cd-202605" style="display:none;margin-top:8px"><table class="dt"><thead><tr><th>Data</th><th>Histórico</th><th>Cartão</th><th>Fornecedor</th><th class="r">US$</th><th class="r">R$</th></tr></thead><tbody><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">02/04</td><td>Amazon web services</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">5,24</td><td class="r">R$ 29</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">09/04</td><td>AWS Brazil</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">—</td><td class="r">R$ 115</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">11/04</td><td>OPENAI *CHATGPT SUBSCR</td><td style="color:var(--t3)">5564</td><td>OpenAI</td><td class="r">—</td><td class="r">R$ 486</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">13/04</td><td>GITHUB, INC.</td><td style="color:var(--t3)">5564</td><td>GitHub</td><td class="r">20,00</td><td class="r">R$ 106</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">02/05</td><td>AWS Brazil</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">—</td><td class="r">R$ 107</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">02/05</td><td>Amazon web services</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">1.839,67</td><td class="r">R$ 9.658</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">02/05</td><td>Amazon web services</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">5,12</td><td class="r">R$ 27</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">04/05</td><td>IOF S/ TRANS INTER REAIS</td><td style="color:var(--t3)">8691</td><td>IOF / impostos</td><td class="r">—</td><td class="r">R$ 17</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">04/05</td><td>CUSTO TRANS. EXTERIOR-IOF</td><td style="color:var(--t3)">8691</td><td>IOF / impostos</td><td class="r">—</td><td class="r">R$ 344</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">04/05</td><td>ANUIDADE 02/04</td><td style="color:var(--t3)">5564</td><td>Anuidade</td><td class="r">—</td><td class="r">R$ 30</td></tr></tbody></table></div></div><div class="card" style="margin-bottom:10px"><div class="ct" style="cursor:pointer" onclick="cartToggle('202604')"><span id="cic-202604">▸</span> Abr/26 <span class="ct-tag">6 lançamentos</span> <span style="float:right;font-family:var(--mono);color:var(--t1)">R$ 10.031</span></div><div id="cd-202604" style="display:none;margin-top:8px"><table class="dt"><thead><tr><th>Data</th><th>Histórico</th><th>Cartão</th><th>Fornecedor</th><th class="r">US$</th><th class="r">R$</th></tr></thead><tbody><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">11/03</td><td>OPENAI *CHATGPT SUBSCR</td><td style="color:var(--t3)">5564</td><td>OpenAI</td><td class="r">—</td><td class="r">R$ 640</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">13/03</td><td>GITHUB, INC.</td><td style="color:var(--t3)">5564</td><td>GitHub</td><td class="r">20,00</td><td class="r">R$ 111</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">01/04</td><td>ANUIDADE 01/04</td><td style="color:var(--t3)">5564</td><td>Anuidade</td><td class="r">—</td><td class="r">R$ 30</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">01/04</td><td>Amazon web services</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">1.641,26</td><td class="r">R$ 8.912</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">02/04</td><td>IOF S/ TRANS INTER REAIS</td><td style="color:var(--t3)">8691</td><td>IOF / impostos</td><td class="r">—</td><td class="r">R$ 22</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">02/04</td><td>CUSTO TRANS. EXTERIOR-IOF</td><td style="color:var(--t3)">8691</td><td>IOF / impostos</td><td class="r">—</td><td class="r">R$ 316</td></tr></tbody></table></div></div><div class="card" style="margin-bottom:10px"><div class="ct" style="cursor:pointer" onclick="cartToggle('202603')"><span id="cic-202603">▸</span> Mar/26 <span class="ct-tag">7 lançamentos</span> <span style="float:right;font-family:var(--mono);color:var(--t1)">R$ 5.615</span></div><div id="cd-202603" style="display:none;margin-top:8px"><table class="dt"><thead><tr><th>Data</th><th>Histórico</th><th>Cartão</th><th>Fornecedor</th><th class="r">US$</th><th class="r">R$</th></tr></thead><tbody><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">11/02</td><td>OPENAI *CHATGPT SUBSCR</td><td style="color:var(--t3)">5564</td><td>OpenAI</td><td class="r">—</td><td class="r">R$ 640</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">13/02</td><td>GITHUB, INC.</td><td style="color:var(--t3)">5564</td><td>GitHub</td><td class="r">20,00</td><td class="r">R$ 110</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">02/03</td><td>AWS Brazil</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">—</td><td class="r">R$ 104</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">02/03</td><td>Amazon web services</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">4,88</td><td class="r">R$ 27</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">02/03</td><td>Amazon web services</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">829,96</td><td class="r">R$ 4.548</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">03/03</td><td>IOF S/ TRANS INTER REAIS</td><td style="color:var(--t3)">8691</td><td>IOF / impostos</td><td class="r">—</td><td class="r">R$ 22</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">03/03</td><td>CUSTO TRANS. EXTERIOR-IOF</td><td style="color:var(--t3)">8691</td><td>IOF / impostos</td><td class="r">—</td><td class="r">R$ 164</td></tr></tbody></table></div></div><div class="card" style="margin-bottom:10px"><div class="ct" style="cursor:pointer" onclick="cartToggle('202602')"><span id="cic-202602">▸</span> Fev/26 <span class="ct-tag">9 lançamentos</span> <span style="float:right;font-family:var(--mono);color:var(--t1)">R$ 6.759</span></div><div id="cd-202602" style="display:none;margin-top:8px"><table class="dt"><thead><tr><th>Data</th><th>Histórico</th><th>Cartão</th><th>Fornecedor</th><th class="r">US$</th><th class="r">R$</th></tr></thead><tbody><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">11/01</td><td>OPENAI *CHATGPT SUBSCR</td><td style="color:var(--t3)">5564</td><td>OpenAI</td><td class="r">—</td><td class="r">R$ 320</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">11/01</td><td>MIRO.COM</td><td style="color:var(--t3)">5564</td><td>Miro</td><td class="r">—</td><td class="r">R$ 711</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">13/01</td><td>GITHUB, INC.</td><td style="color:var(--t3)">5564</td><td>GitHub</td><td class="r">20,00</td><td class="r">R$ 113</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">20/01</td><td>OPENAI *CHATGPT SUBSCR</td><td style="color:var(--t3)">5564</td><td>OpenAI</td><td class="r">—</td><td class="r">R$ 233</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">01/02</td><td>AWS Brazil</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">—</td><td class="r">R$ 117</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">02/02</td><td>Amazon web services</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">904,51</td><td class="r">R$ 5.011</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">02/02</td><td>Amazon web services</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">5,24</td><td class="r">R$ 29</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">03/02</td><td>IOF S/ TRANS INTER REAIS</td><td style="color:var(--t3)">8691</td><td>IOF / impostos</td><td class="r">—</td><td class="r">R$ 44</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">03/02</td><td>CUSTO TRANS. EXTERIOR-IOF</td><td style="color:var(--t3)">8691</td><td>IOF / impostos</td><td class="r">—</td><td class="r">R$ 180</td></tr></tbody></table></div></div><div class="card" style="margin-bottom:10px"><div class="ct" style="cursor:pointer" onclick="cartToggle('202601')"><span id="cic-202601">▸</span> Jan/26 <span class="ct-tag">5 lançamentos</span> <span style="float:right;font-family:var(--mono);color:var(--t1)">R$ 5.739</span></div><div id="cd-202601" style="display:none;margin-top:8px"><table class="dt"><thead><tr><th>Data</th><th>Histórico</th><th>Cartão</th><th>Fornecedor</th><th class="r">US$</th><th class="r">R$</th></tr></thead><tbody><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">01/01</td><td>Amazon web services</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">5,24</td><td class="r">R$ 30</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">01/01</td><td>Amazon web services</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">912,80</td><td class="r">R$ 5.285</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">02/01</td><td>CUSTO TRANS. EXTERIOR-IOF</td><td style="color:var(--t3)">8691</td><td>IOF / impostos</td><td class="r">—</td><td class="r">R$ 190</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">02/01</td><td>AWS Brazil</td><td style="color:var(--t3)">5564</td><td>AWS</td><td class="r">—</td><td class="r">R$ 119</td></tr><tr><td style="font-family:var(--mono);font-size:11px;color:var(--t2)">13/12</td><td>GITHUB, INC.</td><td style="color:var(--t3)">5564</td><td>GitHub</td><td class="r">20,00</td><td class="r">R$ 114</td></tr></tbody></table></div></div>
+<script>
+function cartToggle(c){
+  var d=document.getElementById('cd-'+c), i=document.getElementById('cic-'+c);
+  if(d.style.display==='none'){d.style.display='block';i.textContent='▾';}
+  else{d.style.display='none';i.textContent='▸';}
+}
+</script>
 </div>
 <!-- ═══ FINANCEIRO ═══ -->
 <div class="pg" id="pg-financeiro">
@@ -859,7 +887,7 @@ function dreToggleRow(k){
 <!-- ═══ CLIENTES ═══ -->
 <div class="pg" id="pg-clientes">
 <div class="hero">
-  <div><div class="htitle">Base de Clientes & Retenção</div><div class="hsub">42 clientes ativos · R$ 101.181/mês mapeado · janela: últimos 12 meses fechados (rolling)</div></div>
+  <div><div class="htitle">Base de Clientes & Retenção</div><div class="hsub">12 clientes ativos · R$ 121.812/mês mapeado · janela: últimos 12 meses fechados (rolling)</div></div>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
     <span class="sel-lbl" id="cliSelLbl"></span>
     <button class="reset-btn" id="cliResetBtn" onclick="cliReset()">✕ Limpar</button>
@@ -873,77 +901,31 @@ function dreToggleRow(k){
 <div class="g4">
   <div class="met green" id="ckpi-gar" onclick="cliCat('garantido')">
     <div class="ml">✅ Garantido</div>
-    <div class="mv green">R$ 38.356</div>
-    <div class="ms">14 clientes · uso ativo</div>
-    <div class="delta d-pos">38% da receita</div>
+    <div class="mv green">R$ 0</div>
+    <div class="ms">0 clientes · uso ativo</div>
+    <div class="delta d-pos">0% da receita</div>
   </div>
   <div class="met amber" id="ckpi-med" onclick="cliCat('medio')">
     <div class="ml">🟡 Risco médio</div>
-    <div class="mv amber">R$ 13.040</div>
-    <div class="ms">8 clientes · paga mas não usa</div>
-    <div class="delta d-neg">13% da receita</div>
+    <div class="mv amber">R$ 0</div>
+    <div class="ms">0 clientes · paga mas não usa</div>
+    <div class="delta d-neg">0% da receita</div>
   </div>
   <div class="met red" id="ckpi-alt" onclick="cliCat('alto')">
     <div class="ml">🔴 Risco alto</div>
-    <div class="mv red">R$ 49.785</div>
-    <div class="ms">20 clientes · churn flagged</div>
-    <div class="delta d-neg">49% da receita</div>
+    <div class="mv red">R$ 10.558</div>
+    <div class="ms">1 clientes · churn flagged</div>
+    <div class="delta d-neg">9% da receita</div>
   </div>
   <div class="met blue" id="ckpi-tot">
     <div class="ml">Total mapeado</div>
-    <div class="mv blue" id="ckv-tot">R$ 101.181</div>
-    <div class="ms" id="ckv-sub">42 clientes ativos</div>
+    <div class="mv blue" id="ckv-tot">R$ 121.812</div>
+    <div class="ms" id="ckv-sub">12 clientes ativos</div>
   </div>
 </div>
 
 <!-- ABERTURA POR INTERMEDIÁRIO TOTVS -->
-<div class="sl">Abertura por intermediário TOTVS <span style="color:var(--t3);font-size:11px">— qual filial faz o repasse de cada cliente</span></div>
-<div class="g4" style="margin-bottom:14px">
-  <div class="card" style="padding:14px">
-    <div style="font-size:10.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px">Intermediário</div>
-    <div style="font-size:14px;font-weight:600;margin-bottom:6px">TOTVS Matriz (SP)</div>
-    <div style="font-size:22px;font-weight:700;color:var(--blue);font-family:var(--mono)">R$ 33.680<span style="font-size:11px;color:var(--t3);font-weight:400">/mês</span></div>
-    <div style="font-size:11px;color:var(--t2);margin-bottom:10px">10 ativos · 27 total · R$ 404.164 em 12m</div>
-    <div style="border-top:1px solid var(--br);padding-top:8px">
-      <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Top clientes (12m)</div>
-      <div style="display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--mono);color:var(--t2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">Tele Rio Eletro Domesticos Ltda</span><span style="color:var(--blue);font-weight:600">R$ 54.891</span></div><div style="display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--mono);color:var(--t2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">Pia Sociedade De Sao Paulo</span><span style="color:var(--blue);font-weight:600">R$ 49.706</span></div><div style="display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--mono);color:var(--t2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">Guaraves Guarabira Aves</span><span style="color:var(--blue);font-weight:600">R$ 31.227</span></div><div style="display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--mono);color:var(--t2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">Congregacao Do Santissimo Redentor</span><span style="color:var(--blue);font-weight:600">R$ 28.672</span></div><div style="display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--mono);color:var(--t2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">Rodrigues Industria E Comercio De Col…</span><span style="color:var(--blue);font-weight:600">R$ 28.482</span></div>
-      <div style="font-size:10.5px;color:var(--t3);padding:2px 0;font-style:italic">+ 22 outros</div>
-    </div>
-  </div>
-  <div class="card" style="padding:14px">
-    <div style="font-size:10.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px">Intermediário</div>
-    <div style="font-size:14px;font-weight:600;margin-bottom:6px">TOTVS BH</div>
-    <div style="font-size:22px;font-weight:700;color:var(--blue);font-family:var(--mono)">R$ 12.740<span style="font-size:11px;color:var(--t3);font-weight:400">/mês</span></div>
-    <div style="font-size:11px;color:var(--t2);margin-bottom:10px">8 ativos · 10 total · R$ 152.876 em 12m</div>
-    <div style="border-top:1px solid var(--br);padding-top:8px">
-      <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Top clientes (12m)</div>
-      <div style="display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--mono);color:var(--t2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">Cantu Importacao E Exportacao Ltda</span><span style="color:var(--blue);font-weight:600">R$ 55.130</span></div><div style="display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--mono);color:var(--t2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">Museu De Arte De Sao Paulo Assis Chat…</span><span style="color:var(--blue);font-weight:600">R$ 23.923</span></div><div style="display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--mono);color:var(--t2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">Polar Store Ltda</span><span style="color:var(--blue);font-weight:600">R$ 16.795</span></div><div style="display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--mono);color:var(--t2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">Decanter Vinhos Finos Ltda</span><span style="color:var(--blue);font-weight:600">R$ 12.158</span></div><div style="display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--mono);color:var(--t2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">Higimaster Distribuidora De Produtos …</span><span style="color:var(--blue);font-weight:600">R$ 11.578</span></div>
-      <div style="font-size:10.5px;color:var(--t3);padding:2px 0;font-style:italic">+ 5 outros</div>
-    </div>
-  </div>
-  <div class="card" style="padding:14px">
-    <div style="font-size:10.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px">Intermediário</div>
-    <div style="font-size:14px;font-weight:600;margin-bottom:6px">TOTVS Santa Catarina</div>
-    <div style="font-size:22px;font-weight:700;color:var(--blue);font-family:var(--mono)">R$ 7.830<span style="font-size:11px;color:var(--t3);font-weight:400">/mês</span></div>
-    <div style="font-size:11px;color:var(--t2);margin-bottom:10px">3 ativos · 4 total · R$ 93.966 em 12m</div>
-    <div style="border-top:1px solid var(--br);padding-top:8px">
-      <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Top clientes (12m)</div>
-      <div style="display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--mono);color:var(--t2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">Editora do Brasil</span><span style="color:var(--blue);font-weight:600">R$ 46.469</span></div><div style="display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--mono);color:var(--t2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">Usina Sao Francisco Sa</span><span style="color:var(--blue);font-weight:600">R$ 26.086</span></div><div style="display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--mono);color:var(--t2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">Fueltech Ltda</span><span style="color:var(--blue);font-weight:600">R$ 12.396</span></div><div style="display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--mono);color:var(--t2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">Editora Manole Conteudo Para Educacao…</span><span style="color:var(--blue);font-weight:600">R$ 9.015</span></div>
-      
-    </div>
-  </div>
-  <div class="card" style="padding:14px">
-    <div style="font-size:10.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px">Intermediário</div>
-    <div style="font-size:14px;font-weight:600;margin-bottom:6px">TOTVS Large Enterprise</div>
-    <div style="font-size:22px;font-weight:700;color:var(--blue);font-family:var(--mono)">R$ 1.070<span style="font-size:11px;color:var(--t3);font-weight:400">/mês</span></div>
-    <div style="font-size:11px;color:var(--t2);margin-bottom:10px">1 ativos · 1 total · R$ 12.844 em 12m</div>
-    <div style="border-top:1px solid var(--br);padding-top:8px">
-      <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Top clientes (12m)</div>
-      <div style="display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--mono);color:var(--t2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">Hsr Shopping Dos Lustres Ltda</span><span style="color:var(--blue);font-weight:600">R$ 12.844</span></div>
-      
-    </div>
-  </div>
-</div>
+
 
 <!-- FUNIL + DONUT LADO A LADO -->
 <div class="g2" style="margin-bottom:12px">
@@ -952,30 +934,30 @@ function dreToggleRow(k){
     <div style="display:flex;flex-direction:column;gap:10px;padding:2px 0">
       <div>
         <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
-          <span style="color:var(--t2)">Pagamento ativo</span><span style="color:var(--green)">42 clientes · R$ 101.181/mês</span>
+          <span style="color:var(--t2)">Pagamento ativo</span><span style="color:var(--green)">12 clientes · R$ 121.812/mês</span>
         </div>
         <div class="pbar"><div class="pbi" style="width:100%;background:var(--green)"></div></div>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
-          <span style="color:var(--t2)">✅ Garantido (uso ativo)</span><span style="color:var(--green)">14 clientes · R$ 38.356/mês</span>
+          <span style="color:var(--t2)">✅ Garantido (uso ativo)</span><span style="color:var(--green)">0 clientes · R$ 0/mês</span>
         </div>
-        <div class="pbar"><div class="pbi" style="width:38%;background:var(--green)"></div></div>
+        <div class="pbar"><div class="pbi" style="width:0%;background:var(--green)"></div></div>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
-          <span style="color:var(--t2)">🟡 Risco médio (não usa)</span><span style="color:var(--amber)">8 clientes · R$ 13.040/mês</span>
+          <span style="color:var(--t2)">🟡 Risco médio (não usa)</span><span style="color:var(--amber)">0 clientes · R$ 0/mês</span>
         </div>
-        <div class="pbar"><div class="pbi" style="width:13%;background:var(--amber)"></div></div>
+        <div class="pbar"><div class="pbi" style="width:0%;background:var(--amber)"></div></div>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
-          <span style="color:var(--t2)">🔴 Risco alto (churn)</span><span style="color:var(--red)">20 clientes · R$ 49.785/mês</span>
+          <span style="color:var(--t2)">🔴 Risco alto (churn)</span><span style="color:var(--red)">1 clientes · R$ 10.558/mês</span>
         </div>
-        <div class="pbar"><div class="pbi" style="width:49%;background:var(--red)"></div></div>
+        <div class="pbar"><div class="pbi" style="width:9%;background:var(--red)"></div></div>
       </div>
       <div style="background:var(--red-bg);border-radius:8px;padding:8px 10px;font-size:11px;font-family:var(--mono);color:var(--red);margin-top:4px">
-        ⚠️ Se risco alto cancelar: −R$ 49.785/mês &nbsp;|&nbsp; Se médio + alto cancelar: −R$ 62.825/mês
+        ⚠️ Se risco alto cancelar: −R$ 10.558/mês &nbsp;|&nbsp; Se médio + alto cancelar: −R$ 10.558/mês
       </div>
     </div>
   </div>
@@ -1196,7 +1178,7 @@ if(HAS_CHART){
 
 var fBR=function(v){return v===0?'—':'R$\u00a0'+Math.round(v).toLocaleString('pt-BR');};
 var fK=function(v){return (v>=0?'':'-')+'R$\u00a0'+Math.abs(Math.round(v/1000))+'K';};
-var PAGES=['overview','gastos','cashflow','clientes','totvs','pipeline','projecao','financeiro','pl','dre'];
+var PAGES=['overview','gastos','cashflow','cartao','clientes','totvs','pipeline','projecao','financeiro','pl','dre'];
 
 // ── NAV ──
 function sp(id,btn,mob){
@@ -2064,48 +2046,18 @@ ppRender();
 
 // ── CLIENTES CROSS FILTER ──
 var CLI_DATA=[
-  {id:'t_CANTU_IMPORTACAO_E_EXPORTACAO_',n:'Cantu Importacao E Exportacao Ltda',cat:'garantido',valor:5513,uso:'Ativo',abr:'Ativo',obs:'Contrato 27m · 10/12m ativos'},
-  {id:'t_TELE_RIO_ELETRO_DOMESTICOS_LTD',n:'Tele Rio Eletro Domesticos Ltda',cat:'garantido',valor:5489,uso:'Ativo',abr:'Ativo',obs:'Contrato 35m · 10/12m ativos'},
-  {id:'t_PIA_SOCIEDADE_DE_SAO_PAULO',n:'Pia Sociedade De Sao Paulo',cat:'garantido',valor:4971,uso:'Ativo',abr:'Ativo',obs:'Contrato 38m · 10/12m ativos'},
-  {id:'t_MUSEU_DE_ARTE_DE_SAO_PAULO_ASS',n:'Museu De Arte De Sao Paulo Assis Chat…',cat:'garantido',valor:3418,uso:'Ativo',abr:'Ativo',obs:'Contrato 22m · 7/12m ativos'},
-  {id:'t_USINA_SAO_FRANCISCO_SA',n:'Usina Sao Francisco Sa',cat:'garantido',valor:3261,uso:'Ativo',abr:'Ativo',obs:'Contrato 33m · 8/12m ativos'},
-  {id:'t_CONGREGACAO_DO_SANTISSIMO_REDE',n:'Congregacao Do Santissimo Redentor',cat:'garantido',valor:3186,uso:'Ativo',abr:'Ativo',obs:'Contrato 18m · 9/12m ativos'},
-  {id:'t_MIR_IMPORTACAO_E_EXPORTACAO_LT',n:'Mir Importacao E Exportacao Ltda',cat:'garantido',valor:3168,uso:'Ativo',abr:'Ativo',obs:'Contrato 26m · 8/12m ativos'},
-  {id:'t_DOREL_COMERCIO_E_SERVICOS_LTDA',n:'Dorel Comercio E Servicos Ltda',cat:'garantido',valor:2283,uso:'Ativo',abr:'Ativo',obs:'Contrato 18m · 10/12m ativos'},
-  {id:'t_POLAR_STORE_LTDA',n:'Polar Store Ltda',cat:'garantido',valor:1866,uso:'Ativo',abr:'Ativo',obs:'Contrato 23m · 9/12m ativos'},
-  {id:'t_HSR_SHOPPING_DOS_LUSTRES_LTDA',n:'Hsr Shopping Dos Lustres Ltda',cat:'garantido',valor:1284,uso:'Ativo',abr:'Ativo',obs:'Contrato 31m · 10/12m ativos'},
-  {id:'t_DECANTER_VINHOS_FINOS_LTDA',n:'Decanter Vinhos Finos Ltda',cat:'garantido',valor:1216,uso:'Ativo',abr:'Ativo',obs:'Contrato 14m · 10/12m ativos'},
-  {id:'t_INDUSTRIA_DE_ALIMENTOS_ELSHADA',n:'Industria De Alimentos Elshadai Sa',cat:'garantido',valor:1046,uso:'Ativo',abr:'Ativo',obs:'Contrato 20m · 10/12m ativos'},
-  {id:'t_EDITORA_MANOLE_CONTEUDO_PARA_E',n:'Editora Manole Conteudo Para Educacao…',cat:'garantido',valor:901,uso:'Ativo',abr:'Ativo',obs:'Contrato 35m · 10/12m ativos'},
-  {id:'t_SKY_CRANES_E_HOISTS_LOCACAO_DE',n:'Sky Cranes E Hoists Locacao De Equipa…',cat:'garantido',valor:754,uso:'Ativo',abr:'Ativo',obs:'Contrato 16m · 8/12m ativos'},
-  {id:'t_KHRONOS_INDUSTRIA_COMERCIO_E_S',n:'Khronos Industria Comercio E Servicos…',cat:'medio',valor:3282,uso:'Intermitente',abr:'Ativo',obs:'4/12 meses ativos · contrato 5m'},
-  {id:'t_ORGANIZACAO_LORD_LTDA',n:'Organizacao Lord Ltda',cat:'medio',valor:2281,uso:'Intermitente',abr:'?',obs:'8/12 meses ativos · contrato 32m'},
-  {id:'t_FUNDACAO_DA_UNIVERSIDADE_FEDER',n:'Fundacao Da Universidade Federal Do P…',cat:'medio',valor:1795,uso:'Ativo',abr:'Ativo',obs:'Contrato recente (7m) · 6/12m ativos'},
-  {id:'t_FUELTECH_LTDA',n:'Fueltech Ltda',cat:'medio',valor:1550,uso:'Ativo',abr:'Ativo',obs:'Contrato recente (9m) · 8/12m ativos'},
-  {id:'t_SERGIO_C_WEISER_DECORACAO_LTDA',n:'Sergio C Weiser Decoracao Ltda',cat:'medio',valor:1451,uso:'Intermitente',abr:'Ativo',obs:'4/12 meses ativos · contrato 6m'},
-  {id:'t_HIGIMASTER_DISTRIBUIDORA_DE_PR',n:'Higimaster Distribuidora De Produtos …',cat:'medio',valor:1158,uso:'Ativo',abr:'Ativo',obs:'Contrato recente (11m) · 10/12m ativos'},
-  {id:'t_LABORATORIO_DE_FLORAIS_E_COSME',n:'Laboratorio De Florais E Cosmeticos J…',cat:'medio',valor:1018,uso:'Intermitente',abr:'?',obs:'8/12 meses ativos · contrato 14m'},
-  {id:'t_INDUSTRIA_ALIMENTICIA_RALSTON_',n:'Industria Alimenticia Ralston Ltda',cat:'medio',valor:505,uso:'Ativo',abr:'Ativo',obs:'Contrato recente (11m) · 10/12m ativos'},
-  {id:'t_ENUTRI_PRODUTOS_NUTRICIONAIS_L',n:'Enutri Produtos Nutricionais Ltda',cat:'alto',valor:6342,uso:'Inativo',abr:'—',obs:'Sem comissão há 4 meses (último: 2026-01)'},
-  {id:'t_CASA_UNICA_MATERIAIS_PARA_CONS',n:'Casa Unica Materiais Para Construcao …',cat:'alto',valor:6133,uso:'Inativo',abr:'—',obs:'Sem comissão há 7 meses (último: 2025-10)'},
-  {id:'editora_brasil',n:'Editora do Brasil',cat:'alto',valor:5809,uso:'Inativo',abr:'Ativo',obs:'Sem uso ativo desde 2021 — risco churn alto'},
-  {id:'t_RODRIGUES_INDUSTRIA_E_COMERCIO',n:'Rodrigues Industria E Comercio De Col…',cat:'alto',valor:4747,uso:'Inativo',abr:'—',obs:'Sem comissão há 5 meses (último: 2025-12)'},
-  {id:'dux',n:'Dux Company',cat:'alto',valor:4009,uso:'Ativo',abr:'?',obs:'Solicitou cancelamento'},
-  {id:'guaraves',n:'Guaraves Guarabira Aves',cat:'alto',valor:3470,uso:'Inativo',abr:'Ativo',obs:'Sem uso ativo desde 2022'},
-  {id:'atacadao',n:'Atacadão Autopeças',cat:'alto',valor:2116,uso:'Ativo',abr:'Ativo',obs:'Parcelas vencidas R$ 14K — cobrança em curso'},
-  {id:'t_ELASTOBOR_BORRACHAS_E_PLASTICO',n:'Elastobor Borrachas E Plasticos Ltda',cat:'alto',valor:2061,uso:'Inativo',abr:'—',obs:'Sem comissão há 10 meses (último: 2025-07)'},
-  {id:'t_DINAMICA_DISTRIBUIDORA_LTDA',n:'Dinamica Distribuidora Ltda',cat:'alto',valor:2004,uso:'Inativo',abr:'—',obs:'Sem comissão há 10 meses (último: 2025-07)'},
-  {id:'jdk',n:'JDK Presentes (Dryzum)',cat:'alto',valor:1860,uso:'Inativo',abr:'Ativo',obs:'Fase de cancelamento'},
-  {id:'t_ALFAMA_NEGOCIOS_E_PARTICIPACOE',n:'Alfama Negocios E Participacoes Ltda',cat:'alto',valor:1553,uso:'Inativo',abr:'—',obs:'Sem comissão há 11 meses (último: 2025-06)'},
-  {id:'t_GRID_COMERCIO_SERVICOS_TECNOLO',n:'Grid Comercio Servicos Tecnologia Em …',cat:'alto',valor:1306,uso:'Inativo',abr:'—',obs:'Sem comissão há 7 meses (último: 2025-10)'},
-  {id:'t_SETELOC_SA',n:'Seteloc Sa',cat:'alto',valor:1228,uso:'Inativo',abr:'—',obs:'Sem comissão há 5 meses (último: 2025-12)'},
-  {id:'t_COMUNIDADE_CANCAO_NOVA_ASSOCIA',n:'Comunidade Cancao Nova  Associacao In…',cat:'alto',valor:1139,uso:'Inativo',abr:'—',obs:'Sem comissão há 7 meses (último: 2025-10)'},
-  {id:'t_LISS_COMERCIO_IMPORTACAO_E_EXP',n:'Liss Comercio Importacao E Exportacao…',cat:'alto',valor:1022,uso:'Inativo',abr:'—',obs:'Sem comissão há 10 meses (último: 2025-07)'},
-  {id:'t_MACRILAN_BEAUTY_BRASIL_COMERCI',n:'Macrilan Beauty Brasil Comercio E Imp…',cat:'alto',valor:1015,uso:'Inativo',abr:'—',obs:'Sem comissão há 10 meses (último: 2025-07)'},
-  {id:'t_DVA_COMERCIO_E_IMPORTACAO_DE_A',n:'Dva Comercio E Importacao De Artigos …',cat:'alto',valor:1015,uso:'Inativo',abr:'—',obs:'Sem comissão há 9 meses (último: 2025-08)'},
-  {id:'t_YWP_COMERCIO_DISTRIBUICAO_IMPO',n:'Ywp Comercio Distribuicao Importacao …',cat:'alto',valor:1010,uso:'Inativo',abr:'—',obs:'Sem comissão há 10 meses (último: 2025-07)'},
-  {id:'t_LBF_BIJUTERIAS_E_ACESSORIOS_LT',n:'Lbf Bijuterias E Acessorios Ltda',cat:'alto',valor:1007,uso:'Inativo',abr:'—',obs:'Sem comissão há 4 meses (último: 2026-01)'},
-  {id:'t_TUKA_RENTAL_LOCACAO_DE_MAQUINA',n:'Tuka Rental  Locacao De Maquinas E Eq…',cat:'alto',valor:939,uso:'Inativo',abr:'—',obs:'Sem comissão há 7 meses (último: 2025-10)'}
+  {id:'atacadao',n:'Atacadão Autopeças',cat:'alto',valor:10558,uso:'Ativo',abr:'Ativo',obs:'Parcelas vencidas R$ 14K — cobrança em curso'},
+  {id:'_unk_TOTVS_S.A.',n:'TOTVS S.A.',cat:'sem_classificacao',valor:40763,uso:'?',abr:'?',obs:''},
+  {id:'_unk_TOTVS_SA',n:'TOTVS SA',cat:'sem_classificacao',valor:16075,uso:'?',abr:'?',obs:''},
+  {id:'_unk_FUELTECH_LTDA',n:'FUELTECH LTDA',cat:'sem_classificacao',valor:11731,uso:'?',abr:'?',obs:''},
+  {id:'_unk_TOTVS_S.A._SANTA_CAT',n:'TOTVS S.A. SANTA CATARINA',cat:'sem_classificacao',valor:9260,uso:'?',abr:'?',obs:''},
+  {id:'_unk_SERGIO_C_WEISER_DECO',n:'SERGIO C WEISER DECORACAO LTDA',cat:'sem_classificacao',valor:8759,uso:'?',abr:'?',obs:''},
+  {id:'_unk_FUNDACAO_DA_UNIVERSI',n:'FUNDACAO DA UNIVERSIDADE FEDERAL DO PARANA PARA O DESENVOLVIMENTO DA CIENCIA, TE',cat:'sem_classificacao',valor:5866,uso:'?',abr:'?',obs:''},
+  {id:'_unk_TELE_RIO_ELETRO_DOME',n:'TELE RIO ELETRO DOMESTICOS LTDA',cat:'sem_classificacao',valor:5537,uso:'?',abr:'?',obs:''},
+  {id:'_unk_HIGIMASTER_DISTRIBUI',n:'HIGIMASTER DISTRIBUIDORA DE PRODUTOS DE HIGIENE LTDA',cat:'sem_classificacao',valor:4921,uso:'?',abr:'?',obs:''},
+  {id:'_unk_KHRONOS_INDUSTRIA_CO',n:'KHRONOS INDUSTRIA COMERCIO E SERVICOS EM ELETRONICA LTDA',cat:'sem_classificacao',valor:3910,uso:'?',abr:'?',obs:''},
+  {id:'_unk_1000_MARCAS_SAFETY_B',n:'1000 MARCAS SAFETY BRASIL EIRELI',cat:'sem_classificacao',valor:3096,uso:'?',abr:'?',obs:''},
+  {id:'_unk_TOTVS_LARGE_ENTERPRI',n:'TOTVS LARGE ENTERPRISE TECNOLOGIA S.A.',cat:'sem_classificacao',valor:1336,uso:'?',abr:'?',obs:''}
 ];
 var CAT_CLI=[
   {cat:'garantido',label:'Garantido',  color:'#1e7e4f'},
@@ -2120,7 +2072,7 @@ function fBRc(v){return 'R$ '+Math.round(v).toLocaleString('pt-BR');}
 var cliDonut=new Chart(document.getElementById('cliDonut'),{
   type:'doughnut',
   data:{labels:CAT_CLI.map(function(c){return c.label;}),
-    datasets:[{data:[38356,13040,49785],backgroundColor:CAT_CLI.map(function(c){return c.color;}),borderWidth:2,borderColor:'#fff'}]},
+    datasets:[{data:[0,0,10558],backgroundColor:CAT_CLI.map(function(c){return c.color;}),borderWidth:2,borderColor:'#fff'}]},
   options:{responsive:true,maintainAspectRatio:false,cutout:'64%',animation:{duration:250},
     plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.label+': '+fBRc(c.parsed)+'/mês';}}}},
     onClick:function(_,els){if(els&&els.length>0){var cat=CAT_CLI[els[0].index].cat;CLI_AC=CLI_AC===cat?null:cat;CLI_AR=null;cliRender();}}
