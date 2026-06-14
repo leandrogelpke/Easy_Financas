@@ -1,0 +1,41 @@
+{
+  "_schema": "Overrides manuais da classificação de risco. A classificação default é AUTOMÁTICA (regras em compute_cli_data_totvs): garantido (ativo + recorrente >=12m), medio (intermitente ou contrato novo), alto (sem comissão há >=4m). Este JSON serve só para CORRIGIR casos onde a regra automática erra (ex.: cliente em fase de cancelamento mas ainda paga).",
+  "_categorias": {
+    "garantido": "uso ativo, paga em dia, baixo risco churn",
+    "medio":     "paga mas uso inativo/intermitente ou contrato recente",
+    "alto":      "vencido, churn flagged ou solicitação de cancelamento"
+  },
+  "_fonte": "Snapshot Totvs (relatórios de comissão BASE/COMPLEMENTAR/REAL). Cada cliente listado aqui sobrescreve a classificação automática que viria do snapshot.",
+  "clientes": {
+    "atacadao": {
+      "display": "Atacadão Autopeças",
+      "aliases": ["ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA"],
+      "cat": "alto", "uso": "Ativo", "abr": "Ativo",
+      "obs": "Parcelas vencidas R$ 14K — cobrança em curso"
+    },
+    "dux": {
+      "display": "Dux Company",
+      "aliases": ["DUX COMPANY SA"],
+      "cat": "alto", "uso": "Ativo", "abr": "Ativo",
+      "obs": "Solicitou cancelamento"
+    },
+    "editora_brasil": {
+      "display": "Editora do Brasil",
+      "aliases": ["EDITORA DO BRASIL SA"],
+      "cat": "alto", "uso": "Inativo", "abr": "—",
+      "obs": "Sem uso ativo desde 2021 — risco churn alto"
+    },
+    "guaraves": {
+      "display": "Guaraves Guarabira Aves",
+      "aliases": ["GUARAVES GUARABIRA AVES LTDA"],
+      "cat": "alto", "uso": "Inativo", "abr": "—",
+      "obs": "Sem uso ativo desde 2022"
+    },
+    "jdk": {
+      "display": "JDK Presentes (Dryzum)",
+      "aliases": ["JDK COMERCIO DE PRESENTES FINOS S A"],
+      "cat": "alto", "uso": "Inativo", "abr": "—",
+      "obs": "Fase de cancelamento"
+    }
+  }
+}

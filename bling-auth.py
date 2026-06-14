@@ -23,6 +23,7 @@ import secrets
 import socketserver
 import sys
 import threading
+import urllib.error
 import urllib.parse
 import urllib.request
 import webbrowser
@@ -81,9 +82,10 @@ def main():
     }
     auth_url = f"{AUTHORIZE_URL}?{urllib.parse.urlencode(auth_params)}"
 
-    # sobe servidor em thread
+    # sobe servidor em thread — allow_reuse_address precisa estar na CLASSE
+    # antes do bind, senão a porta fica em TIME_WAIT entre re-runs rápidos.
+    socketserver.TCPServer.allow_reuse_address = True
     server = socketserver.TCPServer(("localhost", CALLBACK_PORT), CallbackHandler)
-    server.allow_reuse_address = True
     server_thread = threading.Thread(target=server.serve_forever, daemon=True)
     server_thread.start()
     print(f"[ok] listener subiu em http://localhost:{CALLBACK_PORT}/callback")

@@ -1,0 +1,59 @@
+name: Auditoria da Execução
+
+# Agente auditor — encadeia logo após cada execução do agente principal
+# (que roda 07h/12h/16h BRT). Lê o log gerado, avalia a qualidade da
+# execução e dos dados publicados, grava um relatório de auditoria, abre
+# Issue em caso de problema e atualiza IMPROVEMENTS.md com padrões
+# recorrentes dos últimos 7 dias. NUNCA altera os HTMLs publicados.
+on:
+  workflow_run:
+    workflows: ["Atualizar Dashboard (Bling)"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: easy-financas-audit
+  cancel-in-progress: false
+
+jobs:
+  auditar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Rodar auditor
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          TRIGGER: ${{ github.event_name }}
+          UPSTREAM_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          UPSTREAM_RUN_URL: ${{ github.event.workflow_run.html_url }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python3 ci/ci_auditor.py
+
+      - name: Commit & push do relatório de auditoria
+        if: always()
+        run: |
+          git config user.name  "Easy Analytics Auditor"
+          git config user.email "actions@users.noreply.github.com"
+          git add logs/ IMPROVEMENTS.md 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "[audit] nada para commitar"
+          else
+            git commit -m "audit: relatório de auditoria + melhorias [skip ci]"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push
+          fi

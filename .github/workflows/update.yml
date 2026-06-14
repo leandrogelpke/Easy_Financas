@@ -1,0 +1,159 @@
+name: Atualizar Dashboard (Bling)
+
+# Agente principal — atualiza o dashboard Easy Analytics com dados frescos
+# do Bling 3x ao dia (horário de Brasília, UTC-3) e publica no GitHub Pages.
+#   '0 10 * * *' → 07h00 BRT
+#   '0 15 * * *' → 12h00 BRT
+#   '0 19 * * *' → 16h00 BRT
+on:
+  schedule:
+    - cron: '0 10 * * *'
+    - cron: '0 15 * * *'
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: easy-financas-update
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Marca início
+        id: inicio
+        run: echo "ts=$(date -u +%s)" >> "$GITHUB_OUTPUT"
+
+      - name: Restaurar credenciais do Bling (a partir dos Secrets)
+        env:
+          BLING_OAUTH: ${{ secrets.BLING_OAUTH }}
+          BLING_TOKEN: ${{ secrets.BLING_TOKEN }}
+        run: |
+          printf '%s' "$BLING_OAUTH" > .bling-oauth.json
+          printf '%s' "$BLING_TOKEN" > .bling-tokens.json
+          # cópia de referência p/ detectar rotação do refresh_token
+          cp .bling-tokens.json .bling-tokens.orig.json
+          chmod 600 .bling-oauth.json .bling-tokens.json
+          python3 -c "import json; json.load(open('.bling-oauth.json')); json.load(open('.bling-tokens.json')); print('[ok] credenciais válidas (JSON)')"
+
+      - name: Fetch dados do Bling
+        id: fetch
+        continue-on-error: true
+        run: |
+          # janela deslizante: 7 meses atrás (mesma regra do weekly.sh)
+          DI=$(python3 -c "
+          from datetime import date, timedelta
+          d = date.today().replace(day=1)
+          for _ in range(7):
+              d = (d - timedelta(days=1)).replace(day=1)
+          print(d.strftime('%Y-%m-%d'))")
+          echo "[fetch] janela: $DI → hoje"
+          mkdir -p data/bling-api
+          python3 fetch-bling.py --out data/bling-api --data-inicial "$DI" --no-detail-receber
+
+      - name: Salvar token rotacionado de volta no Secret
+        id: token
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          if [ ! -f .bling-tokens.json ]; then
+            echo "status=missing" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          if cmp -s .bling-tokens.json .bling-tokens.orig.json; then
+            echo "[token] inalterado (access_token ainda válido) — nada a salvar"
+            echo "status=unchanged" >> "$GITHUB_OUTPUT"
+          elif [ -z "$GH_TOKEN" ]; then
+            echo "::warning::token do Bling rotacionou mas GH_PAT não está configurado — não foi possível persistir. Próxima execução pode falhar."
+            echo "status=rotated_not_saved" >> "$GITHUB_OUTPUT"
+          else
+            gh secret set BLING_TOKEN --repo "$GITHUB_REPOSITORY" < .bling-tokens.json
+            echo "[token] refresh_token rotacionado — Secret BLING_TOKEN atualizado"
+            echo "status=rotated_saved" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Gerar index.html (build)
+        id: build
+        continue-on-error: true
+        env:
+          TOTVS_SNAP: totvs_snapshot.json
+          CARTAO_SNAP: cartao_snapshot.json
+        run: python3 build-html.py --in data/bling-api --out index.html
+
+      - name: Gate — testes de regressão (test_audit)
+        id: gate_audit
+        continue-on-error: true
+        run: python3 test_audit.py
+
+      - name: Gate — testes estruturais do HTML (test_build)
+        id: gate_build
+        continue-on-error: true
+        run: python3 test_build.py
+
+      - name: Commit & push do dashboard
+        id: push
+        continue-on-error: true
+        run: |
+          git config user.name  "Easy Analytics Bot"
+          git config user.email "actions@users.noreply.github.com"
+          # mantém só os 10 snapshots mais recentes versionados
+          ls -1t data/bling-api/bling_data_*.json 2>/dev/null | tail -n +11 \
+            | xargs -r git rm -f --ignore-unmatch
+          git add index.html DRE_Projetado_Realizado.html 2>/dev/null || true
+          git add data/bling-api/bling_data_*.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "[push] nada novo para commitar"
+            echo "status=nothing" >> "$GITHUB_OUTPUT"
+          else
+            STAMP=$(TZ=America/Sao_Paulo date '+%Y-%m-%d %H:%M')
+            git commit -m "auto: dashboard $STAMP BRT" -m "Atualização automática via GitHub Actions (agente principal)."
+            git push
+            echo "[push] publicado"
+            echo "status=success" >> "$GITHUB_OUTPUT"
+          fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Gravar log da execução
+        if: always()
+        env:
+          START_TS:    ${{ steps.inicio.outputs.ts }}
+          OUT_FETCH:   ${{ steps.fetch.outcome }}
+          OUT_BUILD:   ${{ steps.build.outcome }}
+          OUT_GATE_A:  ${{ steps.gate_audit.outcome }}
+          OUT_GATE_B:  ${{ steps.gate_build.outcome }}
+          OUT_PUSH:    ${{ steps.push.outputs.status }}
+          PUSH_OUTCOME: ${{ steps.push.outcome }}
+          TOKEN_STATUS: ${{ steps.token.outputs.status }}
+          COMMIT_SHA:  ${{ steps.push.outputs.sha }}
+          TRIGGER:     ${{ github.event_name }}
+          RUN_ID:      ${{ github.run_id }}
+          RUN_NUMBER:  ${{ github.run_number }}
+          RUN_URL:     ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python3 ci/write_update_log.py
+
+      - name: Commit & push do log
+        if: always()
+        run: |
+          git config user.name  "Easy Analytics Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add logs/ 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "[log] nada para commitar"
+          else
+            git commit -m "log: execução do agente principal [skip ci]"
+            # rebase defensivo caso o push do dashboard e o do log corram juntos
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push
+          fi

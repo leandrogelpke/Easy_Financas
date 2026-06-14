@@ -930,6 +930,16 @@ def _load_bling_csvs(bling_dir: Path) -> tuple:
     em_aberto = load(latest("contas_pagar_em_aberto"))
     recebidas = load(latest("contas_receber_recebidas"))
     receber_em_aberto = load(latest("contas_receber_em_aberto"))
+
+    # Reconciliação: remove fantasmas do a pagar (duplicatas já pagas +
+    # provisões cobertas) antes de montar a matriz/DRE. Fonte única em
+    # audit.py — evita dupla contagem na projeção e mantém DRE/P&L e a
+    # auditoria alinhados com Visão Geral / Caixa.
+    try:
+        from audit import reconcile_em_aberto  # type: ignore
+        em_aberto, _ = reconcile_em_aberto(pagas, em_aberto)
+    except Exception:
+        pass
     return pagas, em_aberto, recebidas, receber_em_aberto
 
 

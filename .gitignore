@@ -1,6 +1,22 @@
+# ── Credenciais (NUNCA commitar) ──────────────────────────────
 .git-token-store
 .bling-api-key
 .bling-oauth.json
 .bling-tokens.json
+.bling-tokens.orig.json
+
+# ── Python ────────────────────────────────────────────────────
 __pycache__/
 *.pyc
+
+# ── Dados do CI: só o snapshot consolidado (bling_data_*.json) é
+#    versionado; CSVs e cache de retomada ficam fora do git. ─────
+data/bling-api/.cache/
+data/bling-api/*.csv
+
+# ── Dados brutos sensíveis (extratos/relatórios) — não publicar ─
+cartao/raw/
+totvs/raw/
+
+# ── Sistema ───────────────────────────────────────────────────
+.DS_Store

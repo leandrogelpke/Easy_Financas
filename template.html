@@ -170,6 +170,10 @@ nav{position:sticky;top:0;z-index:100;background:rgba(244,246,249,0.96);backdrop
 footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono)}
 .snap-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;animation:snapPulse 3s ease-in-out infinite}
 @keyframes snapPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.75)}}
+@media(max-width:760px){.hamb{display:flex}.ntabs{display:none}}
+.dre-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.dre-detail-grid{grid-template-columns:1fr}}
+.dre-row:hover{background:var(--s2)!important;transition:background .12s}
 @media(max-width:560px){.g5{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}.htitle{font-size:18px}}
 </style>
 </head>
@@ -191,17 +195,20 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
         style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:13px;user-select:none;color:var(--t3)">👁</span>
     </div>
     <button class="lbtn" onclick="unl()">Acessar</button>
-    <div class="lhint">Easy Analytics · 02/mai/2026 · confidencial</div>
+    <div class="lhint">Easy Analytics · @@LOGIN_DATE@@ · confidencial</div>
   </div>
 </div>
 <script>
 (function(){
-  var P='Easy1.2.3.@',K='ea_dash_v3';
+  var H='@@PWD_HASH@@',K='ea_dash_v3';
   if(sessionStorage.getItem(K)==='1'){document.addEventListener('DOMContentLoaded',function(){var l=document.getElementById('lock');if(l)l.style.display='none';});}
   window.unl=function(){
     var i=document.getElementById('lpwd'),e=document.getElementById('lerr');
-    if(i.value===P){sessionStorage.setItem(K,'1');var l=document.getElementById('lock');l.style.transition='opacity .3s';l.style.opacity='0';setTimeout(function(){l.style.display='none';},300);}
-    else{e.textContent='Senha incorreta.';i.value='';i.style.borderColor='var(--red)';i.focus();setTimeout(function(){i.style.borderColor='var(--bd2)';e.textContent='';},1500);}
+    crypto.subtle.digest('SHA-256',new TextEncoder().encode(i.value)).then(function(b){
+      var hex=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('');
+      if(hex===H){sessionStorage.setItem(K,'1');var l=document.getElementById('lock');l.style.transition='opacity .3s';l.style.opacity='0';setTimeout(function(){l.style.display='none';},300);}
+      else{e.textContent='Senha incorreta.';i.value='';i.style.borderColor='var(--red)';i.focus();setTimeout(function(){i.style.borderColor='var(--bd2)';e.textContent='';},1500);}
+    });
   };
 })();
 </script>
@@ -211,11 +218,16 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   <button class="mobtab active" onclick="sp('overview',this,1)">Visão Geral</button>
   <button class="mobtab" onclick="sp('gastos',this,1)">Gastos</button>
   <button class="mobtab" onclick="sp('cashflow',this,1)">Caixa</button>
+  @@CARTAO_MOBTAB@@
   <button class="mobtab" onclick="sp('clientes',this,1)">Clientes</button>
+  @@TOTVS_MOBTAB@@
   <button class="mobtab" onclick="sp('pipeline',this,1)">Pipeline</button>
   <button class="mobtab" onclick="sp('projecao',this,1)">Projeção</button>
   <button class="mobtab" onclick="sp('financeiro',this,1)">Financeiro</button>
+  @@PL_MOBTAB@@
   <button class="mobtab" onclick="sp('dre',this,1)">DRE</button>
+  @@CONTAS_MOBTAB@@
+  @@AUDIT_MOBTAB@@
 </div>
 
 <!-- NAV -->
@@ -226,13 +238,18 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
     <button class="ntab active" onclick="sp('overview',this)">Visão Geral</button>
     <button class="ntab" onclick="sp('gastos',this)">Gastos</button>
     <button class="ntab" onclick="sp('cashflow',this)">Caixa</button>
+    @@CARTAO_NTAB@@
     <button class="ntab" onclick="sp('clientes',this)">Clientes</button>
+    @@TOTVS_NTAB@@
     <button class="ntab" onclick="sp('pipeline',this)">Pipeline</button>
     <button class="ntab" onclick="sp('projecao',this)">Projeção</button>
     <button class="ntab" onclick="sp('financeiro',this)">Financeiro</button>
+    @@PL_NTAB@@
     <button class="ntab" onclick="sp('dre',this)">DRE</button>
+    @@CONTAS_NTAB@@
+    @@AUDIT_NTAB@@
   </div>
-  <button class="hamb" id="hbtn" onclick="tmob()" style="display:none" aria-label="Menu">
+  <button class="hamb" id="hbtn" onclick="tmob()" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
   <div class="ndate"><span class="snap-dot"></span>@@UPDATED_AT@@</div>
@@ -241,55 +258,31 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <!-- ═══ VISÃO GERAL ═══ -->
 <div class="pg active" id="pg-overview">
 <div class="hero">
-  <div><div class="htitle">Diagnóstico Executivo<br>Easy Analytics 2026</div><div class="hsub">jan–abr/2026 · total pago confirmado: R$ 800.401 · fonte: Bling ERP</div></div>
-  <div class="pills">
-    <span class="pill pr"><span class="pdot"></span>Gastos +390% vs. budget</span>
-    <span class="pill pa"><span class="pdot"></span>R$ 94 K Polar sem categoria</span>
-    <span class="pill pg2"><span class="pdot"></span>Buy-out encerra jun/26</span>
-  </div>
+  <div><div class="htitle">Diagnóstico Executivo<br>Easy Analytics</div><div class="hsub">@@OVERVIEW_HERO_SUB@@</div></div>
+  <div class="pills">@@OVERVIEW_PILLS@@</div>
 </div>
 <div class="sl">KPIs executivos</div>
-<div class="g5">
-  <div class="met red"><div class="ml">Total pago (confirmado)</div><div class="mv red">R$ 800 K</div><div class="ms">excl. R$ 94 K Polar s/ classif.</div></div>
-  <div class="met red"><div class="ml">Média mensal real</div><div class="mv red">R$ 200 K</div><div class="ms">vs. R$ 30,8 K orçado</div><div class="delta d-neg">+R$ 169 K/mês acima</div></div>
-  <div class="met amber"><div class="ml">Receita estimada</div><div class="mv amber">~R$ 320 K</div><div class="ms">~R$ 80 K/mês vs. R$ 90 K orçado</div></div>
-  <div class="met red"><div class="ml">Resultado operacional</div><div class="mv red">−R$ 480 K</div><div class="ms">budget previa +R$ 217 K</div></div>
-  <div class="met amber"><div class="ml">Polar sem classificação</div><div class="mv amber">R$ 94 K</div><div class="ms">mar: R$ 65 K · abr: R$ 29 K</div></div>
-</div>
+<div class="g5">@@OVERVIEW_KPIS@@</div>
 <div class="sl">Highlights e lowlights</div>
 <div class="g2">
   <div class="card">
     <div class="ct">Riscos e desvios</div>
-    <div class="alt alr"><div class="ats">Despesas 390% acima do budget em 4 meses</div><div class="asd">R$ 800 K pago vs. R$ 123 K orçado. 80% das saídas não existiam no orçamento original.</div></div>
-    <div class="alt alr"><div class="ats">6 fornecedores ativos não estavam no orçamento</div><div class="asd">Buy-out, Geremias, Macedo, EP Serv., IVY Group e CBYK somam R$ 424 K em 4 meses.</div></div>
-    <div class="alt ala"><div class="ats">Cartão de crédito subiu 75% em abril</div><div class="asd">R$ 5.739 em jan/fev/mar → R$ 10.031 em abril. Verificar causas.</div></div>
-    <div class="alt ala"><div class="ats">R$ 34.856 vencidos a receber</div><div class="asd">Atacadão (3 parcelas) + TOTVS SA (abr) sem recebimento. Padrão sugere inadimplência recorrente.</div></div>
+    @@OVERVIEW_RISCOS@@
   </div>
   <div class="card">
     <div class="ct">Pontos positivos</div>
-    <div class="alt alg"><div class="ats">Buy-out encerra 25/jun/26 — R$ 59.814/mês libres a partir de julho</div><div class="asd">Maior despesa da empresa encerra na parcela 18/18. Melhora permanente no fluxo.</div></div>
-    <div class="alt alg"><div class="ats">Vtconn e Victor Hugo aparentemente encerrados — R$ 8.400/mês liberados</div><div class="asd">Sem pagamentos em abril para ambos. Se encerrados, R$ 100 K/ano liberados.</div></div>
-    <div class="alt alg"><div class="ats">IRPJ e CSLL pagos regularmente — compliance fiscal saudável</div><div class="asd">R$ 26 K em impostos diretos em 4 meses. Sem risco de passivo tributário.</div></div>
-    <div class="alt alb"><div class="ats">Efata, Macedo e Godoy com valores estáveis</div><div class="asd">Variação inferior a 2% entre meses. Facilita projeção e controle orçamentário.</div></div>
+    @@OVERVIEW_POSITIVOS@@
   </div>
 </div>
-<div class="sl">Ações imediatas</div>
+<div class="sl">Próximas ações <span style="color:var(--t3);font-size:11px">— geradas dos dados Bling + auditoria a cada rodada</span></div>
 <div class="g2">
   <div class="card">
-    <div class="ct">Esta semana</div>
-    <div class="tli"><div class="tld" style="background:var(--red)"></div><div><div class="tlt">Confirmar status jurídico buy-out (18/18 vence 25/jun)</div><div class="tls">Contatar advogado antes do vencimento</div></div></div>
-    <div class="tli"><div class="tld" style="background:var(--red)"></div><div><div class="tlt">Cobrança formal Atacadão — 3 parcelas vencidas</div><div class="tls">R$ 20.277 em aberto — boleto + contato direto</div></div></div>
-    <div class="tli"><div class="tld" style="background:var(--red)"></div><div><div class="tlt">Confirmar TOTVS SA — R$ 14.200 vencido (abr)</div><div class="tls">RPS nº 1124 sem baixa confirmada</div></div></div>
-    <div class="tli"><div class="tld" style="background:var(--red)"></div><div><div class="tlt">Classificar Polar Técnica — R$ 94 K sem categoria</div><div class="tls">Aporte, serviço ou distribuição? Impacta DRE</div></div></div>
-    <div class="tli"><div class="tld" style="background:var(--amber)"></div><div><div class="tlt">Identificar IVY Group Holding e CBYK</div><div class="tls">R$ 16 K sem contrato identificado — risco compliance</div></div></div>
+    <div class="ct">Imediatas (ação esta semana)</div>
+    @@NEXT_ACTIONS_IMEDIATAS@@
   </div>
   <div class="card">
-    <div class="ct">Mai–Jun 2026</div>
-    <div class="tli"><div class="tld" style="background:var(--amber)"></div><div><div class="tlt">Follow-up prioritário: Baianão + SESI</div><div class="tls">R$ 21 K/mês SaaS se ambos fecharem</div></div></div>
-    <div class="tli"><div class="tld" style="background:var(--amber)"></div><div><div class="tlt">Avaliar continuidade Efata (R$ 35 K/mês)</div><div class="tls">Maior despesa op. pós-buy-out. Analisar ROI</div></div></div>
-    <div class="tli"><div class="tld" style="background:var(--amber)"></div><div><div class="tlt">Garantir aporte Polar para cobrir gap de mai</div><div class="tls">~R$ 145 K em saídas projetadas em maio</div></div></div>
-    <div class="tli"><div class="tld" style="background:var(--blue)"></div><div><div class="tlt">Reativar 10 oportunidades paradas no pipeline</div><div class="tls">Nova abordagem direta — não depender só do ESN</div></div></div>
-    <div class="tli"><div class="tld" style="background:var(--blue)"></div><div><div class="tlt">Estruturar CS básico — NPS + QBR top 10 contas</div><div class="tls">Churn de 60% histórico continua sem ação estruturada</div></div></div>
+    <div class="ct">Acompanhar (próximos 30–60d)</div>
+    @@NEXT_ACTIONS_ACOMPANHAR@@
   </div>
 </div>
 </div>
@@ -297,7 +290,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <!-- ═══ GASTOS COM CROSS FILTER ═══ -->
 <div class="pg" id="pg-gastos">
 <div class="hero">
-  <div><div class="htitle">Gastos Reais — Jan a Abr 2026</div><div class="hsub">fonte: relatório de pagamentos Bling · total bruto: R$ 894.401 · total classificado: R$ 800.401</div></div>
+  <div><div class="htitle">@@GASTOS_HERO_TITLE@@</div><div class="hsub">@@GASTOS_HERO_SUB@@</div></div>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
     <span class="sel-lbl" id="selLbl"></span>
     <button class="reset-btn" id="resetBtn" onclick="cfReset()">✕ Limpar filtros</button>
@@ -352,12 +345,8 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   </div>
 </div>
 <div class="cf-hint">💡 Toque nas pills de situação, no gráfico ou em qualquer linha para filtrar</div>
-<div class="g4">
-  <div class="met amber"><div class="ml">Saldo estimado hoje</div><div class="mv amber">~R$ 48 K</div><div class="ms">Itaú + Bradesco</div></div>
-  <div class="met red"><div class="ml">A pagar mai–jun</div><div class="mv red">R$ 297 K</div><div class="ms">23 lançamentos em aberto</div></div>
-  <div class="met green"><div class="ml">A receber (filtrado)</div><div class="mv green" id="cxvRec">R$ 102 K</div><div class="ms" id="cxsRec">8 parcelas</div></div>
-  <div class="met red"><div class="ml">Gap líquido</div><div class="mv red">−R$ 194 K</div><div class="ms">Depende de aporte Polar</div></div>
-</div>
+<div class="g4">@@CAIXA_KPIS@@</div>
+@@CAIXA_FLUXO_HTML@@
 <div class="sl">Filtrar por situação</div>
 <div class="month-pills" id="cxPills">
   <div class="mpill sel" data-s="all" onclick="cxSit('all')">Todos</div>
@@ -388,7 +377,11 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   </div>
   <div class="totals" id="cxTblTot"></div>
 </div>
-<div class="sl">Contas a pagar — mai e jun/2026</div>
+@@CAIXA_VENCIDOS_HTML@@
+<div class="sl">Contas a pagar — mês atual + próximos 2 meses</div>
+@@PAGAR_MENSAL_HTML@@
+<!-- BLOCO HARDCODED ANTIGO MANTIDO ABAIXO PARA REMOÇÃO MANUAL (gerado dinamicamente acima) -->
+<div style="display:none">
 <div class="g2">
   <div class="card">
     <div class="ct">Maio/2026 — total: R$ 155.645</div>
@@ -424,6 +417,9 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   </div>
 </div>
 </div>
+<!-- fim bloco hardcoded antigo (oculto) -->
+</div>
+@@CARTAO_PG@@
 <!-- ═══ FINANCEIRO ═══ -->
 <div class="pg" id="pg-financeiro">
 
@@ -499,52 +495,18 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 
 </div><!-- /pg-financeiro -->
 
-<!-- ═══ DRE ═══ -->
-<div class="pg" id="pg-dre">
+@@PL_PG@@
 
-<div class="hero">
-  <div>
-    <div class="htitle">DRE — Receita vs Despesas</div>
-    <div class="hsub" id="dreHsub">Real (meses fechados) + Projetado Bling (meses futuros) · atualiza semanalmente</div>
-  </div>
-</div>
+@@DRE_PG@@
 
-<div class="sl">KPIs do período</div>
-<div class="g4" id="dreKpis" style="margin-bottom:12px"></div>
+@@CONTAS_PG@@
 
-<div class="sl">Receita vs Despesas — mês a mês</div>
-<div class="card" style="margin-bottom:12px">
-  <div class="ct">Barras: real <span class="ct-tag">opaco = real · translúcido = projetado</span></div>
-  <div class="cw" style="height:300px"><canvas id="dreBar"></canvas></div>
-  <div id="dreLegend" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:12px;font-size:10.5px;color:var(--t2)"></div>
-</div>
-
-<div class="card" style="margin-bottom:12px">
-  <div class="ct">Resultado mensal — Receita − Despesas</div>
-  <div class="cw" style="height:180px"><canvas id="dreResult"></canvas></div>
-</div>
-
-<div class="card">
-  <div class="ct">Detalhamento mensal completo</div>
-  <div class="tbl-wrap">
-    <table class="dt">
-      <thead><tr>
-        <th>Mês</th><th>Tipo</th>
-        <th class="r">Receita</th><th class="r">Despesas</th>
-        <th class="r">Resultado</th><th class="r">Acumulado</th>
-      </tr></thead>
-      <tbody id="dreTbody"></tbody>
-    </table>
-  </div>
-  <div class="totals" id="dreTotals" style="margin-top:10px"></div>
-</div>
-
-</div><!-- /pg-dre -->
+@@AUDIT_PG@@
 
 <!-- ═══ CLIENTES ═══ -->
 <div class="pg" id="pg-clientes">
 <div class="hero">
-  <div><div class="htitle">Base de Clientes & Retenção</div><div class="hsub">27 pagantes · R$ 196.687/mês total mapeado · out/25–abr/26</div></div>
+  <div><div class="htitle">Base de Clientes & Retenção</div><div class="hsub">@@CLI_HSUB@@</div></div>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
     <span class="sel-lbl" id="cliSelLbl"></span>
     <button class="reset-btn" id="cliResetBtn" onclick="cliReset()">✕ Limpar</button>
@@ -558,28 +520,31 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <div class="g4">
   <div class="met green" id="ckpi-gar" onclick="cliCat('garantido')">
     <div class="ml">✅ Garantido</div>
-    <div class="mv green">R$ 79.741</div>
-    <div class="ms">15 clientes · uso ativo abr/26</div>
-    <div class="delta d-pos">41% da receita</div>
+    <div class="mv green">R$ @@CLI_VAL_GAR@@</div>
+    <div class="ms">@@CLI_N_GAR@@ clientes · uso ativo</div>
+    <div class="delta d-pos">@@CLI_PCT_GAR@@% da receita</div>
   </div>
   <div class="met amber" id="ckpi-med" onclick="cliCat('medio')">
     <div class="ml">🟡 Risco médio</div>
-    <div class="mv amber">R$ 26.769</div>
-    <div class="ms">6 clientes · paga mas não usa</div>
-    <div class="delta d-neg">14% da receita</div>
+    <div class="mv amber">R$ @@CLI_VAL_MED@@</div>
+    <div class="ms">@@CLI_N_MED@@ clientes · paga mas não usa</div>
+    <div class="delta d-neg">@@CLI_PCT_MED@@% da receita</div>
   </div>
   <div class="met red" id="ckpi-alt" onclick="cliCat('alto')">
     <div class="ml">🔴 Risco alto</div>
-    <div class="mv red">R$ 45.580</div>
-    <div class="ms">6 clientes · churn flagged</div>
-    <div class="delta d-neg">23% da receita</div>
+    <div class="mv red">R$ @@CLI_VAL_ALT@@</div>
+    <div class="ms">@@CLI_N_ALT@@ clientes · churn flagged</div>
+    <div class="delta d-neg">@@CLI_PCT_ALT@@% da receita</div>
   </div>
   <div class="met blue" id="ckpi-tot">
     <div class="ml">Total mapeado</div>
-    <div class="mv blue" id="ckv-tot">R$ 196.687</div>
-    <div class="ms" id="ckv-sub">27 clientes ativos</div>
+    <div class="mv blue" id="ckv-tot">R$ @@CLI_VAL_TOT@@</div>
+    <div class="ms" id="ckv-sub">@@CLI_N_TOT@@ clientes ativos</div>
   </div>
 </div>
+
+<!-- ABERTURA POR INTERMEDIÁRIO TOTVS -->
+@@CLI_FILIAIS_HTML@@
 
 <!-- FUNIL + DONUT LADO A LADO -->
 <div class="g2" style="margin-bottom:12px">
@@ -588,36 +553,30 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
     <div style="display:flex;flex-direction:column;gap:10px;padding:2px 0">
       <div>
         <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
-          <span style="color:var(--t2)">Base histórica total</span><span style="color:var(--blue)">68 clientes</span>
+          <span style="color:var(--t2)">Pagamento ativo</span><span style="color:var(--green)">@@CLI_N_TOT@@ clientes · R$ @@CLI_VAL_TOT@@/mês</span>
         </div>
-        <div class="pbar"><div class="pbi" style="width:100%;background:var(--blue)"></div></div>
+        <div class="pbar"><div class="pbi" style="width:100%;background:var(--green)"></div></div>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
-          <span style="color:var(--t2)">Pagamento ativo</span><span style="color:var(--green)">27 (40%) · R$ 196.687/mês</span>
+          <span style="color:var(--t2)">✅ Garantido (uso ativo)</span><span style="color:var(--green)">@@CLI_N_GAR@@ clientes · R$ @@CLI_VAL_GAR@@/mês</span>
         </div>
-        <div class="pbar"><div class="pbi" style="width:40%;background:var(--green)"></div></div>
+        <div class="pbar"><div class="pbi" style="width:@@CLI_PCT_GAR@@%;background:var(--green)"></div></div>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
-          <span style="color:var(--t2)">✅ Garantido (uso ativo)</span><span style="color:var(--green)">15 clientes · R$ 79.741/mês</span>
+          <span style="color:var(--t2)">🟡 Risco médio (não usa)</span><span style="color:var(--amber)">@@CLI_N_MED@@ clientes · R$ @@CLI_VAL_MED@@/mês</span>
         </div>
-        <div class="pbar"><div class="pbi" style="width:29%;background:var(--green)"></div></div>
+        <div class="pbar"><div class="pbi" style="width:@@CLI_PCT_MED@@%;background:var(--amber)"></div></div>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
-          <span style="color:var(--t2)">🟡 Risco médio (não usa)</span><span style="color:var(--amber)">6 clientes · R$ 26.769/mês</span>
+          <span style="color:var(--t2)">🔴 Risco alto (churn)</span><span style="color:var(--red)">@@CLI_N_ALT@@ clientes · R$ @@CLI_VAL_ALT@@/mês</span>
         </div>
-        <div class="pbar"><div class="pbi" style="width:14%;background:var(--amber)"></div></div>
-      </div>
-      <div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;font-family:var(--mono)">
-          <span style="color:var(--t2)">🔴 Risco alto (churn)</span><span style="color:var(--red)">6 clientes · R$ 45.580/mês</span>
-        </div>
-        <div class="pbar"><div class="pbi" style="width:23%;background:var(--red)"></div></div>
+        <div class="pbar"><div class="pbi" style="width:@@CLI_PCT_ALT@@%;background:var(--red)"></div></div>
       </div>
       <div style="background:var(--red-bg);border-radius:8px;padding:8px 10px;font-size:11px;font-family:var(--mono);color:var(--red);margin-top:4px">
-        ⚠️ Se risco alto cancelar: −R$ 45.580/mês &nbsp;|&nbsp; Se tudo cancelar: −R$ 72.349/mês
+        ⚠️ Se risco alto cancelar: −R$ @@CLI_VAL_ALT@@/mês &nbsp;|&nbsp; Se médio + alto cancelar: −R$ @@CLI_VAL_MED_PLUS_ALT@@/mês
       </div>
     </div>
   </div>
@@ -655,6 +614,8 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   <div class="totals" id="cliTblTot"></div>
 </div>
 </div>
+
+@@TOTVS_PG@@
 
 <!-- ═══ PIPELINE ═══ -->
 <div class="pg" id="pg-pipeline">
@@ -760,15 +721,27 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <footer>easy analytics · dashboard executivo · 02/mai/2026 · dados: bling erp + relatório pagamentos + pipeline + base clientes · confidencial</footer>
 
 <script>
-// ── CHART DEFAULTS ──
-Chart.defaults.color='#4a5f7a';
-Chart.defaults.borderColor='rgba(60,90,130,0.1)';
-Chart.defaults.font.family="'IBM Plex Mono',monospace";
-Chart.defaults.font.size=11;
+// ── CHART DEFAULTS (resiliente a Chart.js indisponível) ──
+var HAS_CHART=(typeof Chart!=='undefined');
+if(HAS_CHART){
+  Chart.defaults.color='#4a5f7a';
+  Chart.defaults.borderColor='rgba(60,90,130,0.1)';
+  Chart.defaults.font.family="'IBM Plex Mono',monospace";
+  Chart.defaults.font.size=11;
+}else{
+  // Stub: aceita `new Chart(...)` sem quebrar. Tabelas e filtros seguem funcionando.
+  window.Chart=function(){return{data:{datasets:[{}]},update:function(){},destroy:function(){}};};
+  window.addEventListener('DOMContentLoaded',function(){
+    var w=document.createElement('div');
+    w.style.cssText='position:fixed;bottom:14px;right:14px;background:#b7650a;color:#fff;padding:8px 14px;border-radius:8px;font-family:IBM Plex Mono,monospace;font-size:11px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.15);max-width:280px;line-height:1.4';
+    w.innerHTML='⚠ Chart.js não carregou (CDN bloqueado ou offline). Tabelas e filtros funcionam normalmente; só os gráficos ficam vazios.';
+    document.body.appendChild(w);
+  });
+}
 
 var fBR=function(v){return v===0?'—':'R$\u00a0'+Math.round(v).toLocaleString('pt-BR');};
 var fK=function(v){return (v>=0?'':'-')+'R$\u00a0'+Math.abs(Math.round(v/1000))+'K';};
-var PAGES=['overview','gastos','cashflow','clientes','pipeline','projecao','financeiro','dre'];
+var PAGES=['overview','gastos','cashflow','cartao','clientes','totvs','pipeline','projecao','financeiro','pl','dre'];
 
 // ── NAV ──
 function sp(id,btn,mob){
@@ -1084,6 +1057,7 @@ function _fmtK(v){return v>=1000?(v/1000).toFixed(0)+'k':v;}
 
 // ── DRE: RECEITA VS DESPESAS (real + projetado) ──
 var DRE_DATA=@@DRE_DATA@@;
+var DRE_DETAIL=@@DRE_DETAIL@@;
 var dreBarChart=null, dreResChart=null;
 var projDreBarChart=null;
 
@@ -1177,21 +1151,25 @@ function dreRender(){
     '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#c0392b;display:inline-block"></span>Despesas reais</span>'+
     '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:rgba(192,57,43,0.35);display:inline-block"></span>Despesas projetadas</span>';
 
-  // Tabela detalhe
+  // Tabela detalhe (com drilldown clicável por mês)
   var tbHtml='';
   var acum=0;
   DRE_DATA.forEach(function(m){
     var res=m.rec-m.desp;
     acum+=res;
     var isReal=m.tipo==='real';
-    tbHtml+='<tr>'+
-      '<td class="lbl">'+m.label+'</td>'+
+    var hasDetail=!!(DRE_DETAIL && DRE_DETAIL[m.month] && ((DRE_DETAIL[m.month].rec||[]).length+(DRE_DETAIL[m.month].desp||[]).length)>0);
+    var cursor=hasDetail?'cursor:pointer':'';
+    var caret=hasDetail?'<span id="dreCaret-'+m.month+'" style="color:var(--t3);font-family:var(--mono);font-size:11px;margin-right:6px;user-select:none">▸</span>':'<span style="margin-right:18px"></span>';
+    tbHtml+='<tr class="dre-row" data-mo="'+m.month+'" '+(hasDetail?'onclick="dreToggleDetail(\''+m.month+'\')"':'')+' style="'+cursor+'">'+
+      '<td class="lbl">'+caret+m.label+'</td>'+
       '<td><span class="bge '+(isReal?'bgg':'bgb')+'">'+(isReal?'Real':'Projetado')+'</span></td>'+
       '<td class="r" style="color:var(--green)">R$ '+_fmt(m.rec)+'</td>'+
       '<td class="r" style="color:var(--red)">R$ '+_fmt(m.desp)+'</td>'+
       '<td class="r" style="color:'+(res>=0?'var(--green)':'var(--red)')+'">R$ '+_fmt(res)+'</td>'+
       '<td class="r" style="color:'+(acum>=0?'var(--green)':'var(--red)')+'">R$ '+_fmt(acum)+'</td>'+
-      '</tr>';
+      '</tr>'+
+      (hasDetail?'<tr class="dre-detail" id="dreDetail-'+m.month+'" style="display:none;background:var(--s2)"><td colspan="6" id="dreDetailBody-'+m.month+'" style="padding:0"></td></tr>':'');
   });
   document.getElementById('dreTbody').innerHTML=tbHtml;
 
@@ -1205,6 +1183,57 @@ function dreRender(){
     '<div class="tot-i"><div class="tot-l">Resultado</div><div class="tot-v" style="color:'+(totRes>=0?'var(--green)':'var(--red)')+'">R$ '+_fmt(totRes)+'</div></div>'+
     '<div class="tot-i"><div class="tot-l">Meses reais</div><div class="tot-v">'+realM.length+'</div></div>'+
     '<div class="tot-i"><div class="tot-l">Meses projetados</div><div class="tot-v">'+planM.length+'</div></div>';
+}
+
+// ── DRE drilldown: abertura de receitas/despesas por mês ──
+function _dreEsc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function _dreItems(items, isRec){
+  if(!items||!items.length)return '<div style="padding:12px;color:var(--t3);text-align:center;font-size:11px">— nenhum lançamento —</div>';
+  var color = isRec ? 'var(--green)' : 'var(--red)';
+  var rows = items.map(function(it){
+    var cat = it.categoria ? it.categoria : '<span style="color:var(--amber);font-style:italic">sem categoria</span>';
+    var hist = it.historico ? '<div style="font-size:10px;color:var(--t3);margin-top:2px;line-height:1.3">'+_dreEsc(it.historico).substring(0,90)+(it.historico.length>90?'…':'')+'</div>' : '';
+    var doc = it.doc ? '<span style="font-family:var(--mono);font-size:9.5px;color:var(--t3);margin-left:6px">#'+_dreEsc(it.doc)+'</span>' : '';
+    var dt = it.venc ? '<span style="font-family:var(--mono);font-size:10px;color:var(--t3)">'+it.venc.substring(8,10)+'/'+it.venc.substring(5,7)+'</span>' : '';
+    var tipoPill = it.tipo==='projetado' ? '<span class="pill pa" style="font-size:9px;padding:0 5px;margin-left:4px">prev</span>' : '';
+    return '<tr><td style="padding:5px 8px">'+dt+'</td><td style="padding:5px 8px;font-size:11.5px">'+_dreEsc(it.contato)+doc+tipoPill+hist+'</td><td style="padding:5px 8px;font-size:10.5px;color:var(--t3)">'+cat+'</td><td class="r" style="padding:5px 8px;font-family:var(--mono);font-size:11.5px;color:'+color+';white-space:nowrap">R$ '+_fmt(it.valor)+'</td></tr>';
+  }).join('');
+  return '<div class="tbl-wrap" style="max-height:340px;overflow-y:auto;border:1px solid var(--bd);border-radius:6px;background:var(--s1)"><table class="dt" style="margin:0"><thead><tr style="position:sticky;top:0;background:var(--s1);z-index:1"><th style="width:38px">Venc.</th><th>'+(isRec?'Cliente':'Fornecedor')+'</th><th>Categoria</th><th class="r">Valor</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+function _dreRenderDetail(mo){
+  var det = DRE_DETAIL && DRE_DETAIL[mo];
+  if(!det) return '';
+  var totRec = (det.rec||[]).reduce(function(s,x){return s+(x.valor||0);},0);
+  var totDesp = (det.desp||[]).reduce(function(s,x){return s+(x.valor||0);},0);
+  return '<div style="padding:14px 16px">'+
+    '<div class="dre-detail-grid">'+
+      '<div>'+
+        '<div style="font-family:var(--mono);font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;display:flex;justify-content:space-between"><span>↑ Receitas ('+(det.rec||[]).length+')</span><span style="color:var(--green);font-weight:500">R$ '+_fmt(totRec)+'</span></div>'+
+        _dreItems(det.rec, true)+
+      '</div>'+
+      '<div>'+
+        '<div style="font-family:var(--mono);font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;display:flex;justify-content:space-between"><span>↓ Despesas ('+(det.desp||[]).length+')</span><span style="color:var(--red);font-weight:500">R$ '+_fmt(totDesp)+'</span></div>'+
+        _dreItems(det.desp, false)+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+function dreToggleDetail(mo){
+  var row = document.getElementById('dreDetail-'+mo);
+  var caret = document.getElementById('dreCaret-'+mo);
+  var body = document.getElementById('dreDetailBody-'+mo);
+  if(!row||!body) return;
+  if(row.style.display==='none'){
+    if(!body.dataset.loaded){
+      body.innerHTML = _dreRenderDetail(mo);
+      body.dataset.loaded = '1';
+    }
+    row.style.display = 'table-row';
+    if(caret) caret.textContent = '▾';
+  } else {
+    row.style.display = 'none';
+    if(caret) caret.textContent = '▸';
+  }
 }
 
 // ── PROJEÇÃO: gráfico DRE integrado (reutiliza DRE_DATA) ──
@@ -1382,35 +1411,7 @@ function ppReset(){PP_ST=null;PP_AR=null;ppRender();}
 ppRender();
 
 // ── CLIENTES CROSS FILTER ──
-var CLI_DATA=[
-  {id:'cantu',   n:'Cantu Importação',        cat:'garantido',valor:11535,uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'telerio', n:'Tele Rio Eletro',          cat:'garantido',valor:10978,uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'pia',     n:'Pia Sociedade SP',         cat:'garantido',valor:10205,uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'masp',    n:'MASP',                     cat:'garantido',valor:8883, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'mir',     n:'MIR (Ramsons)',            cat:'garantido',valor:6445, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'usina',   n:'Usina São Francisco',      cat:'garantido',valor:5271, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'khronos', n:'Khronos Eletrônica',       cat:'garantido',valor:5264, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'atacadao',n:'Atacadão Autopecas',       cat:'garantido',valor:4232, uso:'Ativo',  abr:'Ativo',obs:'Parcela parcial'},
-  {id:'lord',    n:'Org. Lord (Conbral)',      cat:'garantido',valor:4154, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'decanter',n:'Decanter Vinhos Finos',    cat:'garantido',valor:2640, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'hsr',     n:'HSR Shopping Lustres',     cat:'garantido',valor:2625, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'fueltech',n:'Fueltech LTDA',            cat:'garantido',valor:2338, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'higi',    n:'Higimaster',               cat:'garantido',valor:2322, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'manole',  n:'Editora Manole',           cat:'garantido',valor:1809, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'ralston', n:'Ind. Alim. Ralston',       cat:'garantido',valor:1041, uso:'Ativo',  abr:'Ativo',obs:''},
-  {id:'polar_s', n:'Polar Store LTDA',         cat:'medio',    valor:6754, uso:'Inativo',abr:'—',   obs:'Vínculo sócio Polar'},
-  {id:'congr',   n:'Congregação SS Redentor',  cat:'medio',    valor:6147, uso:'Ativo',  abr:'?',   obs:'Uso incerto'},
-  {id:'dorel',   n:'Dorel Comércio',           cat:'medio',    valor:4735, uso:'Ativo',  abr:'não', obs:'Não usou abr'},
-  {id:'weiser',  n:'Sérgio Weiser Decoração',  cat:'medio',    valor:4643, uso:'Ativo',  abr:'não', obs:'Não usou abr'},
-  {id:'funpar',  n:'FUNPAR',                   cat:'medio',    valor:2366, uso:'Ativo',  abr:'não', obs:'Não usou abr'},
-  {id:'elshadai',n:'Elshadai Alimentos',       cat:'medio',    valor:2123, uso:'Ativo',  abr:'não', obs:'Não usou abr'},
-  {id:'editora', n:'Editora do Brasil SA',     cat:'alto',     valor:17739,uso:'Inativo',abr:'—',   obs:'Uso inativo · set/2021'},
-  {id:'guaraves',n:'Guaraves Guarabira Aves',  cat:'alto',     valor:10584,uso:'Inativo',abr:'—',   obs:'Uso inativo · ago/2022'},
-  {id:'dux',     n:'Dux Company SA',           cat:'alto',     valor:9863, uso:'Ativo',  abr:'não', obs:'Solicitou cancelamento'},
-  {id:'jdk',     n:'JDK Presentes (Dryzum)',   cat:'alto',     valor:3829, uso:'Inativo',abr:'—',   obs:'Fase de cancelamento'},
-  {id:'lab',     n:'Lab. Florais Joel Aleixo', cat:'alto',     valor:2120, uso:'Inativo',abr:'—',   obs:'Parou de usar fev/26'},
-  {id:'sky',     n:'Sky Cranes & Hoists',      cat:'alto',     valor:1446, uso:'Inativo',abr:'—',   obs:'Nunca ativou'}
-];
+var CLI_DATA=@@CLI_DATA@@;
 var CAT_CLI=[
   {cat:'garantido',label:'Garantido',  color:'#1e7e4f'},
   {cat:'medio',    label:'Risco Médio',color:'#b7650a'},
@@ -1424,7 +1425,7 @@ function fBRc(v){return 'R$ '+Math.round(v).toLocaleString('pt-BR');}
 var cliDonut=new Chart(document.getElementById('cliDonut'),{
   type:'doughnut',
   data:{labels:CAT_CLI.map(function(c){return c.label;}),
-    datasets:[{data:[79741,26769,45580],backgroundColor:CAT_CLI.map(function(c){return c.color;}),borderWidth:2,borderColor:'#fff'}]},
+    datasets:[{data:[@@CLI_DONUT_DATA@@],backgroundColor:CAT_CLI.map(function(c){return c.color;}),borderWidth:2,borderColor:'#fff'}]},
   options:{responsive:true,maintainAspectRatio:false,cutout:'64%',animation:{duration:250},
     plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.label+': '+fBRc(c.parsed)+'/mês';}}}},
     onClick:function(_,els){if(els&&els.length>0){var cat=CAT_CLI[els[0].index].cat;CLI_AC=CLI_AC===cat?null:cat;CLI_AR=null;cliRender();}}
@@ -1476,9 +1477,10 @@ function cliRender(){
     var vis=cliVis(row);
     if(vis){tFil+=row.valor;cnt++;}
     var isSel=CLI_AR===row.id;
-    var bgClass=row.cat==='garantido'?'bgg':row.cat==='medio'?'bga':'bgr';
-    var catLabel=CAT_CLI.find(function(c){return c.cat===row.cat;}).label;
-    var colr=row.cat==='garantido'?'var(--green)':row.cat==='medio'?'var(--amber)':'var(--red)';
+    var bgClass=row.cat==='garantido'?'bgg':row.cat==='medio'?'bga':row.cat==='alto'?'bgr':'bgn';
+    var _catObj=CAT_CLI.find(function(c){return c.cat===row.cat;});
+    var catLabel=_catObj?_catObj.label:'Sem classif.';
+    var colr=row.cat==='garantido'?'var(--green)':row.cat==='medio'?'var(--amber)':row.cat==='alto'?'var(--red)':'var(--slate)';
     var abrClass=row.abr.toLowerCase()==='ativo'||row.abr==='x'?'bgg':row.abr==='—'||row.abr===''?'bgr':'bga';
     var tr=document.createElement('tr');tr.className=isSel?'sel':(!vis?'dim':'');
     tr.innerHTML='<td style="color:var(--t3);font-family:var(--mono)">'+String(idx++).padStart(2,'0')+'</td>'

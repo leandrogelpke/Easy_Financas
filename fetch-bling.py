@@ -56,6 +56,16 @@ def log(msg: str, quiet: bool = False) -> None:
         print(msg, flush=True)
 
 
+def atomic_write_text(path: Path, content: str, mode: int | None = None) -> None:
+    """Escreve via tmp + rename pra evitar arquivo truncado se o processo
+    for interrompido no meio (timeout do bash, kill, etc)."""
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(content, encoding="utf-8")
+    if mode is not None:
+        os.chmod(tmp, mode)
+    os.replace(tmp, path)
+
+
 class BlingClient:
     def __init__(self, oauth_cfg: Dict[str, str], tokens: Dict[str, Any], quiet: bool = False):
         self.client_id = oauth_cfg["client_id"]
@@ -93,8 +103,7 @@ class BlingClient:
             new = json.loads(resp.read().decode())
         new["_obtained_at"] = int(time.time())
         self.tokens = new
-        TOKENS_FILE.write_text(json.dumps(new, indent=2))
-        os.chmod(TOKENS_FILE, 0o600)
+        atomic_write_text(TOKENS_FILE, json.dumps(new, indent=2), mode=0o600)
         log("[token] novo access_token salvo (expires_in=%ss)" % new.get("expires_in"), self.quiet)
 
     def ensure_fresh_token(self) -> None:
@@ -178,7 +187,7 @@ def write_csv(path: Path, rows: List[Dict[str, Any]], columns: List[str]) -> Non
 
 SITUACAO_LABELS = {
     1: "Em aberto",
-    2: "Recebido" if False else "Paga/Recebida",  # contexto: pagar=Paga, receber=Recebida
+    2: "Paga/Recebida",  # contexto-dependente; situacao_label(sit, kind) resolve
     3: "Parcial",
     4: "Devolvida",
     5: "Cancelada",
@@ -233,9 +242,9 @@ def fetch_contatos_idx(
         if (i + 1) % save_every == 0:
             log(f"  ... {len(out)}/{len(ids_unique)}", client.quiet)
             if cache_path:
-                cache_path.write_text(json.dumps(list(out.values()), ensure_ascii=False))
+                atomic_write_text(cache_path, json.dumps(list(out.values()), ensure_ascii=False))
     if cache_path:
-        cache_path.write_text(json.dumps(list(out.values()), ensure_ascii=False))
+        atomic_write_text(cache_path, json.dumps(list(out.values()), ensure_ascii=False))
     return out
 
 
@@ -305,9 +314,9 @@ def fetch_contas(
         if (i + 1) % save_every == 0:
             log(f"  ... {len(detailed)}/{len(listed)}", client.quiet)
             if cache_path:
-                cache_path.write_text(json.dumps(detailed, ensure_ascii=False))
+                atomic_write_text(cache_path, json.dumps(detailed, ensure_ascii=False))
     if cache_path:
-        cache_path.write_text(json.dumps(detailed, ensure_ascii=False))
+        atomic_write_text(cache_path, json.dumps(detailed, ensure_ascii=False))
     return detailed
 
 
@@ -366,6 +375,8 @@ def main() -> int:
     ap.add_argument("--limit", type=int, default=None, help="limita N itens por dataset (smoke test)")
     ap.add_argument("--no-detail-receber", action="store_true",
                     help="receber ja vem com info rica na lista; pula GET /id pra acelerar")
+    ap.add_argument("--no-detail-pagar-aberto", action="store_true",
+                    help="pular GET /id para contas_pagar_em_aberto (ja tem vencimento+valor na lista, muito mais rapido)")
     ap.add_argument("--data-inicial", default=None,
                     help="filtra contas pagar/receber pelas datas de emissao a partir desta (YYYY-MM-DD)")
     ap.add_argument("--data-final", default=None,
@@ -413,7 +424,9 @@ def main() -> int:
     cache_dir = out_dir / ".cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
     for kind, sit, label in plan:
-        do_detail = not (kind == "receber" and args.no_detail_receber)
+        skip_detail_receber = kind == "receber" and args.no_detail_receber
+        skip_detail_pagar_aberto = kind == "pagar" and sit == 1 and getattr(args, "no_detail_pagar_aberto", False)
+        do_detail = not (skip_detail_receber or skip_detail_pagar_aberto)
         cache_path = cache_dir / f"{kind}_sit{sit}.json"
         fetched[(kind, sit)] = fetch_contas(
             client, kind, sit,
@@ -461,7 +474,7 @@ def main() -> int:
         log(f"[ok] {label}: {len(rows)} linhas -> {label}_{today}.csv", args.quiet)
 
     snapshot_path = out_dir / f"bling_data_{today}.json"
-    snapshot_path.write_text(json.dumps(json_snapshot, ensure_ascii=False, indent=2))
+    atomic_write_text(snapshot_path, json.dumps(json_snapshot, ensure_ascii=False, indent=2))
     log(f"[ok] snapshot consolidado -> {snapshot_path.name}", args.quiet)
     log(f"[done] tudo em {out_dir}", args.quiet)
     return 0
