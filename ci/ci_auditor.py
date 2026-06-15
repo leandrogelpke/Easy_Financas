@@ -157,6 +157,15 @@ def check_execution(update_log: dict) -> list[dict]:
         else:
             out.append(finding(f"gate_{gate}", "warn", f"Gate {gate} não executou (status={st})."))
 
+    # auditor pré-commit (gate duro)
+    pc = steps.get("precommit")
+    if pc == "success":
+        out.append(finding("precommit_gate", "ok", "Auditor pré-commit liberou a publicação."))
+    elif pc == "failure":
+        out.append(finding("precommit_gate", "error",
+                           "Auditor pré-commit BLOQUEOU a publicação (dado/artefato inválido).",
+                           "Ver log do step 'Auditor pré-commit' no run; dashboard manteve a última versão boa."))
+
     # push
     push = steps.get("push")
     if push == "success":
@@ -296,7 +305,7 @@ def check_recurring(window_days: int = 7) -> list[dict]:
             continue
         n += 1
         steps = d.get("steps", {})
-        for key in ("fetch", "build", "gate_test_audit", "gate_test_build"):
+        for key in ("fetch", "build", "gate_test_audit", "gate_test_build", "precommit"):
             if steps.get(key) == "failure":
                 fail_counts[key] = fail_counts.get(key, 0) + 1
         if steps.get("push") not in ("success", "nothing"):

@@ -105,8 +105,21 @@ jobs:
         continue-on-error: true
         run: python3 test_build.py
 
+      - name: Auditor pré-commit (gate duro de dados/artefatos)
+        id: precommit
+        continue-on-error: true
+        run: python3 ci/precommit_check.py
+
       - name: Commit & push do dashboard
         id: push
+        # SÓ publica se TUDO passou: fetch + build + ambos os gates + auditor
+        # pré-commit. Qualquer falha → mantém a última versão boa no ar.
+        if: >-
+          steps.fetch.outcome == 'success' &&
+          steps.build.outcome == 'success' &&
+          steps.gate_audit.outcome == 'success' &&
+          steps.gate_build.outcome == 'success' &&
+          steps.precommit.outcome == 'success'
         continue-on-error: true
         run: |
           git config user.name  "Easy Analytics Bot"
@@ -136,6 +149,7 @@ jobs:
           OUT_BUILD:   ${{ steps.build.outcome }}
           OUT_GATE_A:  ${{ steps.gate_audit.outcome }}
           OUT_GATE_B:  ${{ steps.gate_build.outcome }}
+          OUT_PRECOMMIT: ${{ steps.precommit.outcome }}
           OUT_PUSH:    ${{ steps.push.outputs.status }}
           PUSH_OUTCOME: ${{ steps.push.outcome }}
           TOKEN_STATUS: ${{ steps.token.outputs.status }}
@@ -160,3 +174,22 @@ jobs:
             git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
             git push
           fi
+
+      - name: Falhar o job se o gate pré-commit bloqueou a publicação
+        if: always()
+        env:
+          OUT_FETCH:     ${{ steps.fetch.outcome }}
+          OUT_BUILD:     ${{ steps.build.outcome }}
+          OUT_GATE_A:    ${{ steps.gate_audit.outcome }}
+          OUT_GATE_B:    ${{ steps.gate_build.outcome }}
+          OUT_PRECOMMIT: ${{ steps.precommit.outcome }}
+        run: |
+          fail=0
+          for s in FETCH BUILD GATE_A GATE_B PRECOMMIT; do
+            v=$(eval echo \$OUT_$s)
+            if [ "$v" != "success" ]; then
+              echo "::error::etapa $s = $v (publicação bloqueada — última versão boa mantida no ar)"
+              fail=1
+            fi
+          done
+          [ "$fail" = "0" ] && echo "[gate] todas as etapas críticas OK — dashboard publicado." || exit 1

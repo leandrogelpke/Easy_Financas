@@ -84,6 +84,7 @@ def main() -> int:
         "build": _norm(os.environ.get("OUT_BUILD")),
         "gate_test_audit": _norm(os.environ.get("OUT_GATE_A")),
         "gate_test_build": _norm(os.environ.get("OUT_GATE_B")),
+        "precommit": _norm(os.environ.get("OUT_PRECOMMIT")),
         "push": (os.environ.get("OUT_PUSH") or _norm(os.environ.get("PUSH_OUTCOME"))).strip(),
     }
 
@@ -100,7 +101,14 @@ def main() -> int:
         errors.append("Gate test_audit FALHOU (regressão tributária).")
     if steps["gate_test_build"] == "failure":
         errors.append("Gate test_build FALHOU (estrutura do HTML).")
-    if steps["push"] not in ("success", "nothing"):
+    if steps["precommit"] == "failure":
+        errors.append("Auditor pré-commit BLOQUEOU a publicação (artefato/dado inválido).")
+    # publicação bloqueada pelo gate → push 'skipped'
+    blocked = any(steps[k] != "success" for k in
+                  ("fetch", "build", "gate_test_audit", "gate_test_build", "precommit"))
+    if blocked and steps["push"] in ("skipped", ""):
+        warnings.append("Publicação bloqueada pelo gate — última versão boa mantida no ar.")
+    elif steps["push"] not in ("success", "nothing", "skipped"):
         warnings.append("Push do dashboard não confirmado.")
     if steps["push"] == "nothing":
         warnings.append("Nenhuma mudança publicada (dados idênticos à última execução).")
