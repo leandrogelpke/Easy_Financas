@@ -2,14 +2,18 @@ name: Atualizar Dashboard (Bling)
 
 # Agente principal — atualiza o dashboard Easy Analytics com dados frescos
 # do Bling 3x ao dia (horário de Brasília, UTC-3) e publica no GitHub Pages.
-#   '0 10 * * *' → 07h00 BRT
-#   '0 15 * * *' → 12h00 BRT
-#   '0 19 * * *' → 16h00 BRT
+# Minuto :11 (NÃO :00) de propósito: o GitHub atrasa/derruba crons no minuto
+# cheio sob carga. https://docs.github.com/actions → "schedule" (best-effort).
+#   '11 10 * * *' → 07h11 BRT
+#   '11 15 * * *' → 12h11 BRT
+#   '11 19 * * *' → 16h11 BRT
 on:
   schedule:
-    - cron: '0 10 * * *'
-    - cron: '0 15 * * *'
-    - cron: '0 19 * * *'
+    - cron: '11 10 * * *'
+    - cron: '11 15 * * *'
+    - cron: '11 19 * * *'
+    # TEMPORÁRIO — teste de fumaça do agendador (remover após confirmar):
+    - cron: '50 15 * * *'
   workflow_dispatch:
 
 permissions:
