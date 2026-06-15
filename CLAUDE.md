@@ -14,9 +14,14 @@ Dashboard financeiro pessoal do Leandro (Easy Analytics):
   vindos do Google Drive).
 - **Saída:** `index.html` estático publicado em GitHub Pages
   (`https://leandrogelpke.github.io/Easy_Financas/`).
-- **Cadência:** `weekly.sh` roda semanalmente via "runbook semanal" no
-  Cowork. É idempotente — pode rodar várias vezes no mesmo dia sem
-  duplicar nada.
+- **Cadência:** **automatizada no GitHub Actions** — `update.yml` roda
+  3×/dia (07h/12h/16h BRT) e publica sozinho. O `weekly.sh` virou
+  ferramenta **local** para atualizar Totvs/Cartão (que vêm do Drive). É
+  idempotente — pode rodar várias vezes no mesmo dia sem duplicar nada.
+
+> **Automação (CI):** a arquitetura de workflows, gates, secrets e rotação
+> de token está documentada em **`DOCS.md`**. Leia antes de mexer em
+> `.github/workflows/` ou em `ci/`.
 
 **Princípio rígido:** TUDO que é número no dashboard deve vir de dados
 vivos do Bling / Totvs / auditoria. Nada deve ser hardcoded no template
@@ -40,7 +45,7 @@ vivos do Bling / Totvs / auditoria. Nada deve ser hardcoded no template
 | `fetch-cartao.py` | Parseia faturas Bradesco PDF → `cartao_snapshot.json` (usa `pdftotext`) |
 | `cartao_render.py` | Aba "Cartão" (ntab/mobtab/pg) a partir do snapshot |
 | `chat_widget.py` | Widget de busca/chat IA injetado no fim |
-| `test_audit.py` | Self-tests do audit (6 testes, 33 asserts) |
+| `test_audit.py` | Self-tests do audit (10 testes) — gate de regressão |
 | `bling-auth.py` | Fluxo OAuth2 inicial (raramente usado) |
 
 ### Shell / config
@@ -470,6 +475,10 @@ for r in d['contas_receber_recebidas']:
 | 10/06 | Caixa: seção Vencidos (100%) + janela a pagar = atual+2m + gráfico fluxo mensal (entradas×saídas) | `render_vencidos_html` / `render_cashflow_html` |
 | 10/06 | Fix cliRender quebrava (`CAT_CLI.find().label` em cliente `sem_classificacao`) e derrubava o resto do script → Projeção/Clientes em branco | `template.html` cliRender defensivo |
 | 12/06 | Reconciliação a pagar: remove fantasmas que inflavam "vencidos" (Visão Geral marcava vencido o que Gastos mostrava pago). Vencido a pagar R$ 178.748 → R$ 11.686 | `audit.py::reconcile_em_aberto` + plugado em build-html/contas_view/dre_render + 4 testes |
+| 14/06 | **Migração para GitHub Actions** — `update.yml` (3×/dia) + `audit.yml` (auditor encadeado). Secrets `BLING_TOKEN`/`BLING_OAUTH`/`GH_PAT`; rotação automática do token Bling | `.github/workflows/` + `ci/` · ver `DOCS.md` |
+| 14/06 | Cards: Runway (`caixa_config.json`), Concentração de receita, Retenções—crédito tributário (`audit.py::check_retencao_credito_resumo` + `retencoes_compensadas.json`) | build-html.py + audit.py |
+| 14/06 | **Gotcha:** `TOTVS_SNAP.parent` define o dir dos CSVs do Bling → snapshot Totvs movido p/ `data/bling-api/`. Sem isso, abas Auditoria/P&L/DRE/Contas saem vazias | `update.yml` |
+| 15/06 | **Gate pré-commit** (`ci/precommit_check.py`): bloqueia publicação de dado/artefato ruim; commit/push agora condicional a fetch+build+gates+precommit verdes | `update.yml` + `ci/` |
 
 ---
 
