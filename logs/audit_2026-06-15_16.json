@@ -1,22 +1,16 @@
 {
-  "generated_at_brt": "2026-06-15 16:23:15",
+  "generated_at_brt": "2026-06-15 16:37:36",
   "auditor": "ci_auditor.py",
   "target_update_log": "update_2026-06-15_16.json",
   "upstream_conclusion": "success",
   "summary": {
     "error": 0,
     "warn": 0,
-    "info": 1,
+    "info": 0,
     "ok": 12
   },
   "ok": true,
   "findings": [
-    {
-      "check": "token_rotacao",
-      "severity": "info",
-      "detail": "Token rotacionado e Secret BLING_TOKEN atualizado.",
-      "recommendation": ""
-    },
     {
       "check": "fetch_bling",
       "severity": "ok",
@@ -56,7 +50,7 @@
     {
       "check": "push_pages",
       "severity": "ok",
-      "detail": "Publicado. Commit 9e95428158ba1f30032b2af8abb9a856c2db1a3a.",
+      "detail": "Publicado. Commit 7e394ce0105589391dc7059a4ae5fc5cba22f04d.",
       "recommendation": ""
     },
     {
@@ -93,7 +87,7 @@
   "recommendations": [],
   "links": {
     "dashboard": "https://leandrogelpke.github.io/Easy_Financas/",
-    "audit_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/27570643465",
-    "update_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/27570456572"
+    "audit_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/27571454195",
+    "update_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/27571253272"
   }
 }
