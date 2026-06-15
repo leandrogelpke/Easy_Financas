@@ -1,4 +1,4 @@
 {
-  "saldo_caixa": null,
-  "_nota": "Informe aqui o saldo atual em conta (soma das contas bancarias da Easy) como NUMERO em reais, ex.: \"saldo_caixa\": 120000. O Bling nao expoe saldo bancario, entao esse valor e mantido manualmente (como clientes_classificacao.json). Com ele preenchido, o card 'Runway (caixa ÷ burn)' na Visao Geral passa a mostrar quantos meses o caixa dura se a receita parar. Deixe null para o card exibir a chamada de configuracao."
+  "saldo_caixa": 515.75,
+  "_nota": "Saldo atual em conta (soma das contas bancarias da Easy), em reais. O Bling nao expoe saldo bancario, entao e mantido manualmente (como clientes_classificacao.json). Alimenta o card 'Runway (caixa ÷ burn)' na Visao Geral = quantos meses o caixa dura se a receita parar. Atualize a cada conferencia de saldo."
 }
