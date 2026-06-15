@@ -88,7 +88,10 @@ jobs:
         id: build
         continue-on-error: true
         env:
-          TOTVS_SNAP: totvs_snapshot.json
+          # totvs_snapshot.json mora DENTRO de data/bling-api porque o build
+          # deriva o diretório dos CSVs do Bling de TOTVS_SNAP.parent — é de lá
+          # que as abas Auditoria, P&L/DRE e A Pagar/Receber leem os CSVs.
+          TOTVS_SNAP: data/bling-api/totvs_snapshot.json
           CARTAO_SNAP: cartao_snapshot.json
         run: python3 build-html.py --in data/bling-api --out index.html
 

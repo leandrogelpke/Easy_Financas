@@ -767,6 +767,68 @@ def check_pj_sem_retencao(matriz: dict, cfg: dict = CONFIG) -> list[AuditFinding
     return findings
 
 
+def _load_compensacoes() -> float:
+    """Lê retencoes_compensadas.json (log manual de compensações já feitas via
+    DARF). O Bling não rastreia matching retido↔compensado, então esse total é
+    informado manualmente. Ausente/ilegível → 0."""
+    try:
+        p = Path(__file__).resolve().parent / "retencoes_compensadas.json"
+        d = json.loads(p.read_text(encoding="utf-8"))
+        return float(d.get("compensado_total", 0) or 0)
+    except Exception:
+        return 0.0
+
+
+def check_retencao_credito_resumo(matriz: dict, cfg: dict = CONFIG) -> list[AuditFinding]:
+    """Card-resumo 'Retenções na fonte — crédito tributário'.
+
+    Os clientes PJ retêm na NF da Easy ~6,15% (CSRF 4,65% + IRRF 1,5%). Esse
+    valor é CRÉDITO que abate PIS/COFINS/CSLL/IRPJ a recolher — nunca custo.
+    O Bling não distingue 'retido a compensar' de 'já compensado', então:
+      - retido estimado = receita real × 6,15% (computável dos dados)
+      - compensado = log manual opcional (retencoes_compensadas.json)
+      - saldo a compensar = retido − compensado
+    Status informativo: a apuração final é conferida com o Serrano.
+    """
+    findings: list[AuditFinding] = []
+    rec = matriz.get("receita_por_mes", {})
+    mt = matriz.get("month_types", {})
+    receita_real = sum(v for ym, v in rec.items() if mt.get(ym) == "real")
+    if receita_real <= 0:
+        return findings
+
+    aliq_ret = cfg["ret_pis_cofins_csll_aliq"] + cfg["ret_irrf_pj_aliq"]  # 6,15%
+    retido_estimado = receita_real * aliq_ret
+    comp = _load_compensacoes()
+    saldo = retido_estimado - comp
+
+    if comp > 0:
+        cauda = (f"Compensado registrado: {_fmt_brl(comp)} · saldo a compensar "
+                 f"{_fmt_brl(saldo)}.")
+        status = "info" if saldo <= retido_estimado * 0.15 else "warn"
+    else:
+        cauda = ("Registre compensações em retencoes_compensadas.json "
+                 "(\"compensado_total\") para acompanhar o saldo.")
+        status = "info"
+
+    findings.append(AuditFinding(
+        check_id="retencao_credito_resumo",
+        status=status,
+        title="Retenções na fonte — crédito tributário",
+        detail=(f"~{_fmt_brl(retido_estimado)} retidos na fonte por clientes PJ "
+                f"(6,15% = CSRF 4,65% + IRRF 1,5% sobre receita real de "
+                f"{_fmt_brl(receita_real)}). É CRÉDITO que abate "
+                f"PIS/COFINS/CSLL/IRPJ a recolher — não tratar como custo. " + cauda),
+        value=retido_estimado, expected=comp or None,
+        diff=(saldo if comp > 0 else None),
+        action=("Conferir com o Serrano se o crédito está sendo compensado nos "
+                "DARF mensais/trimestrais. Atualizar retencoes_compensadas.json "
+                "a cada apuração."),
+        category="tributario",
+    ))
+    return findings
+
+
 # ═══════════════════════════════════════════════════════════════
 # RECONCILIAÇÃO DE CONTAS A PAGAR EM ABERTO
 # ───────────────────────────────────────────────────────────────
@@ -1067,6 +1129,7 @@ def run_audit(matriz: dict, totvs_por_mes: dict, bling_dir: Path,
     all_findings += check_cbs_ibs_2026(matriz, today, cfg)
     all_findings += check_retencoes_recebidas(matriz, totvs_por_mes, cfg)
     all_findings += check_pj_sem_retencao(matriz, cfg)
+    all_findings += check_retencao_credito_resumo(matriz, cfg)
     all_findings += check_reconciliacao_pagar(bling_dir, today)
     all_findings += check_vencidos(bling_dir, today)
     all_findings += check_sem_categoria(bling_dir)

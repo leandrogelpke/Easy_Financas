@@ -1,0 +1,4 @@
+{
+  "compensado_total": 0,
+  "_nota": "Total acumulado de retencoes na fonte (CSRF 4,65% + IRRF 1,5%) JA compensado contra DARF de PIS/COFINS/CSLL/IRPJ, conforme apuracao do Serrano. Atualize este numero a cada apuracao. O card 'Retencoes na fonte — credito tributario' na aba Auditoria mostra retido estimado − compensado = saldo a compensar."
+}

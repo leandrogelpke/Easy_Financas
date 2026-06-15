@@ -1542,6 +1542,17 @@ def _signed_kbrl(v: float) -> str:
 # OVERVIEW — KPIs E ALERTAS DINÂMICOS
 # ──────────────────────────────────────────────
 
+def load_caixa_config() -> dict:
+    """Lê caixa_config.json (mantido manualmente, como clientes_classificacao.json).
+    Contém o saldo em caixa atual p/ o cálculo de Runway. O Bling não expõe
+    saldo bancário, então esse valor é informado pelo usuário. Ausente → {}."""
+    try:
+        p = Path(__file__).resolve().parent / "caixa_config.json"
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
 def compute_overview_hero_sub(months: list[date], total_pago: int) -> str:
     if not months:
         return "fonte: Bling ERP"
@@ -1570,7 +1581,8 @@ def compute_overview_pills(pagar_data: list, cx_data: list) -> str:
     return "\n    ".join(pills)
 
 
-def compute_overview_kpis_html(rows: list, pagar_data: list, cx_data: list, months: list[date]) -> str:
+def compute_overview_kpis_html(rows: list, pagar_data: list, cx_data: list, months: list[date],
+                               saldo_caixa: float | None = None) -> str:
     n = len(months) or 1
     total_pago   = sum(r["total"] for r in rows)
     media        = total_pago / n
@@ -1607,15 +1619,53 @@ def compute_overview_kpis_html(rows: list, pagar_data: list, cx_data: list, mont
         f'<div class="mv {pag_cor}">{_kbrl(pagar_30d)}</div>'
         f'<div class="ms">{pag_sub}</div></div>',
 
-        f'<div class="met {sc_cor}"><div class="ml">Sem categoria (pagar)</div>'
-        f'<div class="mv {sc_cor}">{_kbrl(sem_cat_val) if sem_cat_val else "R$ 0"}</div>'
-        f'<div class="ms">{sc_sub}</div></div>',
     ]
+
+    # Runway = quanto o caixa atual dura se a receita parar (caixa ÷ burn bruto
+    # mensal). burn = `media` (média mensal de saídas pagas, fonte Bling).
+    # saldo_caixa vem de caixa_config.json (mantido manualmente) — sem ele,
+    # mostramos a chamada pra informar o saldo em vez de inventar número.
+    if saldo_caixa and media > 0:
+        runway = saldo_caixa / media
+        rw_cor = "red" if runway < 3 else ("amber" if runway < 6 else "green")
+        rw_val = (f"{runway:.1f}".replace(".", ",") + " meses") if runway < 100 else "99+ meses"
+        rw_sub = f"caixa {_kbrl(saldo_caixa)} ÷ burn {_kbrl(media)}/mês"
+    else:
+        rw_cor = "amber"
+        rw_val = "—"
+        rw_sub = "informe saldo_caixa em caixa_config.json"
+    cards.append(
+        f'<div class="met {rw_cor}"><div class="ml">Runway (caixa ÷ burn)</div>'
+        f'<div class="mv {rw_cor}">{rw_val}</div>'
+        f'<div class="ms">{rw_sub}</div></div>'
+    )
     return "\n  ".join(cards)
 
 
-def compute_overview_riscos_html(cx_data: list, pagar_data: list) -> str:
+def compute_overview_riscos_html(cx_data: list, pagar_data: list,
+                                 cli_data: list | None = None) -> str:
     alerts = []
+
+    # Concentração de receita — dependência de poucos clientes (risco de caixa
+    # típico de empresa de software/serviços). Base: receita rolling por cliente
+    # (campo "total" de cli_data, derivado do Bling/Totvs).
+    if cli_data:
+        ranked = sorted(cli_data, key=lambda x: -x.get("total", 0))
+        tot = sum(x.get("total", 0) for x in cli_data) or 1
+        top3 = [x for x in ranked[:3] if x.get("total", 0) > 0]
+        if top3:
+            pct = round(100 * sum(x.get("total", 0) for x in top3) / tot)
+            nomes = ", ".join(x["n"] for x in top3)
+            if pct >= 50:
+                alerts.append(
+                    f'<div class="alt alr"><div class="ats">Concentração de receita: top 3 = {pct}%</div>'
+                    f'<div class="asd">{nomes} — dependência alta; diversificar reduz risco de caixa.</div></div>'
+                )
+            elif pct >= 35:
+                alerts.append(
+                    f'<div class="alt ala"><div class="ats">Concentração moderada: top 3 = {pct}%</div>'
+                    f'<div class="asd">{nomes} — monitorar dependência da carteira.</div></div>'
+                )
 
     # Vencidos a receber
     venc_rec = [r for r in cx_data if r["sit"] == "Atrasada"]
@@ -1667,8 +1717,21 @@ def compute_overview_riscos_html(cx_data: list, pagar_data: list) -> str:
     return "\n    ".join(alerts)
 
 
-def compute_overview_positivos_html(cx_data: list, pagar_data: list, rows: list) -> str:
+def compute_overview_positivos_html(cx_data: list, pagar_data: list, rows: list,
+                                    cli_data: list | None = None) -> str:
     positivos = []
+
+    # Carteira diversificada (contraponto da concentração em Riscos)
+    if cli_data:
+        tot = sum(x.get("total", 0) for x in cli_data) or 1
+        ranked = sorted(cli_data, key=lambda x: -x.get("total", 0))[:3]
+        pct = round(100 * sum(x.get("total", 0) for x in ranked) / tot)
+        if pct < 35 and tot > 1:
+            positivos.append(
+                '<div class="alt alg"><div class="ats">Carteira diversificada</div>'
+                f'<div class="asd">Top 3 clientes = {pct}% da receita — baixa dependência.</div></div>'
+            )
+
     venc_rec = any(r["sit"] == "Atrasada" for r in cx_data)
     venc_pag = any(r["window"] == "vencido" for r in pagar_data)
     sem_cat  = any(r["cat"] == "(sem categoria)" for r in pagar_data)
@@ -2137,9 +2200,10 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     # ── Marcadores dinâmicos do dashboard ──
     overview_hero_sub   = compute_overview_hero_sub(months, total_pago)
     overview_pills      = compute_overview_pills(pagar_data, cx_data)
-    overview_kpis       = compute_overview_kpis_html(rows, pagar_data, cx_data, months)
-    overview_riscos     = compute_overview_riscos_html(cx_data, pagar_data)
-    overview_positivos  = compute_overview_positivos_html(cx_data, pagar_data, rows)
+    saldo_caixa         = load_caixa_config().get("saldo_caixa")
+    overview_kpis       = compute_overview_kpis_html(rows, pagar_data, cx_data, months, saldo_caixa)
+    overview_riscos     = compute_overview_riscos_html(cx_data, pagar_data, cli_data)
+    overview_positivos  = compute_overview_positivos_html(cx_data, pagar_data, rows, cli_data)
     caixa_kpis          = compute_caixa_kpis_html(pagar_data, cx_data)
     gastos_title, gastos_sub = compute_gastos_header(months, rows)
 
