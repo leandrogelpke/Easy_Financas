@@ -946,6 +946,92 @@ def reconcile_em_aberto(
     return limpo, ajustes
 
 
+def dedupe_receber(rows: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Remove duplicatas EXATAS de contas a RECEBER (recebidas ou em aberto).
+
+    Critério conservador: colapsa registros com mesmo (contato, vencimento,
+    valor) SÓ quando NENHUMA das cópias tem `numero_documento` — ou seja, são
+    indistinguíveis. Parcelas legítimas têm documento/vencimento distintos e
+    são preservadas. Mantém a 1ª ocorrência (ordem original preservada).
+
+    Retorna (limpo, ajustes); cada ajuste:
+      {tipo: "DUPLICATA_RECEBER", contato, contato_id, venc, valor}.
+    Determinística → idempotente (rodar de novo no resultado não remove nada).
+    """
+    groups: dict[tuple, list[dict]] = defaultdict(list)
+    for r in rows:
+        v = round(_recon_money(r.get("valor") or r.get("saldo")), 2)
+        groups[(_recon_contato(r), _recon_venc(r), v)].append(r)
+
+    limpo: list[dict] = []
+    ajustes: list[dict] = []
+    emitido: dict[tuple, int] = defaultdict(int)
+    for r in rows:
+        v = round(_recon_money(r.get("valor") or r.get("saldo")), 2)
+        key = (_recon_contato(r), _recon_venc(r), v)
+        g = groups[key]
+        docs_vazios = all((x.get("numero_documento") or "").strip() == "" for x in g)
+        if len(g) > 1 and docs_vazios:
+            if emitido[key] == 0:
+                emitido[key] = 1
+                limpo.append(r)
+            else:
+                ajustes.append({
+                    "tipo": "DUPLICATA_RECEBER",
+                    "contato": r.get("contato_nome", ""),
+                    "contato_id": r.get("contato_id"),
+                    "venc": _recon_venc(r), "valor": v,
+                })
+        else:
+            limpo.append(r)
+    return limpo, ajustes
+
+
+def check_duplicatas_receber(bling_dir: Path, today: date) -> list[AuditFinding]:
+    """Card de trilha: sinaliza duplicatas exatas removidas do a receber
+    (recebidas + em aberto). Transparência da limpeza feita por dedupe_receber."""
+    findings: list[AuditFinding] = []
+
+    def _load_csv(prefix: str) -> list[dict]:
+        cands = sorted(Path(bling_dir).glob(f"{prefix}_*.csv"))
+        if not cands:
+            return []
+        with cands[-1].open(encoding="utf-8-sig") as fh:
+            return list(csv.DictReader(fh, delimiter=";"))
+
+    total_ajustes = 0
+    total_valor = 0.0
+    detalhes: list[str] = []
+    for prefix, rotulo in (("contas_receber_recebidas", "recebido"),
+                           ("contas_receber_em_aberto", "a receber")):
+        _, ajustes = dedupe_receber(_load_csv(prefix))
+        for a in ajustes:
+            total_ajustes += 1
+            total_valor += a["valor"]
+            detalhes.append(f"{a['contato'][:28]} {_fmt_brl(a['valor'])} (venc {a['venc']}, {rotulo})")
+
+    if total_ajustes == 0:
+        findings.append(AuditFinding(
+            check_id="duplicatas_receber", status="ok",
+            title="Sem duplicatas no a receber",
+            detail="Nenhum recebível idêntico (mesmo contato/valor/vencimento sem documento).",
+            category="reconciliacao",
+        ))
+    else:
+        findings.append(AuditFinding(
+            check_id="duplicatas_receber", status="warn",
+            title=f"{total_ajustes} duplicata(s) removida(s) do a receber",
+            detail=(f"Valor que inflaria a receita: {_fmt_brl(total_valor)}. "
+                    + "; ".join(detalhes[:6])
+                    + ". Lançamentos idênticos sem nº de documento — confirmar no Bling se "
+                      "são parcelas reais ou duplicação."),
+            value=total_valor,
+            action="Remover a duplicação no Bling; se forem parcelas reais, adicionar nº de documento distinto.",
+            category="reconciliacao",
+        ))
+    return findings
+
+
 def check_reconciliacao_pagar(bling_dir: Path, today: date) -> list[AuditFinding]:
     """Audita a limpeza de fantasmas em contas a pagar (camada de reconciliação).
 
@@ -1131,6 +1217,7 @@ def run_audit(matriz: dict, totvs_por_mes: dict, bling_dir: Path,
     all_findings += check_pj_sem_retencao(matriz, cfg)
     all_findings += check_retencao_credito_resumo(matriz, cfg)
     all_findings += check_reconciliacao_pagar(bling_dir, today)
+    all_findings += check_duplicatas_receber(bling_dir, today)
     all_findings += check_vencidos(bling_dir, today)
     all_findings += check_sem_categoria(bling_dir)
     all_findings += check_reconc_bling_totvs(matriz, totvs_por_mes, cfg)

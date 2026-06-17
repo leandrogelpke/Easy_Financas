@@ -940,6 +940,14 @@ def _load_bling_csvs(bling_dir: Path) -> tuple:
         em_aberto, _ = reconcile_em_aberto(pagas, em_aberto)
     except Exception:
         pass
+    # Deduplicação do a receber (recebíveis idênticos sem documento) — mantém
+    # DRE/P&L/auditoria alinhados com Caixa/Visão Geral (sem inflar receita).
+    try:
+        from audit import dedupe_receber  # type: ignore
+        recebidas, _ = dedupe_receber(recebidas)
+        receber_em_aberto, _ = dedupe_receber(receber_em_aberto)
+    except Exception:
+        pass
     return pagas, em_aberto, recebidas, receber_em_aberto
 
 

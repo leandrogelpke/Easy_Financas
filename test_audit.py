@@ -225,6 +225,45 @@ def test_reconcile_idempotente() -> None:
     assert limpo1 == limpo2
 
 
+def test_dedupe_receber_remove_identicas() -> None:
+    """Recebíveis idênticos (mesmo contato/valor/venc) SEM documento → colapsa p/ 1."""
+    rows = [
+        {"contato_id": "9", "contato_nome": "ATACADAO", "vencimento": "2026-05-15",
+         "valor": "7.038,75", "numero_documento": ""},
+        {"contato_id": "9", "contato_nome": "ATACADAO", "vencimento": "2026-05-15",
+         "valor": "7.038,75", "numero_documento": ""},
+        {"contato_id": "3", "contato_nome": "OUTRO", "vencimento": "2026-05-16",
+         "valor": "100,00", "numero_documento": ""},
+    ]
+    limpo, aj = audit.dedupe_receber(rows)
+    assert len(limpo) == 2, f"deveria sobrar 2, sobraram {len(limpo)}"
+    assert len(aj) == 1 and round(aj[0]["valor"], 2) == 7038.75
+
+
+def test_dedupe_receber_preserva_com_documento() -> None:
+    """Mesmo valor/venc mas com documentos distintos → parcelas reais, preserva."""
+    rows = [
+        {"contato_id": "9", "contato_nome": "X", "vencimento": "2026-05-15",
+         "valor": "500,00", "numero_documento": "NF-1"},
+        {"contato_id": "9", "contato_nome": "X", "vencimento": "2026-05-15",
+         "valor": "500,00", "numero_documento": "NF-2"},
+    ]
+    limpo, aj = audit.dedupe_receber(rows)
+    assert len(limpo) == 2 and aj == [], "com documento distinto não pode deduplicar"
+
+
+def test_dedupe_receber_idempotente() -> None:
+    rows = [
+        {"contato_id": "9", "contato_nome": "A", "vencimento": "2026-05-15",
+         "valor": "10,00", "numero_documento": ""},
+        {"contato_id": "9", "contato_nome": "A", "vencimento": "2026-05-15",
+         "valor": "10,00", "numero_documento": ""},
+    ]
+    limpo1, aj1 = audit.dedupe_receber(rows)
+    limpo2, aj2 = audit.dedupe_receber(limpo1)
+    assert len(aj1) == 1 and aj2 == [] and limpo1 == limpo2
+
+
 TESTS = [
     test_competencia_do_historico,
     test_trimestre_do_historico,
@@ -236,6 +275,9 @@ TESTS = [
     test_reconcile_provisao_coberta,
     test_reconcile_preserva_legitimo,
     test_reconcile_idempotente,
+    test_dedupe_receber_remove_identicas,
+    test_dedupe_receber_preserva_com_documento,
+    test_dedupe_receber_idempotente,
 ]
 
 

@@ -2113,6 +2113,21 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     except Exception as _e:  # pragma: no cover
         print(f"[recon] reconciliação ignorada: {_e}", file=sys.stderr)
 
+    # ── Deduplicação do A RECEBER: remove recebíveis idênticos (mesmo
+    #    contato/valor/vencimento sem documento) que inflavam Entradas/receita.
+    #    Mesma fonte (audit.py) usada na aba Auditoria. ──
+    try:
+        from audit import dedupe_receber  # type: ignore
+        recebidas, _dup_rec = dedupe_receber(recebidas)
+        receber,  _dup_ren = dedupe_receber(receber)
+        _nd = len(_dup_rec) + len(_dup_ren)
+        if _nd:
+            _vd = sum(a["valor"] for a in _dup_rec + _dup_ren)
+            print(f"[dedup-receber] {_nd} duplicata(s) removida(s) do a receber "
+                  f"(R$ {_vd:,.0f}) — {len(_dup_rec)} recebidas + {len(_dup_ren)} em aberto")
+    except Exception as _e:  # pragma: no cover
+        print(f"[dedup-receber] ignorado: {_e}", file=sys.stderr)
+
     # ── Computar dados ──
     months = compute_last_4_months(pagas)
     if not months:
