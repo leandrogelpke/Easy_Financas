@@ -32387,6 +32387,122 @@
       "source_email_date_raw": "",
       "n_linhas": 33,
       "hash": "f418f661cbf448c7b22711c853bbea5dfb0c3315419cb9873f1f23baaf643534"
+    },
+    {
+      "tipo": "BASE",
+      "competencia": "2026-05-01",
+      "total_geral": 63314.12,
+      "cnpjs_filial": [
+        {
+          "razao_social": "TOTVS LARGE ENTERPRISE TECNOLOGIA S.A.",
+          "cnpj": "82373077000252",
+          "total": 1312.59,
+          "cod_empresa": null,
+          "cod_fornecedor": null,
+          "num_pedido": "1127"
+        },
+        {
+          "razao_social": "TOTVS S.A. SANTA CATARINA",
+          "cnpj": "53113791001790",
+          "total": 11778.52,
+          "cod_empresa": null,
+          "cod_fornecedor": null,
+          "num_pedido": "1128"
+        },
+        {
+          "razao_social": "TOTVS SA",
+          "cnpj": "53113791001285",
+          "total": 16722.99,
+          "cod_empresa": null,
+          "cod_fornecedor": null,
+          "num_pedido": "1129"
+        },
+        {
+          "razao_social": "TOTVS SA",
+          "cnpj": "53113791000122",
+          "total": 33500.02,
+          "cod_empresa": null,
+          "cod_fornecedor": null,
+          "num_pedido": "1130"
+        }
+      ],
+      "clientes": [
+        {
+          "cnpj_filial": "82373077000252",
+          "cod_cliente": null,
+          "cliente": "TOTVS LARGE ENTERPRISE TECNOLOGIA S.A.",
+          "produto_cod": null,
+          "produto_desc": "Easy Mobile TOTVS",
+          "valor_comissao": 1312.59,
+          "base_comissao": null,
+          "valor_bruto_item": null,
+          "perc_total": null,
+          "nota_fiscal": "1127",
+          "emissao_nf": "2026-05-06",
+          "dt_vencto": "2026-05-21",
+          "referencia": "2026-05-01",
+          "situacao": "Ativo",
+          "recorrente": null
+        },
+        {
+          "cnpj_filial": "53113791001790",
+          "cod_cliente": null,
+          "cliente": "TOTVS S.A. SANTA CATARINA",
+          "produto_cod": null,
+          "produto_desc": "Easy Mobile TOTVS",
+          "valor_comissao": 11778.52,
+          "base_comissao": null,
+          "valor_bruto_item": null,
+          "perc_total": null,
+          "nota_fiscal": "1128",
+          "emissao_nf": "2026-05-06",
+          "dt_vencto": "2026-05-21",
+          "referencia": "2026-05-01",
+          "situacao": "Ativo",
+          "recorrente": null
+        },
+        {
+          "cnpj_filial": "53113791001285",
+          "cod_cliente": null,
+          "cliente": "TOTVS SA",
+          "produto_cod": null,
+          "produto_desc": "Easy Mobile TOTVS",
+          "valor_comissao": 16722.99,
+          "base_comissao": null,
+          "valor_bruto_item": null,
+          "perc_total": null,
+          "nota_fiscal": "1129",
+          "emissao_nf": "2026-05-06",
+          "dt_vencto": "2026-05-21",
+          "referencia": "2026-05-01",
+          "situacao": "Ativo",
+          "recorrente": null
+        },
+        {
+          "cnpj_filial": "53113791000122",
+          "cod_cliente": null,
+          "cliente": "TOTVS SA",
+          "produto_cod": null,
+          "produto_desc": "Easy Mobile TOTVS",
+          "valor_comissao": 33500.02,
+          "base_comissao": null,
+          "valor_bruto_item": null,
+          "perc_total": null,
+          "nota_fiscal": "1130",
+          "emissao_nf": "2026-05-06",
+          "dt_vencto": "2026-05-21",
+          "referencia": "2026-05-01",
+          "situacao": "Ativo",
+          "recorrente": null
+        }
+      ],
+      "source_file": "FATURAMENTO_05.2026.xlsx (planilha interna · Easy Mobile TOTVS)",
+      "source_email_subject": "[INTERNO] Easy Mobile TOTVS 05/2026 — derivado da planilha de faturamento",
+      "source_email_from": "planilha-interna-FATURAMENTO",
+      "source_email_date": null,
+      "source_note": "Competência derivada da planilha interna de faturamento (NFS-e Easy → TOTVS). Substituir pelo Relatório de Comissão ASE806 oficial quando a TOTVS emitir.",
+      "n_linhas": 4,
+      "hash": "973be2b39db28e50c1215efb0cdd08b21d05ca77"
     }
   ],
   "_meta": {
