@@ -327,6 +327,27 @@ def _render_diretoria(agg, reconc_rows, reconc_summary):
     p.append(f'<div class="met {tone_recon}"><div class="ml">Reconciliação Bling</div><div class="mv {tone_recon}">{ok} OK</div><div class="ms">{warn} divergentes · {err} sem NF</div></div>')
     p.append('</div>')
 
+    # ── De-para: faturado bruto × líquido recebido ──────────────────
+    # Esclarece por que o caixa (Bling) recebe MENOS que a comissão bruta:
+    # a Totvs retém 6,15% na fonte (PIS+COFINS+IRRF+CSLL). Alíquota vem do
+    # audit.CONFIG (fonte única). O líquido ainda pode diferir do caixa por
+    # notas emitidas mas não recebidas no mês.
+    try:
+        from audit import CONFIG as _CFG  # type: ignore
+        _ret_fonte = _CFG["ret_pis_cofins_csll_aliq"] + _CFG["ret_irrf_pj_aliq"]
+    except Exception:
+        _ret_fonte = 0.0615
+    if ultima_comp:
+        _bruto = real_por_comp.get(ultima_comp, 0) or 0
+        _ret = _bruto * _ret_fonte
+        _liq = _bruto - _ret
+        p.append(f'<div class="sl">Faturado × recebido · {fmt_comp(ultima_comp)} — por que o caixa recebe menos</div>')
+        p.append('<div class="g3">')
+        p.append(f'<div class="met blue"><div class="ml">Faturado bruto (comissão)</div><div class="mv blue">{fmt_brl(_bruto, True)}</div><div class="ms">NFS-e emitidas · competência</div></div>')
+        p.append(f'<div class="met amber"><div class="ml">Retenção na fonte ({_ret_fonte*100:.2f}%)</div><div class="mv amber">− {fmt_brl(_ret, True)}</div><div class="ms">PIS+COFINS+IRRF+CSLL · crédito que abate tributos</div></div>')
+        p.append(f'<div class="met green"><div class="ml">Líquido a receber</div><div class="mv green">{fmt_brl(_liq, True)}</div><div class="ms">o que cai no caixa (Bling) · menos notas ainda não recebidas no mês</div></div>')
+        p.append('</div>')
+
     p.append('<div class="sl">Tendência mensal · Mix por filial</div>')
     p.append('<div class="g2">')
     p.append('<div class="card"><div class="ct"><b>Comissão por competência</b><span>Real (Base + Complementar)</span></div>')
