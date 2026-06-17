@@ -156,19 +156,34 @@ def main() -> int:
     ap.add_argument("--competencia", required=True, help="YYYY-MM")
     ap.add_argument("--snapshot", type=Path, required=True)
     ap.add_argument("--tipo-cob", default="Easy Mobile TOTVS")
+    ap.add_argument("--only-if-absent", action="store_true",
+                    help="não injeta se já existir doc OFICIAL (não-interno) para a competência; "
+                         "remove o doc interno se o oficial tiver chegado. Use no weekly.sh para "
+                         "o bridge se auto-desativar quando o ASE806 oficial for emitido.")
     args = ap.parse_args()
 
-    doc = build_doc(args.xlsx, args.competencia, args.tipo_cob)
-    comp = doc["competencia"]
+    comp = f"{args.competencia}-01" if len(args.competencia) == 7 else args.competencia
 
     snap = json.loads(args.snapshot.read_text(encoding="utf-8"))
     docs = snap.get("documentos", [])
-    # remove docs internos da MESMA competência (idempotência); preserva oficiais
     antes = len(docs)
+    oficial = [d for d in docs
+               if d.get("competencia") == comp and d.get("source_email_from") != SOURCE_TAG]
+
+    if args.only_if_absent and oficial:
+        # ASE806 oficial chegou → remove qualquer doc interno e NÃO injeta.
+        docs = [d for d in docs if not (
+            d.get("competencia") == comp and d.get("source_email_from") == SOURCE_TAG)]
+        snap["documentos"] = docs
+        args.snapshot.write_text(json.dumps(snap, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"[ok] {comp}: doc OFICIAL presente — bridge interno desativado/removido "
+              f"(docs {antes}→{len(docs)}).")
+        return 0
+
+    doc = build_doc(args.xlsx, args.competencia, args.tipo_cob)
+    # remove docs internos da MESMA competência (idempotência); preserva oficiais
     docs = [d for d in docs if not (
         (d.get("competencia") == comp) and (d.get("source_email_from") == SOURCE_TAG))]
-    # avisa se já existe doc OFICIAL na mesma competência (não sobrescreve)
-    oficial = [d for d in docs if d.get("competencia") == comp]
     if oficial:
         print(f"[aviso] já existe doc OFICIAL para {comp} — o interno será ADICIONADO ao lado.")
     docs.append(doc)

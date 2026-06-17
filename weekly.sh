@@ -74,6 +74,29 @@ python3 "$EF/fetch-totvs.py" \
     --drive-manifest "$MANIFEST" || \
   echo "[warn] fetch-totvs.py falhou (segue mesmo assim)"
 
+# ── BRIDGE TEMPORÁRIO: Totvs maio/26 da planilha interna ────────────
+# O fetch-totvs acima regenera o snapshot do zero e NÃO conhece a planilha
+# interna de faturamento — então reinjetamos a competência maio/26 aqui.
+# `--only-if-absent` faz isto se auto-desativar: quando o Relatório de
+# Comissão ASE806 oficial de maio chegar em totvs/raw (e virar doc oficial),
+# o bridge para de injetar e remove o doc interno. REMOVER este bloco quando
+# o oficial estiver consolidado. Ver: ingest_totvs_interno.py.
+CTRL="$(dirname "$(dirname "$PROD")")"   # .../Controles Easy
+for cand in \
+    "$CTRL/FATURAMENTO_05.2026.xlsx" \
+    "$EF/totvs/raw/FATURAMENTO_05.2026.xlsx" \
+    "$(ls -d /sessions/*/mnt/FATURAMENTO_05.2026.xlsx 2>/dev/null | head -1)"; do
+    if [ -n "$cand" ] && [ -f "$cand" ]; then
+        python3 "$EF/ingest_totvs_interno.py" \
+            --xlsx "$cand" --competencia 2026-05 \
+            --snapshot "$PROD/totvs_snapshot.json" \
+            --only-if-absent \
+          && echo "[totvs] bridge maio/26 aplicado (fonte: $(basename "$cand"))" \
+          || echo "[warn] bridge totvs maio/26 falhou (segue mesmo assim)"
+        break
+    fi
+done
+
 echo ""
 echo "=== 1b2. processando faturas de Cartão de Crédito (PDF Bradesco) ==="
 # Fonte-da-verdade: $EF/cartao/raw/ — onde o agente Cowork deposita os PDFs
