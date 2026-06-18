@@ -344,7 +344,7 @@ def _render_diretoria(agg, reconc_rows, reconc_summary):
         p.append(f'<div class="sl">Faturado × recebido · {fmt_comp(ultima_comp)} — por que o caixa recebe menos</div>')
         p.append('<div class="g3">')
         p.append(f'<div class="met blue"><div class="ml">Faturado bruto (comissão)</div><div class="mv blue">{fmt_brl(_bruto, True)}</div><div class="ms">NFS-e emitidas · competência</div></div>')
-        p.append(f'<div class="met amber"><div class="ml">Retenção na fonte ({_ret_fonte*100:.2f}%)</div><div class="mv amber">− {fmt_brl(_ret, True)}</div><div class="ms">PIS+COFINS+IRRF+CSLL · crédito que abate tributos</div></div>')
+        p.append(f'<div class="met amber"><div class="ml">Retenção na fonte ({_ret_fonte*100:.2f}%)</div><div class="mv amber">− {fmt_brl(_ret, True)}</div><div class="ms">PIS+COFINS+IRRF+CSLL desta competência · saldo acumulado a compensar na aba Auditoria</div></div>')
         p.append(f'<div class="met green"><div class="ml">Líquido a receber</div><div class="mv green">{fmt_brl(_liq, True)}</div><div class="ms">o que cai no caixa (Bling) · menos notas ainda não recebidas no mês</div></div>')
         p.append('</div>')
 
