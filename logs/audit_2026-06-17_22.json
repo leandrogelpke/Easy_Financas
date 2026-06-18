@@ -1,0 +1,97 @@
+{
+  "generated_at_brt": "2026-06-17 22:00:44",
+  "auditor": "ci_auditor.py",
+  "target_update_log": "update_2026-06-17_22.json",
+  "upstream_conclusion": "failure",
+  "summary": {
+    "error": 3,
+    "warn": 0,
+    "info": 0,
+    "ok": 9
+  },
+  "ok": false,
+  "findings": [
+    {
+      "check": "gate_test_build",
+      "severity": "error",
+      "detail": "Gate test_build FALHOU.",
+      "recommendation": "Bloqueia confiança nos números. Corrigir antes de confiar no dashboard."
+    },
+    {
+      "check": "precommit_gate",
+      "severity": "error",
+      "detail": "Auditor pré-commit BLOQUEOU a publicação (dado/artefato inválido).",
+      "recommendation": "Ver log do step 'Auditor pré-commit' no run; dashboard manteve a última versão boa."
+    },
+    {
+      "check": "push_pages",
+      "severity": "error",
+      "detail": "Push não confirmado (status=skipped).",
+      "recommendation": "Conferir permissão contents:write e conflito de push."
+    },
+    {
+      "check": "fetch_bling",
+      "severity": "ok",
+      "detail": "Fetch do Bling concluído com sucesso.",
+      "recommendation": ""
+    },
+    {
+      "check": "registros_completos",
+      "severity": "ok",
+      "detail": "303 registros em 4 datasets (contas_pagar_em_aberto=85, contas_pagar_pagas=124, contas_receber_em_aberto=17, contas_receber_recebidas=77).",
+      "recommendation": ""
+    },
+    {
+      "check": "build_html",
+      "severity": "ok",
+      "detail": "index.html gerado sem erros.",
+      "recommendation": ""
+    },
+    {
+      "check": "gate_test_audit",
+      "severity": "ok",
+      "detail": "Gate test_audit verde.",
+      "recommendation": ""
+    },
+    {
+      "check": "dados_nome_vazio",
+      "severity": "ok",
+      "detail": "Nomes de contato preenchidos (303/303).",
+      "recommendation": ""
+    },
+    {
+      "check": "dados_valor_vazio",
+      "severity": "ok",
+      "detail": "Todos os lançamentos têm valor.",
+      "recommendation": ""
+    },
+    {
+      "check": "dados_datas",
+      "severity": "ok",
+      "detail": "Datas de vencimento consistentes.",
+      "recommendation": ""
+    },
+    {
+      "check": "volume_anomalo",
+      "severity": "ok",
+      "detail": "Volume estável (303 vs 303 anterior).",
+      "recommendation": ""
+    },
+    {
+      "check": "falha_recorrente",
+      "severity": "ok",
+      "detail": "Sem padrões de falha recorrente em 15 execuções nos últimos 7 dias.",
+      "recommendation": ""
+    }
+  ],
+  "recommendations": [
+    "Bloqueia confiança nos números. Corrigir antes de confiar no dashboard.",
+    "Ver log do step 'Auditor pré-commit' no run; dashboard manteve a última versão boa.",
+    "Conferir permissão contents:write e conflito de push."
+  ],
+  "links": {
+    "dashboard": "https://leandrogelpke.github.io/Easy_Financas/",
+    "audit_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/27729752020",
+    "update_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/27729637758"
+  }
+}
