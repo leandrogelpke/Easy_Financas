@@ -3,26 +3,26 @@
     "workflow": "update",
     "agente": "principal",
     "trigger": "workflow_dispatch",
-    "run_id": "27729637758",
-    "run_number": "21",
-    "run_url": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/27729637758",
-    "started_at_utc": "2026-06-18 00:57:32",
-    "ended_at_utc": "2026-06-18 01:00:28",
-    "ended_at_brt": "2026-06-17 22:00:28",
-    "duration_s": 176
+    "run_id": "27729937911",
+    "run_number": "22",
+    "run_url": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/27729937911",
+    "started_at_utc": "2026-06-18 01:05:53",
+    "ended_at_utc": "2026-06-18 01:08:37",
+    "ended_at_brt": "2026-06-17 22:08:37",
+    "duration_s": 164
   },
   "steps": {
     "fetch": "success",
     "token_refresh": "unchanged",
     "build": "success",
     "gate_test_audit": "success",
-    "gate_test_build": "failure",
-    "precommit": "failure",
-    "push": "skipped"
+    "gate_test_build": "success",
+    "precommit": "success",
+    "push": "success"
   },
   "records": {
     "snapshot_file": "bling_data_2026-06-18.json",
-    "fetched_at": "2026-06-17 22:00:28",
+    "fetched_at": "2026-06-17 22:08:27",
     "total": 303,
     "contas_pagar_em_aberto": 85,
     "contas_pagar_pagas": 124,
@@ -31,13 +31,8 @@
     "categorias": 215,
     "contatos": 42
   },
-  "commit_hash": null,
-  "warnings": [
-    "Publicação bloqueada pelo gate — última versão boa mantida no ar."
-  ],
-  "errors": [
-    "Gate test_build FALHOU (estrutura do HTML).",
-    "Auditor pré-commit BLOQUEOU a publicação (artefato/dado inválido)."
-  ],
-  "ok": false
+  "commit_hash": "fdf20ca0db2715710670b69946956bba41596687",
+  "warnings": [],
+  "errors": [],
+  "ok": true
 }
