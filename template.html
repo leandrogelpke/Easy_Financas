@@ -978,30 +978,37 @@ function paReset(){PA_AW='all';PA_AR=null;paRender();}
 function paToggle(id){PA_AR=PA_AR===id?null:id;paRender();}
 
 // ── FINANCEIRO: RECEITA POR CLIENTE ──
+var REC_AR=null;
+function recVis(r){return !REC_AR||r.id===REC_AR;}
 function recRender(){
   if(!document.getElementById('recTbody'))return;
 
-  var tot=RECEBIDO_DATA.reduce(function(s,r){return s+r.val;},0);
-  document.getElementById('recHsub').textContent=RECEBIDO_DATA.length+' clientes · R$ '+_fmt(tot)+' total recebido';
+  var filtered=RECEBIDO_DATA.filter(function(r){return recVis(r);});
+  var tot=filtered.reduce(function(s,r){return s+r.val;},0);
+  document.getElementById('recHsub').textContent=filtered.length+(filtered.length===1?' cliente':' clientes')+' · R$ '+_fmt(tot)+(REC_AR?' (filtrado)':' total recebido');
 
-  // bar chart
+  // bar chart — top 20 (ordem estável: índice casa com RECEBIDO_DATA).
+  // Cross-filter: clicar uma barra seleciona o cliente; barras não-selecionadas esmaecem.
   var top=RECEBIDO_DATA.slice(0,20);
   var barLabels=top.map(function(x){return x.n.length>28?x.n.substring(0,28)+'…':x.n;});
   var barVals=top.map(function(x){return x.val;});
+  var barColors=top.map(function(x){return recVis(x)?'#1e7e4fcc':'rgba(60,90,130,0.10)';});
   if(!recBarChart){
     var ctx=document.getElementById('recBar').getContext('2d');
-    recBarChart=new Chart(ctx,{type:'bar',data:{labels:barLabels,datasets:[{data:barVals,backgroundColor:'#1e7e4fcc',borderRadius:3}]},options:{maintainAspectRatio:false,indexAxis:'y',animation:{duration:250},plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fBR(c.parsed.x);}}}},scales:{x:{ticks:{callback:function(v){return 'R$'+_fmtK(v);}},grid:{color:'rgba(60,90,130,0.08)'}},y:{ticks:{font:{size:10}},grid:{display:false}}}}});
+    recBarChart=new Chart(ctx,{type:'bar',data:{labels:barLabels,datasets:[{data:barVals,backgroundColor:barColors,borderRadius:3}]},options:{maintainAspectRatio:false,indexAxis:'y',animation:{duration:250},plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fBR(c.parsed.x);}}}},scales:{x:{ticks:{callback:function(v){return 'R$'+_fmtK(v);}},grid:{color:'rgba(60,90,130,0.08)'}},y:{ticks:{font:{size:10}},grid:{display:false}}},onClick:function(_,els){if(els&&els.length>0){var id=RECEBIDO_DATA[els[0].index].id;REC_AR=REC_AR===id?null:id;recRender();}}}});
   } else {
     recBarChart.data.labels=barLabels;
     recBarChart.data.datasets[0].data=barVals;
+    recBarChart.data.datasets[0].backgroundColor=barColors;
     recBarChart.update('none');
   }
 
-  // table
+  // table — linhas clicáveis; não-selecionadas esmaecem (.dim)
   var tbHtml='';
   RECEBIDO_DATA.forEach(function(r,i){
     var ticket=r.count>0?r.val/r.count:0;
-    tbHtml+='<tr>'+
+    var vis=recVis(r),isSel=REC_AR===r.id;
+    tbHtml+='<tr class="'+(isSel?'sel':(!vis?'dim':''))+'" data-id="'+r.id+'" style="cursor:pointer">'+
       '<td>'+(i+1)+'</td><td class="lbl">'+r.n+'</td>'+
       '<td class="r" title="R$ '+r.val.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+_fmt(r.val)+'</td>'+
       '<td class="r">'+r.count+'</td>'+
@@ -1009,11 +1016,18 @@ function recRender(){
       '</tr>';
   });
   document.getElementById('recTbody').innerHTML=tbHtml;
+  var _trs=document.getElementById('recTbody').querySelectorAll('tr');
+  for(var _i=0;_i<_trs.length;_i++){(function(tr){var id=tr.getAttribute('data-id');tr.onclick=function(){REC_AR=REC_AR===id?null:id;recRender();};})(_trs[_i]);}
   var recTblEl=document.getElementById('recTblCount');
-  if(recTblEl)recTblEl.textContent=RECEBIDO_DATA.length+' clientes';
+  if(recTblEl)recTblEl.textContent=filtered.length+'/'+RECEBIDO_DATA.length+' clientes';
+
+  // rótulo de seleção + botão Limpar (mesma convenção do cliRender)
+  var lbl=document.getElementById('recSelLbl'),btn=document.getElementById('recResetBtn');
+  if(REC_AR){var ri=RECEBIDO_DATA.find(function(r){return r.id===REC_AR;});lbl.textContent='🔍 '+(ri?ri.n.split(' ').slice(0,2).join(' '):'');btn.classList.add('vis');}
+  else{lbl.textContent='';btn.classList.remove('vis');}
 }
 
-function recReset(){recRender();}
+function recReset(){REC_AR=null;recRender();}
 
 function _fmt(v){return Math.round(v).toLocaleString('pt-BR');}
 function _fmtK(v){return v>=1000?(v/1000).toFixed(0)+'k':v;}
