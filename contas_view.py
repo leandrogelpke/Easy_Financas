@@ -315,22 +315,23 @@ def _cell_html(cell: CellInfo) -> str:
         return '<td class="r" style="font-family:var(--mono);font-size:11px;color:var(--t3)">—</td>'
 
     v_fmt = _fmt_brl_compact(cell.value)
+    v_full = escape(_fmt_brl(cell.value))
     if cell.tipo == "vencido":
-        return (f'<td class="r" style="font-family:var(--mono);font-size:11px;'
+        return (f'<td class="r" title="{v_full}" style="font-family:var(--mono);font-size:11px;'
                 f'color:var(--red);font-weight:500;padding:6px 8px">'
                 f'⚠ {v_fmt}<div style="font-size:9px;color:var(--red);'
                 f'font-weight:400">vencido</div></td>')
     if cell.tipo == "lancado":
-        return (f'<td class="r" style="font-family:var(--mono);font-size:11px;'
+        return (f'<td class="r" title="{v_full}" style="font-family:var(--mono);font-size:11px;'
                 f'color:var(--t1);font-weight:500;padding:6px 8px">'
                 f'{v_fmt}<div style="font-size:9px;color:var(--green);'
                 f'font-weight:400">lançado</div></td>')
     if cell.tipo == "previsto":
-        return (f'<td class="r" style="font-family:var(--mono);font-size:11px;'
+        return (f'<td class="r" title="{v_full}" style="font-family:var(--mono);font-size:11px;'
                 f'color:var(--t2);padding:6px 8px;font-style:italic">'
                 f'~{v_fmt}<div style="font-size:9px;color:var(--amber);'
                 f'font-weight:400;font-style:normal">previsto</div></td>')
-    return f'<td class="r">{v_fmt}</td>'
+    return f'<td class="r" title="{v_full}">{v_fmt}</td>'
 
 
 def _render_matrix_table(

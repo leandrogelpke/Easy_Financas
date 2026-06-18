@@ -1604,19 +1604,19 @@ def compute_overview_kpis_html(rows: list, pagar_data: list, cx_data: list, mont
 
     cards = [
         f'<div class="met blue"><div class="ml">Total pago ({n} meses)</div>'
-        f'<div class="mv blue">{_kbrl(total_pago)}</div>'
+        f'<div class="mv blue" title="{_brl(total_pago)}">{_kbrl(total_pago)}</div>'
         f'<div class="ms">fonte: Bling · confirmados</div></div>',
 
         f'<div class="met blue"><div class="ml">Média mensal</div>'
-        f'<div class="mv blue">{_kbrl(media)}</div>'
+        f'<div class="mv blue" title="{_brl(media)}">{_kbrl(media)}</div>'
         f'<div class="ms">últimos {n} meses</div></div>',
 
         f'<div class="met {rec_cor}"><div class="ml">A receber em aberto</div>'
-        f'<div class="mv {rec_cor}">{_kbrl(total_rec)}</div>'
+        f'<div class="mv {rec_cor}" title="{_brl(total_rec)}">{_kbrl(total_rec)}</div>'
         f'<div class="ms">{n_rec} lançamentos · {rec_sub}</div></div>',
 
         f'<div class="met {pag_cor}"><div class="ml">A pagar — vencido + 30d</div>'
-        f'<div class="mv {pag_cor}">{_kbrl(pagar_30d)}</div>'
+        f'<div class="mv {pag_cor}" title="{_brl(pagar_30d)}">{_kbrl(pagar_30d)}</div>'
         f'<div class="ms">{pag_sub}</div></div>',
 
     ]
@@ -2041,24 +2041,25 @@ def compute_caixa_kpis_html(pagar_data: list, cx_data: list) -> str:
     venc_cor = "red"   if vencidos_tot > 0 else "green"
 
     gap_val  = _signed_kbrl(gap)
+    gap_full = ("+" if gap > 0 else "") + _brl(gap)
     venc_lbl = _brl(vencidos_tot) if vencidos_tot > 0 else "R$ 0"
     venc_sub = "nenhum vencido" if vencidos_tot == 0 else f"pagar {_brl(venc_pag)} + receber {_brl(venc_rec)}"
 
     cards = [
         f'<div class="met {pag_cor}"><div class="ml">A pagar em aberto</div>'
-        f'<div class="mv {pag_cor}">{_kbrl(total_pagar)}</div>'
+        f'<div class="mv {pag_cor}" title="{_brl(total_pagar)}">{_kbrl(total_pagar)}</div>'
         f'<div class="ms">{n_pagar} lançamentos</div></div>',
 
         f'<div class="met {rec_cor}"><div class="ml">A receber em aberto</div>'
-        f'<div class="mv {rec_cor}" id="cxvRec">{_kbrl(total_rec)}</div>'
+        f'<div class="mv {rec_cor}" id="cxvRec" title="{_brl(total_rec)}">{_kbrl(total_rec)}</div>'
         f'<div class="ms" id="cxsRec">{n_rec} lançamentos</div></div>',
 
         f'<div class="met {gap_cor}"><div class="ml">Gap receber − pagar 30d</div>'
-        f'<div class="mv {gap_cor}">{gap_val}</div>'
+        f'<div class="mv {gap_cor}" title="{gap_full}">{gap_val}</div>'
         f'<div class="ms">receber − (vencido + 30d)</div></div>',
 
         f'<div class="met {venc_cor}"><div class="ml">Total vencidos</div>'
-        f'<div class="mv {venc_cor}">{venc_lbl}</div>'
+        f'<div class="mv {venc_cor}" title="{venc_lbl}">{venc_lbl}</div>'
         f'<div class="ms">{venc_sub}</div></div>',
     ]
     return "\n  ".join(cards)

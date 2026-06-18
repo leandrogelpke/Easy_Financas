@@ -261,7 +261,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   <div><div class="htitle">Diagnóstico Executivo<br>Easy Analytics</div><div class="hsub">@@OVERVIEW_HERO_SUB@@</div></div>
   <div class="pills">@@OVERVIEW_PILLS@@</div>
 </div>
-<div class="sl">KPIs executivos</div>
+<div class="sl">KPIs executivos · visão consolidada (todos os dados)</div>
 <div class="g5">@@OVERVIEW_KPIS@@</div>
 <div class="sl">Highlights e lowlights</div>
 <div class="g2">
@@ -817,12 +817,12 @@ function cxRender(){
     var col=CX_SITS.find(function(s){return s.sit===row.sit;});var color=col?col.color:'#3d5a80';
     var isSel=CX_AR===row.id,isDim=!!(CX_AR&&CX_AR!==row.id);
     var d=document.createElement('div');d.className='bar-item'+(isSel?' sel':isDim?' dim':'');
-    d.innerHTML='<div class="bar-label" title="'+row.c+'">'+row.c.split(' ')[0]+' '+row.c.split(' ')[1]+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div><div class="bar-value">R$ '+Math.round(x.v).toLocaleString('pt-BR')+'</div>';
+    d.innerHTML='<div class="bar-label" title="'+row.c+'">'+row.c.split(' ')[0]+' '+row.c.split(' ')[1]+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div><div class="bar-value" title="R$ '+x.v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+Math.round(x.v).toLocaleString('pt-BR')+'</div>';
     (function(id){d.onclick=function(){CX_AR=CX_AR===id?null:id;cxRender();};})(row.id);
     barsEl.appendChild(d);
   });
   document.getElementById('cxBarTitle').textContent=CX_AS==='all'?'todos':CX_AS;
-  document.getElementById('cxBarTot').innerHTML='<div class="tot-i"><div class="tot-l">Parcelas</div><div class="tot-v">'+filtered.length+'</div></div><div class="tot-i"><div class="tot-l">Total filtrado</div><div class="tot-v" style="color:var(--green)">R$ '+Math.round(tot).toLocaleString('pt-BR')+'</div></div>';
+  document.getElementById('cxBarTot').innerHTML='<div class="tot-i"><div class="tot-l">Parcelas</div><div class="tot-v">'+filtered.length+'</div></div><div class="tot-i"><div class="tot-l">Total filtrado</div><div class="tot-v" style="color:var(--green)" title="R$ '+tot.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+Math.round(tot).toLocaleString('pt-BR')+'</div></div>';
 
   // table
   var tbody=document.getElementById('cxTbody');tbody.innerHTML='';
@@ -832,7 +832,7 @@ function cxRender(){
     var isSel=CX_AR===row.id;
     var col=CX_SITS.find(function(s){return s.sit===row.sit;});var color=col?col.color:'#3d5a80';
     var tr=document.createElement('tr');tr.className=isSel?'sel':(!vis?'dim':'');
-    tr.innerHTML='<td style="color:var(--t3);font-family:var(--mono)">'+String(idx++).padStart(2,'0')+'</td><td class="lbl">'+row.c+'</td><td>'+row.venc+'</td><td><span class="bge '+row.bgc+'">'+row.sit+'</span></td><td class="r" style="font-weight:600;color:'+color+'">R$ '+Math.round(row.val).toLocaleString('pt-BR')+'</td>';
+    tr.innerHTML='<td style="color:var(--t3);font-family:var(--mono)">'+String(idx++).padStart(2,'0')+'</td><td class="lbl">'+row.c+'</td><td>'+row.venc+'</td><td><span class="bge '+row.bgc+'">'+row.sit+'</span></td><td class="r" style="font-weight:600;color:'+color+'" title="R$ '+row.val.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+Math.round(row.val).toLocaleString('pt-BR')+'</td>';
     (function(id){tr.onclick=function(){CX_AR=CX_AR===id?null:id;cxRender();};})(row.id);
     tbody.appendChild(tr);
   });
@@ -956,7 +956,7 @@ function paRender(){
       '<td>'+(i+1)+'</td><td class="lbl">'+r.n+'</td><td>'+r.cat+'</td>'+
       '<td style="font-family:var(--mono);font-size:11px">'+r.venc+'</td>'+
       '<td style="font-family:var(--mono);font-size:11px">'+r.doc+'</td>'+
-      '<td class="r">R$ '+_fmt(r.val)+'</td>'+
+      '<td class="r" title="R$ '+r.val.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+_fmt(r.val)+'</td>'+
       '<td><span class="bge '+(wbadge[r.window]||'bgn')+'">'+PA_WINS[r.window]+'</span></td>'+
       '</tr>';
   });
@@ -1003,9 +1003,9 @@ function recRender(){
     var ticket=r.count>0?r.val/r.count:0;
     tbHtml+='<tr>'+
       '<td>'+(i+1)+'</td><td class="lbl">'+r.n+'</td>'+
-      '<td class="r">R$ '+_fmt(r.val)+'</td>'+
+      '<td class="r" title="R$ '+r.val.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+_fmt(r.val)+'</td>'+
       '<td class="r">'+r.count+'</td>'+
-      '<td class="r">R$ '+_fmt(ticket)+'</td>'+
+      '<td class="r" title="R$ '+ticket.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+_fmt(ticket)+'</td>'+
       '</tr>';
   });
   document.getElementById('recTbody').innerHTML=tbHtml;
@@ -1127,10 +1127,10 @@ function dreRender(){
     tbHtml+='<tr class="dre-row" data-mo="'+m.month+'" '+(hasDetail?'onclick="dreToggleDetail(\''+m.month+'\')"':'')+' style="'+cursor+'">'+
       '<td class="lbl">'+caret+m.label+'</td>'+
       '<td><span class="bge '+(isReal?'bgg':'bgb')+'">'+(isReal?'Real':'Projetado')+'</span></td>'+
-      '<td class="r" style="color:var(--green)">R$ '+_fmt(m.rec)+'</td>'+
-      '<td class="r" style="color:var(--red)">R$ '+_fmt(m.desp)+'</td>'+
-      '<td class="r" style="color:'+(res>=0?'var(--green)':'var(--red)')+'">R$ '+_fmt(res)+'</td>'+
-      '<td class="r" style="color:'+(acum>=0?'var(--green)':'var(--red)')+'">R$ '+_fmt(acum)+'</td>'+
+      '<td class="r" style="color:var(--green)" title="R$ '+m.rec.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+_fmt(m.rec)+'</td>'+
+      '<td class="r" style="color:var(--red)" title="R$ '+m.desp.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+_fmt(m.desp)+'</td>'+
+      '<td class="r" style="color:'+(res>=0?'var(--green)':'var(--red)')+'" title="R$ '+res.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+_fmt(res)+'</td>'+
+      '<td class="r" style="color:'+(acum>=0?'var(--green)':'var(--red)')+'" title="R$ '+acum.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+_fmt(acum)+'</td>'+
       '</tr>'+
       (hasDetail?'<tr class="dre-detail" id="dreDetail-'+m.month+'" style="display:none;background:var(--s2)"><td colspan="6" id="dreDetailBody-'+m.month+'" style="padding:0"></td></tr>':'');
   });
@@ -1141,9 +1141,9 @@ function dreRender(){
   var totDesp=DRE_DATA.reduce(function(s,m){return s+m.desp;},0);
   var totRes=totRec-totDesp;
   document.getElementById('dreTotals').innerHTML=
-    '<div class="tot-i"><div class="tot-l">Receita Total</div><div class="tot-v" style="color:var(--green)">R$ '+_fmt(totRec)+'</div></div>'+
-    '<div class="tot-i"><div class="tot-l">Despesas Total</div><div class="tot-v" style="color:var(--red)">R$ '+_fmt(totDesp)+'</div></div>'+
-    '<div class="tot-i"><div class="tot-l">Resultado</div><div class="tot-v" style="color:'+(totRes>=0?'var(--green)':'var(--red)')+'">R$ '+_fmt(totRes)+'</div></div>'+
+    '<div class="tot-i"><div class="tot-l">Receita Total</div><div class="tot-v" style="color:var(--green)" title="R$ '+totRec.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+_fmt(totRec)+'</div></div>'+
+    '<div class="tot-i"><div class="tot-l">Despesas Total</div><div class="tot-v" style="color:var(--red)" title="R$ '+totDesp.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+_fmt(totDesp)+'</div></div>'+
+    '<div class="tot-i"><div class="tot-l">Resultado</div><div class="tot-v" style="color:'+(totRes>=0?'var(--green)':'var(--red)')+'" title="R$ '+totRes.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+_fmt(totRes)+'</div></div>'+
     '<div class="tot-i"><div class="tot-l">Meses reais</div><div class="tot-v">'+realM.length+'</div></div>'+
     '<div class="tot-i"><div class="tot-l">Meses projetados</div><div class="tot-v">'+planM.length+'</div></div>';
 }
@@ -1234,9 +1234,9 @@ function projDreRender(){
     tbHtml+='<tr>'+
       '<td class="lbl">'+m.label+'</td>'+
       '<td><span class="bge '+(isReal?'bgg':'bgb')+'">'+(isReal?'Real':'Proj.')+'</span></td>'+
-      '<td class="r" style="color:var(--green)">R$ '+_fmt(m.rec)+'</td>'+
-      '<td class="r" style="color:var(--red)">R$ '+_fmt(m.desp)+'</td>'+
-      '<td class="r" style="color:'+(res>=0?'var(--green)':'var(--red)')+'">R$ '+_fmt(res)+'</td>'+
+      '<td class="r" style="color:var(--green)" title="R$ '+m.rec.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+_fmt(m.rec)+'</td>'+
+      '<td class="r" style="color:var(--red)" title="R$ '+m.desp.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+_fmt(m.desp)+'</td>'+
+      '<td class="r" style="color:'+(res>=0?'var(--green)':'var(--red)')+'" title="R$ '+res.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+_fmt(res)+'</td>'+
       '</tr>';
   });
   document.getElementById('projDreTbody').innerHTML=tbHtml;
@@ -1332,13 +1332,13 @@ function ppRender(){
       var col=PP_CATS.find(function(c){return c.st===x.st;});var color=col?col.color:'#3d5a80';
       var isSel=PP_AR===x.id,isDim=!!(PP_AR&&PP_AR!==x.id);
       var d=document.createElement('div');d.className='bar-item'+(isSel?' sel':isDim?' dim':'');
-      d.innerHTML='<div class="bar-label" title="'+x.n+'">'+x.n+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div><div class="bar-value">R$ '+Math.round(x.saas).toLocaleString('pt-BR')+'</div>';
+      d.innerHTML='<div class="bar-label" title="'+x.n+'">'+x.n+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div><div class="bar-value" title="R$ '+x.saas.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">R$ '+Math.round(x.saas).toLocaleString('pt-BR')+'</div>';
       (function(id){d.onclick=function(){PP_AR=PP_AR===id?null:id;PP_ST=null;ppRender();};})(x.id);
       barsEl.appendChild(d);
     });
   }
   document.getElementById('ppBarTitle').textContent=PP_ST||'todas';
-  document.getElementById('ppBarTot').innerHTML='<div class="tot-i"><div class="tot-l">Oportunidades</div><div class="tot-v">'+filtered.length+'</div></div><div class="tot-i"><div class="tot-l">SaaS potencial/mês</div><div class="tot-v" style="color:var(--green)">'+fBRpp(totSaas)+'</div></div><div class="tot-i"><div class="tot-l">Impl. potencial</div><div class="tot-v">'+fBRpp(totImpl)+'</div></div>';
+  document.getElementById('ppBarTot').innerHTML='<div class="tot-i"><div class="tot-l">Oportunidades</div><div class="tot-v">'+filtered.length+'</div></div><div class="tot-i"><div class="tot-l">SaaS potencial/mês</div><div class="tot-v" style="color:var(--green)" title="'+(totSaas>0?'R$ '+totSaas.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'">'+fBRpp(totSaas)+'</div></div><div class="tot-i"><div class="tot-l">Impl. potencial</div><div class="tot-v" title="'+(totImpl>0?'R$ '+totImpl.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'">'+fBRpp(totImpl)+'</div></div>';
 
   // table
   var tbody=document.getElementById('ppTbody');tbody.innerHTML='';
@@ -1349,12 +1349,12 @@ function ppRender(){
     var col=PP_CATS.find(function(c){return c.st===row.st;});var color=col?col.color:'#3d5a80';
     var bgClass=row.st==='Proposta'?'bgb':row.st==='Apresentação'?'bgg':row.st==='Parado'?'bga':row.st==='Perdido'?'bgr':'bgn';
     var tr=document.createElement('tr');tr.className=isSel?'sel':(!vis?'dim':'');
-    tr.innerHTML='<td style="color:var(--t3);font-family:var(--mono)">'+String(idx++).padStart(2,'0')+'</td><td class="lbl">'+row.n+'</td><td><span class="bge '+bgClass+'">'+row.st+'</span></td><td class="r">'+fBRpp(row.impl)+'</td><td class="r" style="color:'+color+'">'+fBRpp(row.saas)+'</td><td style="font-size:11px;color:var(--t2)">'+row.obs+'</td>';
+    tr.innerHTML='<td style="color:var(--t3);font-family:var(--mono)">'+String(idx++).padStart(2,'0')+'</td><td class="lbl">'+row.n+'</td><td><span class="bge '+bgClass+'">'+row.st+'</span></td><td class="r" title="'+(row.impl>0?'R$ '+row.impl.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'">'+fBRpp(row.impl)+'</td><td class="r" style="color:'+color+'" title="'+(row.saas>0?'R$ '+row.saas.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'">'+fBRpp(row.saas)+'</td><td style="font-size:11px;color:var(--t2)">'+row.obs+'</td>';
     (function(id){tr.onclick=function(){PP_AR=PP_AR===id?null:id;PP_ST=null;ppRender();};})(row.id);
     tbody.appendChild(tr);
   });
   document.getElementById('ppTblCount').textContent=filtered.length+'/'+PP_DATA.length;
-  document.getElementById('ppTblTot').innerHTML='<div class="tot-i"><div class="tot-l">Filtradas</div><div class="tot-v">'+filtered.length+'</div></div><div class="tot-i"><div class="tot-l">SaaS potencial</div><div class="tot-v" style="color:var(--green)">'+fBRpp(totSaas)+'/mês</div></div>';
+  document.getElementById('ppTblTot').innerHTML='<div class="tot-i"><div class="tot-l">Filtradas</div><div class="tot-v">'+filtered.length+'</div></div><div class="tot-i"><div class="tot-l">SaaS potencial</div><div class="tot-v" style="color:var(--green)" title="'+(totSaas>0?'R$ '+totSaas.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):'—')+'">'+fBRpp(totSaas)+'/mês</div></div>';
 
   // kpi cards
   PP_CATS.forEach(function(c){
@@ -1449,7 +1449,7 @@ function cliRender(){
     tr.innerHTML='<td style="color:var(--t3);font-family:var(--mono)">'+String(idx++).padStart(2,'0')+'</td>'
       +'<td class="lbl" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+row.n+'</td>'
       +'<td><span class="bge '+bgClass+'">'+catLabel+'</span></td>'
-      +'<td class="r" style="font-weight:600;color:'+colr+'">'+fBRc(row.valor)+'</td>'
+      +'<td class="r" style="font-weight:600;color:'+colr+'" title="R$ '+row.valor.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">'+fBRc(row.valor)+'</td>'
       +'<td class="r" style="font-family:var(--mono);font-size:11px">'+Math.round(row.valor/GRAND_TOT*100)+'%</td>'
       +'<td><span class="bge '+abrClass+'">'+row.abr+'</span></td>'
       +'<td style="font-size:11px;color:var(--t2)">'+row.obs+'</td>';
@@ -1459,7 +1459,7 @@ function cliRender(){
 
   document.getElementById('cliTblCount').textContent=cnt+'/'+CLI_DATA.length;
   document.getElementById('cliTblTot').innerHTML='<div class="tot-i"><div class="tot-l">Clientes</div><div class="tot-v">'+cnt+'</div></div>'
-    +'<div class="tot-i"><div class="tot-l">Receita filtrada</div><div class="tot-v" style="color:var(--blue)">'+fBRc(tFil)+'/mês</div></div>'
+    +'<div class="tot-i"><div class="tot-l">Receita filtrada</div><div class="tot-v" style="color:var(--blue)" title="R$ '+tFil.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">'+fBRc(tFil)+'/mês</div></div>'
     +'<div class="tot-i"><div class="tot-l">% da receita total</div><div class="tot-v">'+Math.round(tFil/GRAND_TOT*100)+'%</div></div>';
 
   ['gar','med','alt'].forEach(function(k){
@@ -1526,12 +1526,12 @@ function cfRender(){
     var col=CF_CATS.find(function(c){return c.cat===row.cat;});var color=col?col.color:'#3d5a80';
     var isSel=CF_AR===row.id,isDim=!!(CF_AR&&CF_AR!==row.id);
     var d=document.createElement('div');d.className='bar-item'+(isSel?' sel':isDim?' dim':'');
-    d.innerHTML='<div class="bar-label" title="'+row.n+'">'+row.n+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div><div class="bar-value">'+fBR(x.v)+'</div>';
+    d.innerHTML='<div class="bar-label" title="'+row.n+'">'+row.n+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div><div class="bar-value" title="R$ '+x.v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'">'+fBR(x.v)+'</div>';
     (function(id){d.onclick=function(){CF_AR=CF_AR===id?null:id;CF_AC=null;cfRender();};})(row.id);
     barsEl.appendChild(d);
   });
   document.getElementById('cfBarTitle').textContent=CF_AM==='all'?'todos os meses':(CF_MONTH_LABELS[CF_AM]||CF_AM);
-  document.getElementById('cfBarTot').innerHTML='<div class="tot-i"><div class="tot-l">Fornecedores</div><div class="tot-v">'+wv.length+'</div></div><div class="tot-i"><div class="tot-l">Total</div><div class="tot-v" style="color:var(--red)">'+fBR(barTot)+'</div></div>';
+  document.getElementById('cfBarTot').innerHTML='<div class="tot-i"><div class="tot-l">Fornecedores</div><div class="tot-v">'+wv.length+'</div></div><div class="tot-i"><div class="tot-l">Total</div><div class="tot-v" style="color:var(--red)" title="'+(barTot===0?'—':'R$ '+barTot.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}))+'">'+fBR(barTot)+'</div></div>';
 
   // 5. Table
   var tbody=document.getElementById('cfTbody');tbody.innerHTML='';
@@ -1540,12 +1540,12 @@ function cfRender(){
     var isVis=cfVis(row);
     if(isVis){CF_MONTHS.forEach(function(m){mTots[m]+=(row[m]||0);});tT+=row.total;}
     var tr=document.createElement('tr');tr.className=CF_AR===row.id?'sel':(!isVis?'dim':'');
-    tr.innerHTML='<td style="color:var(--t3);font-family:var(--mono)">'+String(idx++).padStart(2,'0')+'</td><td class="lbl" style="max-width:130px;overflow:hidden;text-overflow:ellipsis">'+row.n+'</td><td><span class="bge '+row.sc+'">'+row.cat+'</span></td>'+CF_MONTHS.map(function(m){return '<td class="r">'+fBR(row[m]||0)+'</td>';}).join('')+'<td class="r" style="font-weight:600">'+fBR(row.total)+'</td><td><span class="bge '+row.sc+'">'+row.st+'</span></td>';
+    tr.innerHTML='<td style="color:var(--t3);font-family:var(--mono)">'+String(idx++).padStart(2,'0')+'</td><td class="lbl" style="max-width:130px;overflow:hidden;text-overflow:ellipsis">'+row.n+'</td><td><span class="bge '+row.sc+'">'+row.cat+'</span></td>'+CF_MONTHS.map(function(m){var _mv=row[m]||0;return '<td class="r" title="'+(_mv===0?'—':'R$ '+_mv.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}))+'">'+fBR(_mv)+'</td>';}).join('')+'<td class="r" style="font-weight:600" title="'+(row.total===0?'—':'R$ '+row.total.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}))+'">'+fBR(row.total)+'</td><td><span class="bge '+row.sc+'">'+row.st+'</span></td>';
     (function(id){tr.onclick=function(){CF_AR=CF_AR===id?null:id;CF_AC=null;cfRender();};})(row.id);
     tbody.appendChild(tr);
   });
   document.getElementById('cfTblCount').textContent=ROWS.filter(function(r){return cfVis(r);}).length+'/'+ROWS.length;
-  document.getElementById('cfTblTot').innerHTML=CF_MONTHS.map(function(m){return '<div class="tot-i"><div class="tot-l">'+CF_MONTH_NAMES[m].substring(0,3)+'</div><div class="tot-v">'+fBR(mTots[m])+'</div></div>';}).join('')+'<div class="tot-i"><div class="tot-l">Total</div><div class="tot-v" style="color:var(--red)">'+fBR(tT)+'</div></div>';
+  document.getElementById('cfTblTot').innerHTML=CF_MONTHS.map(function(m){return '<div class="tot-i"><div class="tot-l">'+CF_MONTH_NAMES[m].substring(0,3)+'</div><div class="tot-v" title="'+(mTots[m]===0?'—':'R$ '+mTots[m].toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}))+'">'+fBR(mTots[m])+'</div></div>';}).join('')+'<div class="tot-i"><div class="tot-l">Total</div><div class="tot-v" style="color:var(--red)" title="'+(tT===0?'—':'R$ '+tT.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}))+'">'+fBR(tT)+'</div></div>';
 
   // 6. KPIs
   [{k:'buyout',cat:'Buy-out'},{k:'pj',cat:'Serviços PJ'},{k:'out',cat:'Outros'}].forEach(function(x){

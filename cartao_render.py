@@ -30,6 +30,11 @@ def _fmt_brl(v: float, compact: bool = False) -> str:
     return "R$ " + f"{round(v):,}".replace(",", ".")
 
 
+def _fmt_brl_preciso(v: float) -> str:
+    """Valor exato em R$ com 2 casas, locale pt-BR (ex.: 1.234,56). Usado só no title=."""
+    return "R$ " + f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+
 def _fmt_usd(v: float, compact: bool = False) -> str:
     if compact and abs(v) >= 1_000:
         return f"US$ {v/1_000:.1f}K".replace(".", ",")
@@ -137,7 +142,7 @@ def render_cartao(snap_path: Path = DEFAULT_SNAP) -> dict:
                 continue
             w = 100 * v / max_mes
             seg.append(
-                f'<div title="{escape(_card_short(cd))}: {_fmt_brl(v)}" '
+                f'<div title="{escape(_card_short(cd))}: {_fmt_brl_preciso(v)}" '
                 f'style="width:{w:.2f}%;background:{card_colors.get(cd,"var(--blue)")};'
                 f'height:100%"></div>'
             )
@@ -175,7 +180,7 @@ def render_cartao(snap_path: Path = DEFAULT_SNAP) -> dict:
             '<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px">'
             f'<div style="width:110px;font-size:11.5px;color:var(--t1)">{escape(name)}</div>'
             f'<div style="flex:1;height:18px;background:var(--s2);border-radius:4px;overflow:hidden">'
-            f'<div style="width:{w:.2f}%;height:100%;background:{col}"></div></div>'
+            f'<div title="{escape(name)}: {_fmt_brl_preciso(v)}" style="width:{w:.2f}%;height:100%;background:{col}"></div></div>'
             f'<div style="width:120px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--t1)">{_fmt_brl(v)} <span style="color:var(--t3)">{pct}%</span></div>'
             '</div>'
         )
@@ -201,7 +206,7 @@ def render_cartao(snap_path: Path = DEFAULT_SNAP) -> dict:
                 f'<td style="color:var(--t3)">{escape(t.get("card_last",""))}</td>'
                 f'<td>{escape(t["vendor"])}</td>'
                 f'<td class="r">{usd}</td>'
-                f'<td class="r">{_fmt_brl(t["brl"])}</td></tr>'
+                f'<td class="r" title="{_fmt_brl_preciso(t["brl"])}">{_fmt_brl(t["brl"])}</td></tr>'
             )
         cid = c.replace("-", "")
         blocks.append(
@@ -209,7 +214,7 @@ def render_cartao(snap_path: Path = DEFAULT_SNAP) -> dict:
             f'<div class="ct" style="cursor:pointer" onclick="cartToggle(\'{cid}\')">'
             f'<span id="cic-{cid}">▸</span> {_comp_label(c)} '
             f'<span class="ct-tag">{len(itens)} lançamentos</span> '
-            f'<span style="float:right;font-family:var(--mono);color:var(--t1)">{_fmt_brl(tot_c)}</span></div>'
+            f'<span style="float:right;font-family:var(--mono);color:var(--t1)" title="{_fmt_brl_preciso(tot_c)}">{_fmt_brl(tot_c)}</span></div>'
             f'<div id="cd-{cid}" style="display:none;margin-top:8px">'
             '<table class="dt"><thead><tr><th>Data</th><th>Histórico</th><th>Cartão</th>'
             '<th>Fornecedor</th><th class="r">US$</th><th class="r">R$</th></tr></thead>'
