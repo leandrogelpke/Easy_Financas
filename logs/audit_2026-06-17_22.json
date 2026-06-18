@@ -1,34 +1,16 @@
 {
-  "generated_at_brt": "2026-06-17 22:00:44",
+  "generated_at_brt": "2026-06-17 22:08:48",
   "auditor": "ci_auditor.py",
   "target_update_log": "update_2026-06-17_22.json",
-  "upstream_conclusion": "failure",
+  "upstream_conclusion": "success",
   "summary": {
-    "error": 3,
+    "error": 0,
     "warn": 0,
     "info": 0,
-    "ok": 9
+    "ok": 12
   },
-  "ok": false,
+  "ok": true,
   "findings": [
-    {
-      "check": "gate_test_build",
-      "severity": "error",
-      "detail": "Gate test_build FALHOU.",
-      "recommendation": "Bloqueia confiança nos números. Corrigir antes de confiar no dashboard."
-    },
-    {
-      "check": "precommit_gate",
-      "severity": "error",
-      "detail": "Auditor pré-commit BLOQUEOU a publicação (dado/artefato inválido).",
-      "recommendation": "Ver log do step 'Auditor pré-commit' no run; dashboard manteve a última versão boa."
-    },
-    {
-      "check": "push_pages",
-      "severity": "error",
-      "detail": "Push não confirmado (status=skipped).",
-      "recommendation": "Conferir permissão contents:write e conflito de push."
-    },
     {
       "check": "fetch_bling",
       "severity": "ok",
@@ -51,6 +33,24 @@
       "check": "gate_test_audit",
       "severity": "ok",
       "detail": "Gate test_audit verde.",
+      "recommendation": ""
+    },
+    {
+      "check": "gate_test_build",
+      "severity": "ok",
+      "detail": "Gate test_build verde.",
+      "recommendation": ""
+    },
+    {
+      "check": "precommit_gate",
+      "severity": "ok",
+      "detail": "Auditor pré-commit liberou a publicação.",
+      "recommendation": ""
+    },
+    {
+      "check": "push_pages",
+      "severity": "ok",
+      "detail": "Publicado. Commit fdf20ca0db2715710670b69946956bba41596687.",
       "recommendation": ""
     },
     {
@@ -84,14 +84,10 @@
       "recommendation": ""
     }
   ],
-  "recommendations": [
-    "Bloqueia confiança nos números. Corrigir antes de confiar no dashboard.",
-    "Ver log do step 'Auditor pré-commit' no run; dashboard manteve a última versão boa.",
-    "Conferir permissão contents:write e conflito de push."
-  ],
+  "recommendations": [],
   "links": {
     "dashboard": "https://leandrogelpke.github.io/Easy_Financas/",
-    "audit_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/27729752020",
-    "update_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/27729637758"
+    "audit_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/27730039415",
+    "update_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/27729937911"
   }
 }
