@@ -129,12 +129,40 @@ def test_canvases_clientes_presentes() -> None:
             "provavelmente quebrou.")
 
 
+def test_fstrings_compat_py311() -> None:
+    """f-string NÃO pode ter backslash na parte de expressão {...} — é
+    SyntaxError no Python 3.11 (usado no CI), embora válido no 3.12+. Pega o
+    caso traiçoeiro em que o build passa local (3.12/3.13) mas quebra no CI.
+    Histórico: 18/06 um title= com aspas escapadas em dre_render.py degradou
+    a aba Auditoria/DRE no CI e bloqueou a publicação.
+    """
+    import ast
+    bad = []
+    for py in sorted(HERE.glob("*.py")):
+        src = py.read_text(encoding="utf-8")
+        try:
+            tree = ast.parse(src)
+        except SyntaxError:
+            continue  # sintaxe inválida é pega por outro caminho
+        for node in ast.walk(tree):
+            if isinstance(node, ast.JoinedStr):
+                for part in node.values:
+                    if isinstance(part, ast.FormattedValue):
+                        seg = ast.get_source_segment(src, part.value) or ""
+                        if "\\" in seg:
+                            bad.append(f"{py.name}:{part.value.lineno}")
+    assert not bad, (
+        "f-string com backslash na expressão (quebra no Python 3.11 do CI): "
+        + ", ".join(bad))
+
+
 TESTS = [
     test_sem_marcadores_pendentes,
     test_pgs_balanceadas,
     test_pg_count_minimo,
     test_tamanho_index_razoavel,
     test_canvases_clientes_presentes,
+    test_fstrings_compat_py311,
 ]
 
 

@@ -684,7 +684,8 @@ def _render_matriz(matriz: dict, struct_def: list, title: str, with_alert: bool 
             for m in months:
                 v = _line_value(matriz, k, m)
                 cm = color if is_alert else "var(--t1)"
-                p.append(f'<td class="r"{(f" title=\"{_fmt_brl(v)}\"") if v else ""} style="font-family:var(--mono);font-size:11px;color:{cm};padding:6px 8px">{_fmt_brl(v, True) if v else "—"}</td>')
+                _ttl = f" title='{_fmt_brl(v)}'" if v else ""
+                p.append(f'<td class="r"{_ttl} style="font-family:var(--mono);font-size:11px;color:{cm};padding:6px 8px">{_fmt_brl(v, True) if v else "—"}</td>')
             p.append(f'<td class="r" title="{_fmt_brl(total)}" style="font-family:var(--mono);font-size:11.5px;font-weight:500;color:{color};padding:6px 8px;border-left:1px solid var(--bd)">{_fmt_brl(total, True)}</td>')
             p.append(f'<td class="r" style="font-family:var(--mono);font-size:10px;color:var(--t3)">{av:+.1f}%</td>')
             p.append('</tr>')
