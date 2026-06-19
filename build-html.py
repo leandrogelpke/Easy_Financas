@@ -2469,6 +2469,7 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
         from chat_widget import build_chat_widget, build_chat_context  # type: ignore
         # Tenta carregar resumo Totvs do snapshot (se existir)
         _totvs_sum = {}
+        _docs = []
         try:
             _totvs_snap_p = _resolve_totvs_snap()
             if _totvs_snap_p.exists():
@@ -2499,6 +2500,7 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
             audit_findings=_findings,
             totvs_summary=_totvs_sum,
             totvs_por_mes=_totvs_pm,
+            totvs_docs=_docs,
             pagas_raw=pagas,
             recebidas_raw=recebidas,
             em_aberto_raw=em_aberto,

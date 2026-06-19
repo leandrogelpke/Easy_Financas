@@ -74,6 +74,7 @@ def build_chat_context(
     audit_findings: list | None = None,
     totvs_summary: dict | None = None,
     totvs_por_mes: dict | None = None,
+    totvs_docs: list[dict] | None = None,
     pagas_raw: list[dict] | None = None,
     recebidas_raw: list[dict] | None = None,
     em_aberto_raw: list[dict] | None = None,
@@ -401,6 +402,56 @@ def build_chat_context(
     if _ALIASES:
         summary["apelidos"] = _ALIASES
 
+    # ── Comissão TOTVS por cliente final (do snapshot ASE806) ──
+    # Dá o detalhe completo do que cada cliente paga via SaaS TOTVS:
+    # faturamento bruto, base de comissão e a parte da Easy (% comissão).
+    # Dedup por (cliente, mês) escolhendo a maior comissão (evita somar
+    # BASE+COMPLEMENTAR em dobro). Mesma base que o Claude Cowork leu.
+    _tv_acc: dict = {}
+    for _doc in (totvs_docs or []):
+        _comp = (str(_doc.get("competencia") or ""))[:7]
+        if not _comp or _doc.get("tipo") not in ("REAL", "BASE", "COMPLEMENTAR"):
+            continue
+        for _c in (_doc.get("clientes") or []):
+            _nome = (_c.get("cliente") or "").strip()
+            if not _nome:
+                continue
+            _cod = (_c.get("cod_cliente") or "").strip()
+            _key = _cod or _nome
+            _e = _tv_acc.setdefault(_key, {
+                "cliente": _nome, "cod": _cod, "ap": _apel(_nome),
+                "contrato": _c.get("contrato"),
+                "dt_contrato": str(_c.get("dt_contrato") or ""),
+                "produto": _c.get("produto_desc"),
+                "perc_comissao": _c.get("perc_total"),
+                "_mes": {},
+            })
+            _vc = round(float(_c.get("valor_comissao") or 0), 2)
+            _prev = _e["_mes"].get(_comp)
+            if _prev is None or _vc > _prev["comissao_easy"]:
+                _e["_mes"][_comp] = {
+                    "mes": _comp,
+                    "faturamento_bruto": round(float(_c.get("valor_bruto_item") or 0), 2),
+                    "base_comissao": round(float(_c.get("base_comissao") or 0), 2),
+                    "comissao_easy": _vc,
+                }
+    totvs_por_cliente = []
+    for _e in _tv_acc.values():
+        _meses = sorted(_e["_mes"].values(), key=lambda m: m["mes"])
+        if not _meses:
+            continue
+        _ult = _meses[-1]
+        totvs_por_cliente.append({
+            "cliente": _e["cliente"], "cod": _e["cod"], "ap": _e["ap"],
+            "contrato": _e["contrato"], "dt_contrato": _e["dt_contrato"],
+            "produto": _e["produto"], "perc_comissao": _e["perc_comissao"],
+            "ultimo_mes": _ult["mes"],
+            "faturamento_bruto_mes": _ult["faturamento_bruto"],
+            "base_comissao_mes": _ult["base_comissao"],
+            "comissao_easy_mes": _ult["comissao_easy"],
+            "por_mes": _meses[-12:],
+        })
+
     # ────────────── FULL (vai no JS, alimenta tools) ──────────────
     full = {
         # Em aberto (a pagar / a receber — futuro)
@@ -419,6 +470,7 @@ def build_chat_context(
         "auditoria":        audit_full,
         "totvs_por_mes":    totvs_meses,
         "totvs_resumo":     totvs_summary or {},
+        "totvs_por_cliente": totvs_por_cliente,
     }
 
     return {"summary": summary, "full": full}
@@ -1026,7 +1078,10 @@ def build_chat_widget(ctx: dict) -> str:
       // Em aberto
       const aberto = (EF_FULL.receber_aberto || []).filter(r => normName((r.cliente||'')+' '+(r.ap||'')).includes(termo));
       const atrasadas = aberto.filter(r => r.situacao === 'Atrasada');
-      if(histRaw.length === 0 && aberto.length === 0) return {{achados: 0, termo: args.nome}};
+      // Comissão TOTVS por cliente final (faturamento bruto, base, comissão Easy %).
+      // Mesma base ASE806 do Cowork — dá o detalhe completo do que o cliente paga via SaaS TOTVS.
+      const tv = (EF_FULL.totvs_por_cliente || []).filter(r => normName((r.cliente||'')+' '+(r.ap||'')+' '+(r.cod||'')).includes(termo));
+      if(histRaw.length === 0 && aberto.length === 0 && tv.length === 0) return {{achados: 0, termo: args.nome}};
       return {{
         termo: args.nome,
         historico_total: {{
@@ -1043,6 +1098,7 @@ def build_chat_widget(ctx: dict) -> str:
           atrasado: Math.round(atrasadas.reduce((s,r)=>s+r.valor,0) * 100) / 100,
           parcelas: aberto.slice(0, 30),
         }},
+        comissao_totvs: tv.length ? tv[0] : null,
       }};
     }},
     consultar_pagamentos: function(args){{
@@ -1210,7 +1266,7 @@ def build_chat_widget(ctx: dict) -> str:
   const TOOL_SCHEMAS = [
     {{name:'consultar_fornecedor', description:'Retorna TUDO sobre um fornecedor: histórico total de pagamentos (com breakdown por mês, sem janela fixa), agregação recente do dashboard, e parcelas em aberto (a pagar futuro). Use sempre que o usuário perguntar sobre quanto pagou/vai pagar pra alguém.',
      input_schema:{{type:'object', properties:{{nome:{{type:'string', description:'nome ou parte do nome do fornecedor (case-insensitive, sem acentos)'}}}}, required:['nome']}}}},
-    {{name:'consultar_cliente', description:'Retorna TUDO sobre um cliente: histórico total de recebimentos (com breakdown por mês) e parcelas a receber em aberto.',
+    {{name:'consultar_cliente', description:'Retorna TUDO sobre um cliente: histórico de recebimentos (por mês), parcelas a receber em aberto E a comissão TOTVS (comissao_totvs: faturamento bruto, base, parte da Easy/% e contrato, com histórico mensal). Aceita nome, apelido/nome comercial (ex.: Ramsons=MIR) ou código.',
      input_schema:{{type:'object', properties:{{nome:{{type:'string'}}}}, required:['nome']}}}},
     {{name:'consultar_pagamentos', description:'Busca pagamentos históricos (já feitos) com filtros combinados. Use quando a pergunta envolver período/mês/categoria específico. Ex: "quanto paguei em jan/26?", "gastos com Serviços PJ no trimestre".',
      input_schema:{{type:'object', properties:{{
