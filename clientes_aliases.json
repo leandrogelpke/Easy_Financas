@@ -1,0 +1,4 @@
+{
+  "_schema": "Apelidos / nomes comerciais -> nome como o cliente aparece no Bling/TOTVS. O chat (consultar_cliente) resolve buscas por apelido. Mantido manualmente. Chave = nome no Bling (como em contato_nome); valor = lista de apelidos/nomes comerciais.",
+  "MIR IMPORTACAO E EXPORTACAO LTDA": ["Ramsons"]
+}

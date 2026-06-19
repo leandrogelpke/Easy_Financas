@@ -22,6 +22,40 @@ Uso no build-html.py:
 
 from __future__ import annotations
 import json
+import unicodedata
+from pathlib import Path
+
+
+def _norm_nome(s: str) -> str:
+    """minúsculas, sem acento, trim — p/ casar nome Bling × apelido."""
+    s = "".join(c for c in unicodedata.normalize("NFD", (s or "").lower())
+                if unicodedata.category(c) != "Mn")
+    return s.strip()
+
+
+def _load_aliases() -> dict:
+    """clientes_aliases.json: {nome_bling: [apelidos...]}. Mantido manualmente."""
+    try:
+        p = Path(__file__).resolve().parent / "clientes_aliases.json"
+        d = json.loads(p.read_text(encoding="utf-8"))
+        return {k: v for k, v in d.items() if not k.startswith("_")}
+    except Exception:
+        return {}
+
+
+_ALIASES = _load_aliases()
+_ALIAS_IDX = {_norm_nome(k): " ".join(v) for k, v in _ALIASES.items()}
+
+
+def _apel(contato: str) -> str:
+    """Apelidos conhecidos de um contato (string p/ busca). Ex.: MIR → 'Ramsons'."""
+    nc = _norm_nome(contato)
+    if not nc:
+        return ""
+    for k, aps in _ALIAS_IDX.items():
+        if k and (k == nc or k in nc or nc in k):
+            return aps
+    return ""
 
 
 # ──────────────────────────────────────────────
@@ -233,6 +267,7 @@ def build_chat_context(
             }
         receber_full.append({
             "cliente":     nome,
+            "ap":          _apel(nome),
             "documento":   doc,
             "vencimento":  c.get("venc", ""),
             "situacao":    c.get("sit", ""),
@@ -247,6 +282,7 @@ def build_chat_context(
         for r in recebido_data:
             recebido_full.append({
                 "cliente":      r.get("n", "?"),
+                "ap":           _apel(r.get("n", "")),
                 "total_pago":   round(float(r.get("val", 0)), 2),
                 "n_pagamentos": int(r.get("count", 0)),
             })
@@ -339,6 +375,7 @@ def build_chat_context(
         recebimentos_hist.append({
             "data":     str(r.get("vencimento") or r.get("dataVencimento") or "")[:10],
             "cliente":  contato,
+            "ap":       _apel(contato),
             "valor":    round(valor, 2),
             "doc":      (r.get("numero_documento") or r.get("numeroDocumento") or "")[:25],
         })
@@ -358,6 +395,11 @@ def build_chat_context(
         "n_pagar_aberto":          len(pagar_data),
         "n_receber_aberto":        len(cx_data),
     }
+
+    # Apelidos / nomes comerciais → nome no Bling (ex.: Ramsons = MIR). A IA usa
+    # pra resolver buscas por apelido sem precisar adivinhar.
+    if _ALIASES:
+        summary["apelidos"] = _ALIASES
 
     # ────────────── FULL (vai no JS, alimenta tools) ──────────────
     full = {
@@ -971,7 +1013,7 @@ def build_chat_widget(ctx: dict) -> str:
       const termo = normName(args.nome || '');
       if(!termo) return {{erro: 'parâmetro "nome" obrigatório'}};
       // Histórico TOTAL
-      const histRaw = (EF_FULL.recebimentos_historico || []).filter(r => normName(r.cliente).includes(termo));
+      const histRaw = (EF_FULL.recebimentos_historico || []).filter(r => normName((r.cliente||'')+' '+(r.ap||'')).includes(termo));
       const histTotal = histRaw.reduce((s, r) => s + r.valor, 0);
       const porMes = {{}};
       histRaw.forEach(r => {{
@@ -980,9 +1022,9 @@ def build_chat_widget(ctx: dict) -> str:
       }});
       const mesesOrd = Object.keys(porMes).sort();
       // Agregação por cliente (snapshot atual)
-      const agreg = (EF_FULL.recebido_por_cliente || []).filter(r => normName(r.cliente).includes(termo));
+      const agreg = (EF_FULL.recebido_por_cliente || []).filter(r => normName((r.cliente||'')+' '+(r.ap||'')).includes(termo));
       // Em aberto
-      const aberto = (EF_FULL.receber_aberto || []).filter(r => normName(r.cliente).includes(termo));
+      const aberto = (EF_FULL.receber_aberto || []).filter(r => normName((r.cliente||'')+' '+(r.ap||'')).includes(termo));
       const atrasadas = aberto.filter(r => r.situacao === 'Atrasada');
       if(histRaw.length === 0 && aberto.length === 0) return {{achados: 0, termo: args.nome}};
       return {{
