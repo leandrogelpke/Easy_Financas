@@ -479,6 +479,7 @@ for r in d['contas_receber_recebidas']:
 | 14/06 | Cards: Runway (`caixa_config.json`), Concentração de receita, Retenções—crédito tributário (`audit.py::check_retencao_credito_resumo` + `retencoes_compensadas.json`) | build-html.py + audit.py |
 | 14/06 | **Gotcha:** `TOTVS_SNAP.parent` define o dir dos CSVs do Bling → snapshot Totvs movido p/ `data/bling-api/`. Sem isso, abas Auditoria/P&L/DRE/Contas saem vazias | `update.yml` |
 | 15/06 | **Gate pré-commit** (`ci/precommit_check.py`): bloqueia publicação de dado/artefato ruim; commit/push agora condicional a fetch+build+gates+precommit verdes | `update.yml` + `ci/` |
+| 20/06 | **Drive pull movido pro CI** — `ci/drive_pull.py` (service account Google, Secret `GDRIVE_SA_KEY`) baixa Totvs/Cartão no próprio Actions; `ci/snapshot_guard.py` só commita se houver dado novo (ignora `_meta`, piso de sanidade 80%). `weekly.sh` local fica **deprecado** (Bling já é do CI; token local quebra na rotação). No-op seguro sem o Secret | `update.yml` + `ci/drive_pull.py` + `ci/snapshot_guard.py` |
 
 ---
 

@@ -20,3 +20,6 @@ totvs/raw/
 
 # ── Sistema ───────────────────────────────────────────────────
 .DS_Store
+
+# status efêmero do drive_pull no CI
+ci/.drive_pull_status.json

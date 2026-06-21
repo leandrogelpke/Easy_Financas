@@ -88,6 +88,77 @@ jobs:
             echo "status=rotated_saved" >> "$GITHUB_OUTPUT"
           fi
 
+      # ── Drive pull (Totvs + Cartão) — substitui as etapas 1/1.5 do weekly.sh ──
+      # Se o Secret GDRIVE_SA_KEY existir, o CI baixa do Drive e regenera os
+      # snapshots; se não existir, pula tudo e mantém os snapshots commitados.
+      - name: Detectar credencial do Drive
+        id: drive_creds
+        env:
+          GDRIVE_SA_KEY: ${{ secrets.GDRIVE_SA_KEY }}
+        run: |
+          if [ -n "$GDRIVE_SA_KEY" ]; then
+            printf '%s' "$GDRIVE_SA_KEY" > /tmp/gdrive_sa.json
+            python3 -c "import json; json.load(open('/tmp/gdrive_sa.json')); print('[ok] SA JSON válido')"
+            echo "has_key=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "[skip] Secret GDRIVE_SA_KEY ausente — Totvs/Cartão mantêm o snapshot commitado."
+            echo "has_key=0" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deps p/ Drive + parsers (Totvs/Cartão)
+        if: steps.drive_creds.outputs.has_key == '1'
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+          pip install --quiet openpyxl google-api-python-client google-auth
+
+      - name: Drive pull (Totvs + Cartão)
+        id: drive_pull
+        if: steps.drive_creds.outputs.has_key == '1'
+        continue-on-error: true
+        env:
+          GDRIVE_SA_KEY_FILE: /tmp/gdrive_sa.json
+        run: python3 ci/drive_pull.py
+
+      - name: Regenerar snapshots Totvs/Cartão (só se baixou algo novo)
+        id: regen
+        if: steps.drive_creds.outputs.has_key == '1' && steps.drive_pull.outcome == 'success'
+        continue-on-error: true
+        run: |
+          ST=ci/.drive_pull_status.json
+          N_TOTVS=$(python3 -c "import json;print(json.load(open('$ST')).get('totvs',0))" 2>/dev/null || echo 0)
+          N_CARTAO=$(python3 -c "import json;print(json.load(open('$ST')).get('cartao',0))" 2>/dev/null || echo 0)
+          echo "[regen] baixados: $N_TOTVS Totvs, $N_CARTAO cartão"
+
+          # --- TOTVS --- (fetch-totvs faz MERGE no snapshot commitado, dedup por hash)
+          if [ "$N_TOTVS" -gt 0 ]; then
+            python3 fetch-totvs.py --in totvs/raw --out data/bling-api/totvs_snapshot.json \
+              || echo "::warning::fetch-totvs falhou"
+            # bridge TEMPORÁRIO: planilha interna FATURAMENTO_MM.AAAA (layout != ASE806).
+            # Remover quando o Relatório de Comissão oficial do mês passar a chegar no Drive.
+            for f in totvs/raw/FATURAMENTO_[0-9][0-9].20[0-9][0-9].xlsx; do
+              [ -e "$f" ] || continue
+              comp=$(basename "$f" | sed -E 's/FATURAMENTO_([0-9]{2})\.([0-9]{4})\.xlsx/\2-\1/')
+              python3 ingest_totvs_interno.py --xlsx "$f" --competencia "$comp" \
+                --snapshot data/bling-api/totvs_snapshot.json --only-if-absent \
+                && echo "[totvs] bridge $comp aplicado ($(basename "$f"))" \
+                || echo "::warning::bridge totvs $comp falhou"
+            done
+            python3 ci/snapshot_guard.py --file data/bling-api/totvs_snapshot.json --kind totvs || true
+          else
+            echo "[totvs] sem arquivos do Drive — mantém snapshot commitado"
+            git checkout -- data/bling-api/totvs_snapshot.json 2>/dev/null || true
+          fi
+
+          # --- CARTÃO ---
+          if [ "$N_CARTAO" -gt 0 ]; then
+            python3 fetch-cartao.py --in cartao/raw --out cartao_snapshot.json \
+              || echo "::warning::fetch-cartao falhou"
+            python3 ci/snapshot_guard.py --file cartao_snapshot.json --kind cartao || true
+          else
+            echo "[cartao] sem PDFs do Drive — mantém snapshot commitado"
+            git checkout -- cartao_snapshot.json 2>/dev/null || true
+          fi
+
       - name: Gerar index.html (build)
         id: build
         continue-on-error: true
@@ -133,6 +204,9 @@ jobs:
             | xargs -r git rm -f --ignore-unmatch
           git add index.html DRE_Projetado_Realizado.html 2>/dev/null || true
           git add data/bling-api/bling_data_*.json 2>/dev/null || true
+          # snapshots Totvs/Cartão: o snapshot_guard já restaurou os sem dado
+          # novo, então um 'add' aqui só encena diff quando houve arquivo novo.
+          git add data/bling-api/totvs_snapshot.json cartao_snapshot.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "[push] nada novo para commitar"
             echo "status=nothing" >> "$GITHUB_OUTPUT"
