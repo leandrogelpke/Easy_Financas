@@ -1,5 +1,5 @@
 {
-  "generated_at_brt": "2026-06-30 14:14:50",
+  "generated_at_brt": "2026-06-30 14:34:41",
   "auditor": "ci_auditor.py",
   "target_update_log": "update_2026-06-30_14.json",
   "upstream_conclusion": "success",
@@ -50,7 +50,7 @@
     {
       "check": "push_pages",
       "severity": "ok",
-      "detail": "Publicado. Commit 2cb75fa68f277ff3f297b91b2872a69a3945822e.",
+      "detail": "Publicado. Commit b780058a97132074dc57a362f9d39968ee9fc094.",
       "recommendation": ""
     },
     {
@@ -87,7 +87,7 @@
   "recommendations": [],
   "links": {
     "dashboard": "https://leandrogelpke.github.io/Easy_Financas/",
-    "audit_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/28462653211",
-    "update_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/28462469606"
+    "audit_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/28463821923",
+    "update_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/28463610970"
   }
 }
