@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-07-03 14:08:13",
+    "fetched_at": "2026-07-03 17:24:11",
     "today": "2026-07-03"
   },
   "categorias": [
@@ -3252,26 +3252,6 @@
       "portador_id": 14892107625
     },
     {
-      "id": 26218305052,
-      "situacao_codigo": 1,
-      "situacao": "Em aberto",
-      "vencimento": "2026-07-03",
-      "vencimento_original": "2026-07-03",
-      "data_emissao": "2026-07-01",
-      "competencia": "2026-06-25",
-      "valor": "22000,00",
-      "saldo": "22000,00",
-      "numero_documento": "000001/01",
-      "historico": "Ref. a NF nº 000001",
-      "contato_id": 18234904217,
-      "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
-      "contato_documento": "39741876000124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
-      "portador_id": 14892107625
-    },
-    {
       "id": 26236598624,
       "situacao_codigo": 1,
       "situacao": "Em aberto",
@@ -3535,26 +3515,6 @@
     }
   ],
   "contas_pagar_pagas": [
-    {
-      "id": 24771251637,
-      "situacao_codigo": 2,
-      "situacao": "Paga",
-      "vencimento": "2026-01-15",
-      "vencimento_original": "2026-01-15",
-      "data_emissao": "2026-01-07",
-      "competencia": "2026-01-07",
-      "valor": "5738,66",
-      "saldo": "0,00",
-      "numero_documento": "",
-      "historico": "CARTÃO DE CREDITO - DÉBITO AUTOMATICO",
-      "contato_id": 16596986114,
-      "contato_nome": "CARTAO DE CREDITO",
-      "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
-      "portador_id": 14890076957
-    },
     {
       "id": 24771251664,
       "situacao_codigo": 2,
@@ -5534,6 +5494,46 @@
       "categoria_descricao": "",
       "categoria_tipo": "",
       "portador_id": 14892107625
+    },
+    {
+      "id": 26218305052,
+      "situacao_codigo": 2,
+      "situacao": "Paga",
+      "vencimento": "2026-07-03",
+      "vencimento_original": "2026-07-03",
+      "data_emissao": "2026-07-01",
+      "competencia": "2026-06-25",
+      "valor": "22000,00",
+      "saldo": "0,00",
+      "numero_documento": "000001/01",
+      "historico": "Ref. a NF nº 000001",
+      "contato_id": 18234904217,
+      "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
+      "contato_documento": "39741876000124",
+      "categoria_id": 0,
+      "categoria_descricao": "",
+      "categoria_tipo": "",
+      "portador_id": 14892107625
+    },
+    {
+      "id": 24771251637,
+      "situacao_codigo": 2,
+      "situacao": "Paga",
+      "vencimento": "2026-01-15",
+      "vencimento_original": "2026-01-15",
+      "data_emissao": "2026-01-07",
+      "competencia": "2026-01-07",
+      "valor": "5738,66",
+      "saldo": "0,00",
+      "numero_documento": "",
+      "historico": "CARTÃO DE CREDITO - DÉBITO AUTOMATICO",
+      "contato_id": 16596986114,
+      "contato_nome": "CARTAO DE CREDITO",
+      "contato_documento": "",
+      "categoria_id": 0,
+      "categoria_descricao": "",
+      "categoria_tipo": "",
+      "portador_id": 14890076957
     },
     {
       "id": 22413441067,
