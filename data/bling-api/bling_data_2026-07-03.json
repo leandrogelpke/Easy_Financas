@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-07-03 09:21:41",
+    "fetched_at": "2026-07-03 13:45:51",
     "today": "2026-07-03"
   },
   "categorias": [
@@ -3269,6 +3269,26 @@
       "categoria_id": 0,
       "categoria_descricao": "",
       "categoria_tipo": "",
+      "portador_id": 14892107625
+    },
+    {
+      "id": 26236598624,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-07-20",
+      "vencimento_original": "2026-07-20",
+      "data_emissao": "2026-07-03",
+      "competencia": "2026-07-02",
+      "valor": "23000,00",
+      "saldo": "23000,00",
+      "numero_documento": "000276/01",
+      "historico": "Ref. a NF nº 000276",
+      "contato_id": 16593154786,
+      "contato_nome": "M. DE Q. MACEDO - EPP",
+      "contato_documento": "29137740000156",
+      "categoria_id": 14665159865,
+      "categoria_descricao": "Serviços de terceiros",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     }
   ],
