@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-07-06 11:03:08",
+    "fetched_at": "2026-07-06 14:52:23",
     "today": "2026-07-06"
   },
   "categorias": [
@@ -3486,6 +3486,26 @@
       "contato_id": 18234904217,
       "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "contato_documento": "39741876000124",
+      "categoria_id": 0,
+      "categoria_descricao": "",
+      "categoria_tipo": "",
+      "portador_id": 14892107625
+    },
+    {
+      "id": 26258871003,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-07-10",
+      "vencimento_original": "2026-07-10",
+      "data_emissao": "2026-07-06",
+      "competencia": "2026-07-06",
+      "valor": "1108,16",
+      "saldo": "1108,16",
+      "numero_documento": "",
+      "historico": "REEMBOLSO DE DESPESA",
+      "contato_id": 18069802589,
+      "contato_nome": "ISABEL FELIX",
+      "contato_documento": "24728788857",
       "categoria_id": 0,
       "categoria_descricao": "",
       "categoria_tipo": "",
