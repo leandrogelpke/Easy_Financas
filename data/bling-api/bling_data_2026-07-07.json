@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-07-07 14:48:52",
+    "fetched_at": "2026-07-07 17:59:40",
     "today": "2026-07-07"
   },
   "categorias": [
@@ -3528,26 +3528,6 @@
       "contato_id": 16955970478,
       "contato_nome": "MIR IMPORTACAO E EXPORTACAO LTDA",
       "contato_documento": "03341024000100",
-      "categoria_id": "",
-      "categoria_descricao": "",
-      "categoria_tipo": "",
-      "portador_id": ""
-    },
-    {
-      "id": 24980245392,
-      "situacao_codigo": 1,
-      "situacao": "Em aberto",
-      "vencimento": "2026-07-15",
-      "vencimento_original": "",
-      "data_emissao": "2026-02-02",
-      "competencia": "",
-      "valor": "50000,00",
-      "saldo": "",
-      "numero_documento": "",
-      "historico": "",
-      "contato_id": 16605292185,
-      "contato_nome": "TOTVS S.A.",
-      "contato_documento": "53113791000122",
       "categoria_id": "",
       "categoria_descricao": "",
       "categoria_tipo": "",
