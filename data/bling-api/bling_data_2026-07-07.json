@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-07-07 09:40:14",
+    "fetched_at": "2026-07-07 14:26:54",
     "today": "2026-07-07"
   },
   "categorias": [
@@ -3828,6 +3828,26 @@
       "contato_id": 16547062910,
       "contato_nome": "1000 MARCAS SAFETY BRASIL EIRELI",
       "contato_documento": "23622391000181",
+      "categoria_id": "",
+      "categoria_descricao": "",
+      "categoria_tipo": "",
+      "portador_id": ""
+    },
+    {
+      "id": 26269514977,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-07-16",
+      "vencimento_original": "",
+      "data_emissao": "2026-07-07",
+      "competencia": "",
+      "valor": "14817,17",
+      "saldo": "",
+      "numero_documento": "",
+      "historico": "",
+      "contato_id": 16547082423,
+      "contato_nome": "TOTVS SA",
+      "contato_documento": "53113791001285",
       "categoria_id": "",
       "categoria_descricao": "",
       "categoria_tipo": "",
