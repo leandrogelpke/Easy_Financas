@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-07-08 14:15:17",
+    "fetched_at": "2026-07-08 17:39:01",
     "today": "2026-07-08"
   },
   "categorias": [
@@ -1690,6 +1690,12 @@
       "nome": "EFATA TREINAMENTO EM TECNOLOGIA LTDA",
       "numeroDocumento": "",
       "tipo": "F"
+    },
+    {
+      "id": 17532272445,
+      "nome": "SAO PAULO MARCAS E PATENTES LTDA",
+      "numeroDocumento": "48791313000131",
+      "tipo": "J"
     },
     {
       "id": 17563715099,
@@ -3550,6 +3556,26 @@
       "categoria_descricao": "",
       "categoria_tipo": "",
       "portador_id": 14890076957
+    },
+    {
+      "id": 26283140047,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-07-16",
+      "vencimento_original": "2026-07-16",
+      "data_emissao": "2026-07-08",
+      "competencia": "2026-07-01",
+      "valor": "801,00",
+      "saldo": "801,00",
+      "numero_documento": "005896/01",
+      "historico": "Ref. a NF nº 005896",
+      "contato_id": 17532272445,
+      "contato_nome": "SAO PAULO MARCAS E PATENTES LTDA",
+      "contato_documento": "48791313000131",
+      "categoria_id": 0,
+      "categoria_descricao": "",
+      "categoria_tipo": "",
+      "portador_id": 14892107625
     }
   ],
   "contas_receber_em_aberto": [
