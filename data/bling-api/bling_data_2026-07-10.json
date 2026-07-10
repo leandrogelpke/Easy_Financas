@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-07-10 09:38:19",
+    "fetched_at": "2026-07-10 14:06:57",
     "today": "2026-07-10"
   },
   "categorias": [
@@ -1508,6 +1508,27 @@
       "descricao": "2060000008 - DESENVOL. PREST. SERV. S/ ISS",
       "tipo": 1,
       "idGrupoDre": 7
+    },
+    {
+      "id": 14737459171,
+      "idCategoriaPai": 14734483966,
+      "descricao": "Salários Comercial",
+      "tipo": 1,
+      "idGrupoDre": 7
+    },
+    {
+      "id": 14737459294,
+      "idCategoriaPai": 14734483993,
+      "descricao": "Salários Operação",
+      "tipo": 1,
+      "idGrupoDre": 7
+    },
+    {
+      "id": 14737459393,
+      "idCategoriaPai": 14734483880,
+      "descricao": "Hosting/Sistemas",
+      "tipo": 1,
+      "idGrupoDre": 7
     }
   ],
   "contatos": [
@@ -1792,9 +1813,9 @@
       "contato_id": 16925497223,
       "contato_nome": "RECEITA FEDERAL",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159843,
+      "categoria_descricao": "Impostos sobre vendas",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -1812,9 +1833,9 @@
       "contato_id": 16925497223,
       "contato_nome": "RECEITA FEDERAL",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159843,
+      "categoria_descricao": "Impostos sobre vendas",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -1832,9 +1853,9 @@
       "contato_id": 16596986114,
       "contato_nome": "CARTAO DE CREDITO",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14890076957
     },
     {
@@ -1852,9 +1873,9 @@
       "contato_id": 16596986114,
       "contato_nome": "CARTAO DE CREDITO",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14890076957
     },
     {
@@ -1872,9 +1893,9 @@
       "contato_id": 16596986114,
       "contato_nome": "CARTAO DE CREDITO",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14890076957
     },
     {
@@ -1892,9 +1913,9 @@
       "contato_id": 16596986114,
       "contato_nome": "CARTAO DE CREDITO",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14890076957
     },
     {
@@ -1912,9 +1933,9 @@
       "contato_id": 16596986114,
       "contato_nome": "CARTAO DE CREDITO",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14890076957
     },
     {
@@ -1932,9 +1953,9 @@
       "contato_id": 16596986114,
       "contato_nome": "CARTAO DE CREDITO",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14890076957
     },
     {
@@ -2232,9 +2253,9 @@
       "contato_id": 16596986114,
       "contato_nome": "CARTAO DE CREDITO",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14890076957
     },
     {
@@ -2252,9 +2273,9 @@
       "contato_id": 16925497223,
       "contato_nome": "RECEITA FEDERAL",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159843,
+      "categoria_descricao": "Impostos sobre vendas",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2272,9 +2293,9 @@
       "contato_id": 17249038019,
       "contato_nome": "LWSA S/A",
       "contato_documento": "02351877001124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2292,9 +2313,9 @@
       "contato_id": 17249038019,
       "contato_nome": "LWSA S/A",
       "contato_documento": "02351877001124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2312,9 +2333,9 @@
       "contato_id": 17249038019,
       "contato_nome": "LWSA S/A",
       "contato_documento": "02351877001124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2332,9 +2353,9 @@
       "contato_id": 17249038019,
       "contato_nome": "LWSA S/A",
       "contato_documento": "02351877001124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2352,9 +2373,9 @@
       "contato_id": 17249038019,
       "contato_nome": "LWSA S/A",
       "contato_documento": "02351877001124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2372,9 +2393,9 @@
       "contato_id": 17249038019,
       "contato_nome": "LWSA S/A",
       "contato_documento": "02351877001124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2392,9 +2413,9 @@
       "contato_id": 17249038019,
       "contato_nome": "LWSA S/A",
       "contato_documento": "02351877001124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2412,9 +2433,9 @@
       "contato_id": 16596986114,
       "contato_nome": "CARTAO DE CREDITO",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14890076957
     },
     {
@@ -2432,9 +2453,9 @@
       "contato_id": 16925497223,
       "contato_nome": "RECEITA FEDERAL",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159843,
+      "categoria_descricao": "Impostos sobre vendas",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2452,9 +2473,9 @@
       "contato_id": 16547098383,
       "contato_nome": "SERRANO CONTABILIDADE LIMITADA",
       "contato_documento": "11048310000100",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159864,
+      "categoria_descricao": "Serviços contábeis",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2472,9 +2493,9 @@
       "contato_id": 16547098383,
       "contato_nome": "SERRANO CONTABILIDADE LIMITADA",
       "contato_documento": "11048310000100",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159864,
+      "categoria_descricao": "Serviços contábeis",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2492,9 +2513,9 @@
       "contato_id": 16547098383,
       "contato_nome": "SERRANO CONTABILIDADE LIMITADA",
       "contato_documento": "11048310000100",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159864,
+      "categoria_descricao": "Serviços contábeis",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2512,9 +2533,9 @@
       "contato_id": 16547098383,
       "contato_nome": "SERRANO CONTABILIDADE LIMITADA",
       "contato_documento": "11048310000100",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159864,
+      "categoria_descricao": "Serviços contábeis",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2532,9 +2553,9 @@
       "contato_id": 16547098383,
       "contato_nome": "SERRANO CONTABILIDADE LIMITADA",
       "contato_documento": "11048310000100",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159864,
+      "categoria_descricao": "Serviços contábeis",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2552,9 +2573,9 @@
       "contato_id": 16547098383,
       "contato_nome": "SERRANO CONTABILIDADE LIMITADA",
       "contato_documento": "11048310000100",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159864,
+      "categoria_descricao": "Serviços contábeis",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2572,9 +2593,9 @@
       "contato_id": 16547098383,
       "contato_nome": "SERRANO CONTABILIDADE LIMITADA",
       "contato_documento": "11048310000100",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159864,
+      "categoria_descricao": "Serviços contábeis",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2592,9 +2613,9 @@
       "contato_id": 16547098383,
       "contato_nome": "SERRANO CONTABILIDADE LIMITADA",
       "contato_documento": "11048310000100",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159864,
+      "categoria_descricao": "Serviços contábeis",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2612,9 +2633,9 @@
       "contato_id": 17358962597,
       "contato_nome": "Eduardo Faria de Godoy 29853590824",
       "contato_documento": "31968032000109",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459294,
+      "categoria_descricao": "Salários Operação",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2632,9 +2653,9 @@
       "contato_id": 17358962597,
       "contato_nome": "Eduardo Faria de Godoy 29853590824",
       "contato_documento": "31968032000109",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459294,
+      "categoria_descricao": "Salários Operação",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2652,9 +2673,9 @@
       "contato_id": 17358962597,
       "contato_nome": "Eduardo Faria de Godoy 29853590824",
       "contato_documento": "31968032000109",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459294,
+      "categoria_descricao": "Salários Operação",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2672,9 +2693,9 @@
       "contato_id": 17358962597,
       "contato_nome": "Eduardo Faria de Godoy 29853590824",
       "contato_documento": "31968032000109",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459294,
+      "categoria_descricao": "Salários Operação",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2692,9 +2713,9 @@
       "contato_id": 17358962597,
       "contato_nome": "Eduardo Faria de Godoy 29853590824",
       "contato_documento": "31968032000109",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459294,
+      "categoria_descricao": "Salários Operação",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2712,9 +2733,9 @@
       "contato_id": 17358962597,
       "contato_nome": "Eduardo Faria de Godoy 29853590824",
       "contato_documento": "31968032000109",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459294,
+      "categoria_descricao": "Salários Operação",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2732,9 +2753,9 @@
       "contato_id": 17358962597,
       "contato_nome": "Eduardo Faria de Godoy 29853590824",
       "contato_documento": "31968032000109",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459294,
+      "categoria_descricao": "Salários Operação",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2752,9 +2773,9 @@
       "contato_id": 17358962597,
       "contato_nome": "Eduardo Faria de Godoy 29853590824",
       "contato_documento": "31968032000109",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459294,
+      "categoria_descricao": "Salários Operação",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2912,9 +2933,9 @@
       "contato_id": 16596986114,
       "contato_nome": "CARTAO DE CREDITO",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14890076957
     },
     {
@@ -2932,9 +2953,9 @@
       "contato_id": 16925497223,
       "contato_nome": "RECEITA FEDERAL",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159843,
+      "categoria_descricao": "Impostos sobre vendas",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2952,9 +2973,9 @@
       "contato_id": 16596986114,
       "contato_nome": "CARTAO DE CREDITO",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14890076957
     },
     {
@@ -2972,9 +2993,9 @@
       "contato_id": 16925497223,
       "contato_nome": "RECEITA FEDERAL",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159843,
+      "categoria_descricao": "Impostos sobre vendas",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -2992,9 +3013,9 @@
       "contato_id": 17144642941,
       "contato_nome": "CRALUS INFORMATICA LTDA",
       "contato_documento": "13211001000127",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14734483996,
+      "categoria_descricao": "2060000003 - DESENVOLVIMENTO PREST. SERVICO",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3012,9 +3033,9 @@
       "contato_id": 17144642941,
       "contato_nome": "CRALUS INFORMATICA LTDA",
       "contato_documento": "13211001000127",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14734483996,
+      "categoria_descricao": "2060000003 - DESENVOLVIMENTO PREST. SERVICO",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3032,9 +3053,9 @@
       "contato_id": 17144642941,
       "contato_nome": "CRALUS INFORMATICA LTDA",
       "contato_documento": "13211001000127",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14734483996,
+      "categoria_descricao": "2060000003 - DESENVOLVIMENTO PREST. SERVICO",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3052,9 +3073,9 @@
       "contato_id": 17144642941,
       "contato_nome": "CRALUS INFORMATICA LTDA",
       "contato_documento": "13211001000127",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14734483996,
+      "categoria_descricao": "2060000003 - DESENVOLVIMENTO PREST. SERVICO",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3072,9 +3093,9 @@
       "contato_id": 17144642941,
       "contato_nome": "CRALUS INFORMATICA LTDA",
       "contato_documento": "13211001000127",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14734483996,
+      "categoria_descricao": "2060000003 - DESENVOLVIMENTO PREST. SERVICO",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3092,9 +3113,9 @@
       "contato_id": 17144642941,
       "contato_nome": "CRALUS INFORMATICA LTDA",
       "contato_documento": "13211001000127",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14734483996,
+      "categoria_descricao": "2060000003 - DESENVOLVIMENTO PREST. SERVICO",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3112,9 +3133,9 @@
       "contato_id": 17144642941,
       "contato_nome": "CRALUS INFORMATICA LTDA",
       "contato_documento": "13211001000127",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14734483996,
+      "categoria_descricao": "2060000003 - DESENVOLVIMENTO PREST. SERVICO",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3132,9 +3153,9 @@
       "contato_id": 17144642941,
       "contato_nome": "CRALUS INFORMATICA LTDA",
       "contato_documento": "13211001000127",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14734483996,
+      "categoria_descricao": "2060000003 - DESENVOLVIMENTO PREST. SERVICO",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3152,9 +3173,9 @@
       "contato_id": 17144642941,
       "contato_nome": "CRALUS INFORMATICA LTDA",
       "contato_documento": "13211001000127",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14734483996,
+      "categoria_descricao": "2060000003 - DESENVOLVIMENTO PREST. SERVICO",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3172,9 +3193,9 @@
       "contato_id": 17144642941,
       "contato_nome": "CRALUS INFORMATICA LTDA",
       "contato_documento": "13211001000127",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14734483996,
+      "categoria_descricao": "2060000003 - DESENVOLVIMENTO PREST. SERVICO",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3192,9 +3213,9 @@
       "contato_id": 16925497223,
       "contato_nome": "RECEITA FEDERAL",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159843,
+      "categoria_descricao": "Impostos sobre vendas",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3212,9 +3233,9 @@
       "contato_id": 16596986114,
       "contato_nome": "CARTAO DE CREDITO",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14890076957
     },
     {
@@ -3232,9 +3253,9 @@
       "contato_id": 17144642941,
       "contato_nome": "CRALUS INFORMATICA LTDA",
       "contato_documento": "13211001000127",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14734483996,
+      "categoria_descricao": "2060000003 - DESENVOLVIMENTO PREST. SERVICO",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3272,9 +3293,9 @@
       "contato_id": 18234904217,
       "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "contato_documento": "39741876000124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459171,
+      "categoria_descricao": "Salários Comercial",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3292,9 +3313,9 @@
       "contato_id": 18234904217,
       "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "contato_documento": "39741876000124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459171,
+      "categoria_descricao": "Salários Comercial",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3312,9 +3333,9 @@
       "contato_id": 18234904217,
       "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "contato_documento": "39741876000124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459171,
+      "categoria_descricao": "Salários Comercial",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3332,9 +3353,9 @@
       "contato_id": 18234904217,
       "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "contato_documento": "39741876000124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459171,
+      "categoria_descricao": "Salários Comercial",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3352,9 +3373,9 @@
       "contato_id": 18234904217,
       "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "contato_documento": "39741876000124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459171,
+      "categoria_descricao": "Salários Comercial",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3372,9 +3393,9 @@
       "contato_id": 18234904217,
       "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "contato_documento": "39741876000124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459171,
+      "categoria_descricao": "Salários Comercial",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3392,9 +3413,9 @@
       "contato_id": 18234904217,
       "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "contato_documento": "39741876000124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459171,
+      "categoria_descricao": "Salários Comercial",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3412,9 +3433,9 @@
       "contato_id": 18234904217,
       "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "contato_documento": "39741876000124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459171,
+      "categoria_descricao": "Salários Comercial",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3432,9 +3453,9 @@
       "contato_id": 18234904217,
       "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "contato_documento": "39741876000124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459171,
+      "categoria_descricao": "Salários Comercial",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3452,9 +3473,9 @@
       "contato_id": 18234904217,
       "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "contato_documento": "39741876000124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459171,
+      "categoria_descricao": "Salários Comercial",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3472,9 +3493,9 @@
       "contato_id": 18234904217,
       "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "contato_documento": "39741876000124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459171,
+      "categoria_descricao": "Salários Comercial",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3492,29 +3513,9 @@
       "contato_id": 18234904217,
       "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "contato_documento": "39741876000124",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
-      "portador_id": 14892107625
-    },
-    {
-      "id": 26258871003,
-      "situacao_codigo": 1,
-      "situacao": "Em aberto",
-      "vencimento": "2026-07-10",
-      "vencimento_original": "2026-07-10",
-      "data_emissao": "2026-07-06",
-      "competencia": "2026-07-06",
-      "valor": "1108,16",
-      "saldo": "1108,16",
-      "numero_documento": "",
-      "historico": "REEMBOLSO DE DESPESA",
-      "contato_id": 18069802589,
-      "contato_nome": "ISABEL FELIX",
-      "contato_documento": "24728788857",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459171,
+      "categoria_descricao": "Salários Comercial",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3532,9 +3533,9 @@
       "contato_id": 16925497223,
       "contato_nome": "RECEITA FEDERAL",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14665159843,
+      "categoria_descricao": "Impostos sobre vendas",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
@@ -3552,9 +3553,9 @@
       "contato_id": 16596986114,
       "contato_nome": "CARTAO DE CREDITO",
       "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
       "portador_id": 14890076957
     },
     {
@@ -3572,9 +3573,9 @@
       "contato_id": 17532272445,
       "contato_nome": "SAO PAULO MARCAS E PATENTES LTDA",
       "contato_documento": "48791313000131",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14734483890,
+      "categoria_descricao": "2010000010 - MARCAS E PATENTES",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     }
   ],
@@ -3921,26 +3922,6 @@
     }
   ],
   "contas_pagar_pagas": [
-    {
-      "id": 24771251664,
-      "situacao_codigo": 2,
-      "situacao": "Paga",
-      "vencimento": "2026-02-15",
-      "vencimento_original": "2026-02-15",
-      "data_emissao": "2026-01-07",
-      "competencia": "2026-02-07",
-      "valor": "6758,98",
-      "saldo": "0,00",
-      "numero_documento": "",
-      "historico": "CARTÃO DE CREDITO - DÉBITO AUTOMATICO - FEV/2026",
-      "contato_id": 16596986114,
-      "contato_nome": "CARTAO DE CREDITO",
-      "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
-      "portador_id": 14890076957
-    },
     {
       "id": 24771251688,
       "situacao_codigo": 2,
@@ -5922,6 +5903,26 @@
       "portador_id": 14892107625
     },
     {
+      "id": 26258871003,
+      "situacao_codigo": 2,
+      "situacao": "Paga",
+      "vencimento": "2026-07-10",
+      "vencimento_original": "2026-07-10",
+      "data_emissao": "2026-07-06",
+      "competencia": "2026-07-06",
+      "valor": "1108,16",
+      "saldo": "0,00",
+      "numero_documento": "",
+      "historico": "REEMBOLSO DE DESPESA",
+      "contato_id": 18069802589,
+      "contato_nome": "ISABEL FELIX",
+      "contato_documento": "24728788857",
+      "categoria_id": 0,
+      "categoria_descricao": "",
+      "categoria_tipo": "",
+      "portador_id": 14892107625
+    },
+    {
       "id": 24771251637,
       "situacao_codigo": 2,
       "situacao": "Paga",
@@ -5933,6 +5934,26 @@
       "saldo": "0,00",
       "numero_documento": "",
       "historico": "CARTÃO DE CREDITO - DÉBITO AUTOMATICO",
+      "contato_id": 16596986114,
+      "contato_nome": "CARTAO DE CREDITO",
+      "contato_documento": "",
+      "categoria_id": 0,
+      "categoria_descricao": "",
+      "categoria_tipo": "",
+      "portador_id": 14890076957
+    },
+    {
+      "id": 24771251664,
+      "situacao_codigo": 2,
+      "situacao": "Paga",
+      "vencimento": "2026-02-15",
+      "vencimento_original": "2026-02-15",
+      "data_emissao": "2026-01-07",
+      "competencia": "2026-02-07",
+      "valor": "6758,98",
+      "saldo": "0,00",
+      "numero_documento": "",
+      "historico": "CARTÃO DE CREDITO - DÉBITO AUTOMATICO - FEV/2026",
       "contato_id": 16596986114,
       "contato_nome": "CARTAO DE CREDITO",
       "contato_documento": "",
