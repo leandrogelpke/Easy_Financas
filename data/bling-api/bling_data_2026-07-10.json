@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-07-10 14:06:57",
+    "fetched_at": "2026-07-10 14:33:31",
     "today": "2026-07-10"
   },
   "categorias": [
@@ -1846,8 +1846,8 @@
       "vencimento_original": "2026-07-15",
       "data_emissao": "2026-01-07",
       "competencia": "2026-07-05",
-      "valor": "10918,27",
-      "saldo": "10918,27",
+      "valor": "13351,51",
+      "saldo": "13351,51",
       "numero_documento": "",
       "historico": "CARTÃO DE CREDITO - DÉBITO AUTOMATICO",
       "contato_id": 16596986114,
@@ -2289,7 +2289,7 @@
       "valor": "120,00",
       "saldo": "120,00",
       "numero_documento": "",
-      "historico": "SISTEMA BLING - 05/2026",
+      "historico": "SISTEMA BLING - 07/2026",
       "contato_id": 17249038019,
       "contato_nome": "LWSA S/A",
       "contato_documento": "02351877001124",
@@ -4613,7 +4613,7 @@
       "valor": "120,00",
       "saldo": "0,00",
       "numero_documento": "",
-      "historico": "SISTEMA BLING - 05/2026",
+      "historico": "SISTEMA BLING - 06/2026",
       "contato_id": 17249038019,
       "contato_nome": "LWSA S/A",
       "contato_documento": "02351877001124",
