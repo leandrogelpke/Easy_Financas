@@ -297,9 +297,10 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   </div>
 </div>
 <div class="cf-hint">💡 Toque em qualquer gráfico, barra ou linha da tabela para filtrar todos os painéis simultaneamente</div>
-<div class="g4">
+<div class="g5">
   <div class="met red" id="kpi-buyout" onclick="cfCat('Buy-out')"><div class="ml">Buy-out quotas</div><div class="mv red" id="kv-buyout">—</div><div class="ms">Rômulo Lima · 4 parcelas</div></div>
-  <div class="met amber" id="kpi-pj" onclick="cfCat('Serviços PJ')"><div class="ml">Serviços PJ</div><div class="mv amber" id="kv-pj">—</div><div class="ms">6 fornecedores ativos</div></div>
+  <div class="met purple" id="kpi-pessoal" onclick="cfCat('Pessoal')"><div class="ml">Despesas com pessoal</div><div class="mv purple" id="kv-pessoal">—</div><div class="ms">PJ: Alan, Isabel, Macedo, Efata, Milajanu, Eduardo</div></div>
+  <div class="met amber" id="kpi-pj" onclick="cfCat('Serviços PJ')"><div class="ml">Serviços PJ</div><div class="mv amber" id="kv-pj">—</div><div class="ms">EP, Cralus, Vtconn, Victor, Plentech</div></div>
   <div class="met blue" id="kpi-out" onclick="cfCat('Outros')"><div class="ml">Outros</div><div class="mv blue" id="kv-out">—</div><div class="ms">Impostos + adm + Polar</div></div>
   <div class="met teal" id="kpi-total"><div class="ml">Total filtrado</div><div class="mv teal" id="kv-total">—</div><div class="ms" id="kv-sub">todos os meses</div></div>
 </div>
@@ -723,12 +724,12 @@ function tmob(){document.getElementById('mmenu').classList.toggle('open');docume
 
 // ── CROSS FILTER DATA ──
 var ROWS=@@ROWS@@;
-var CF_CATS=[{cat:'Buy-out',color:'#c0392b'},{cat:'Serviços PJ',color:'#b7650a'},{cat:'Outros',color:'#3d5a80'}];
+var CF_CATS=[{cat:'Buy-out',color:'#c0392b'},{cat:'Pessoal',color:'#8e44ad'},{cat:'Serviços PJ',color:'#b7650a'},{cat:'Outros',color:'#3d5a80'}];
 var CF_MONTHS=@@CF_MONTHS@@;
 var CF_MONTH_LABELS=@@CF_MONTH_LABELS@@;
 var CF_MONTH_NAMES=@@CF_MONTH_NAMES@@;
 var CF_GROUPS=@@CF_GROUPS@@;
-var CF_GROUP_COLORS=['#c0392bcc','#b7650acc','#1a5fa8cc','#1a7a80cc','#5b4ab0cc','#3d5a80cc'];
+var CF_GROUP_COLORS=['#c0392bcc','#8e44adcc','#b7650acc','#1a5fa8cc','#1a7a80cc','#5b4ab0cc','#3d5a80cc'];
 var CF_AM='all',CF_AC=null,CF_AR=null;
 
 function cfMval(r,m){return m==='all'?r.total:(r[m]||0);}
@@ -1562,7 +1563,7 @@ function cfRender(){
   document.getElementById('cfTblTot').innerHTML=CF_MONTHS.map(function(m){return '<div class="tot-i"><div class="tot-l">'+CF_MONTH_NAMES[m].substring(0,3)+'</div><div class="tot-v" title="'+(mTots[m]===0?'—':'R$ '+mTots[m].toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}))+'">'+fBR(mTots[m])+'</div></div>';}).join('')+'<div class="tot-i"><div class="tot-l">Total</div><div class="tot-v" style="color:var(--red)" title="'+(tT===0?'—':'R$ '+tT.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}))+'">'+fBR(tT)+'</div></div>';
 
   // 6. KPIs
-  [{k:'buyout',cat:'Buy-out'},{k:'pj',cat:'Serviços PJ'},{k:'out',cat:'Outros'}].forEach(function(x){
+  [{k:'buyout',cat:'Buy-out'},{k:'pessoal',cat:'Pessoal'},{k:'pj',cat:'Serviços PJ'},{k:'out',cat:'Outros'}].forEach(function(x){
     var v=ROWS.filter(function(r){return cfVis(r)&&r.cat===x.cat;}).reduce(function(s,r){return s+cfMval(r,CF_AM);},0);
     document.getElementById('kv-'+x.k).textContent=fBR(v);
     var el=document.getElementById('kpi-'+x.k);el.classList.remove('sel','dim');

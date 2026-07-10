@@ -52,11 +52,18 @@ FORNECEDOR_MAP = [
     ("ROMULO FERREIRA LIMA",      "nao_recorrente", "Buy-out de quotas",      "Rômulo Lima (buy-out)"),
     ("GEREMIAS FERREIRA LIMA",    "nao_recorrente", "Acordo trabalhista",     "Geremias Lima (acordo)"),
 
-    # Serviços estratégicos / operação core
-    ("M. DE Q. MACEDO",           "desp_admin", "Serviços estratégicos", "Macedo (op. core)"),
-    ("EFATA TREINAMENTO",         "desp_admin", "Serviços estratégicos", "Efata (treinamento)"),
-    ("MILAJANU CONSULTORIA",      "desp_admin", "Serviços estratégicos", "Milajanu (consultoria TI)"),
-    ("EDUARDO FARIA DE GODOY",    "desp_admin", "Serviços estratégicos", "Eduardo Godoy (PJ)"),
+    # Pessoal — prestadores PJ. Classificação gerencial do Leandro: contam
+    # como "Despesas com pessoal" (não é folha CLT). Subgrupo "Prestadores PJ"
+    # é separado de "Encargos sobre pró-labore" (DCTFWEB) de propósito, pra
+    # não contaminar a auditoria de INSS — ver _calc_pago_tributo("DCTFWEB").
+    ("ALAN BARBOSA",              "desp_pessoal", "Prestadores PJ", "Alan Barbosa (PJ)"),
+    ("M. DE Q. MACEDO",           "desp_pessoal", "Prestadores PJ", "Macedo (PJ)"),
+    ("EFATA TREINAMENTO",         "desp_pessoal", "Prestadores PJ", "Efata (PJ)"),
+    ("MILAJANU CONSULTORIA",      "desp_pessoal", "Prestadores PJ", "Milajanu (PJ)"),
+    ("EDUARDO FARIA DE GODOY",    "desp_pessoal", "Prestadores PJ", "Eduardo Godoy (PJ)"),
+    ("ISABEL FELIX",              "desp_pessoal", "Prestadores PJ", "Isabel Felix (PJ)"),
+
+    # Serviços estratégicos / operação core (despesas administrativas)
     ("EP SERVIÇOS DE TECNOLOGIA", "desp_admin", "Serviços estratégicos", "EP Serviços"),
     ("VTCONN CONSULTORIA",        "desp_admin", "Serviços estratégicos", "Vtconn (encerrado)"),
     ("PLENTECH",                  "desp_admin", "Serviços estratégicos", "Plentech"),
@@ -65,7 +72,6 @@ FORNECEDOR_MAP = [
     ("CBYK CONSULTORIA",          "desp_admin", "Serviços estratégicos", "CBYK Consultoria"),
     ("ATRIA SERVICOS",            "desp_admin", "Serviços estratégicos", "Atria Serviços"),
     ("INNOVA LOG",                "desp_admin", "Serviços estratégicos", "Innova Log"),
-    ("ISABEL FELIX",              "desp_admin", "Serviços estratégicos", "Isabel (reembolso)"),
 
     # Despesas administrativas
     ("SERRANO CONTABILIDADE",     "desp_admin", "Administrativas",       "Serrano (contabilidade)"),
@@ -117,7 +123,7 @@ DRE_CONTABIL = [
     ("deducoes_cofins_esperado","  COFINS (esperado – 3%)",             "line_alert", None),
     ("RECEITA_LIQUIDA","= RECEITA LÍQUIDA",            "subtotal_calc", ["RECEITA_BRUTA", "-DEDUCOES"]),
     ("DESP_PESSOAL",   "(−) DESPESAS COM PESSOAL",     "subtotal_neg", ["desp_pessoal"]),
-    ("desp_pessoal",   "  Encargos / pró-labore",      "line", None),
+    ("desp_pessoal",   "  Pró-labore + prestadores PJ", "line", None),
     ("DESP_ADMIN",     "(−) DESPESAS ADMINISTRATIVAS", "subtotal_neg", ["desp_admin"]),
     ("desp_admin",     "  Serviços / administração",   "line", None),
     ("EBITDA",         "= EBITDA",                     "subtotal_calc", ["RECEITA_LIQUIDA", "-DESP_PESSOAL", "-DESP_ADMIN"]),
@@ -141,7 +147,7 @@ PL_EXEC = [
     ("DESP_OP",       "(−) DESPESAS OPERACIONAIS",    "subtotal_neg",
         ["desp_admin", "desp_pessoal", "DEDUCOES_VENDAS", "impostos_lucro"]),
     ("desp_admin",      "  Serviços estratégicos + Adm.", "line", None),
-    ("desp_pessoal",    "  Pessoal / encargos",       "line", None),
+    ("desp_pessoal",    "  Pessoal / PJ / encargos",   "line", None),
     ("DEDUCOES_VENDAS", "  Impostos sobre vendas (ISS/PIS/COFINS)", "subtotal_neg",
         ["deducoes_iss", "deducoes_pis", "deducoes_cofins",
          "deducoes_pis_esperado", "deducoes_cofins_esperado"]),
@@ -754,10 +760,10 @@ def _render_impostos_check(matriz: dict, totvs: dict) -> str:
                     if tributo == "CSLL" and ("CSLL" in n or re.search(r"\bCSLL\b", h)):
                         return _sum_irpj_csll(matriz, "CSLL", ym)
                     if tributo == "DCTFWEB" and "DCTFWEB" in h:
-                        return _sum_for(matriz, "desp_pessoal", ym)
+                        return _sum_subgroup(matriz, "desp_pessoal", "Encargos sobre pró-labore", ym)
         # Fallback by group
         if tributo == "ISS":     return _sum_for(matriz, "deducoes_iss", ym)
-        if tributo == "DCTFWEB": return _sum_for(matriz, "desp_pessoal", ym)
+        if tributo == "DCTFWEB": return _sum_subgroup(matriz, "desp_pessoal", "Encargos sobre pró-labore", ym)
         return 0.0
 
     for tributo, alq, _gk, descr in tributos:
@@ -807,6 +813,16 @@ def _sum_for(matriz: dict, group_key: str, ym: str) -> float:
     return matriz.get("grupos", {}).get(group_key, {}).get(ym, 0)
 
 
+def _sum_subgroup(matriz: dict, group_key: str, sub_key: str, ym: str) -> float:
+    """Soma só um subgrupo (não o grupo inteiro). Usado pra isolar o DCTFWEB
+    (subgrupo 'Encargos sobre pró-labore') dos prestadores PJ que agora também
+    vivem em desp_pessoal — senão a auditoria de INSS contaria os PJ."""
+    return (matriz.get("subgrupos", {})
+                  .get(group_key, {})
+                  .get(sub_key, {})
+                  .get(ym, 0))
+
+
 def _sum_irpj_csll(matriz: dict, which: str, ym: str) -> float:
     """Soma valores que casam IRPJ ou CSLL no grupo impostos_lucro."""
     tot = 0.0
@@ -829,8 +845,10 @@ def _calc_pago_tributo(matriz: dict, tributo: str, ym: str) -> float:
     if tributo == "COFINS":
         return _sum_for(matriz, "deducoes_cofins", ym)
     if tributo == "DCTFWEB":
-        # DCTFWEB cai em desp_pessoal — RECEITA FEDERAL é o único contato lá
-        return _sum_for(matriz, "desp_pessoal", ym)
+        # DCTFWEB (INSS) vive no subgrupo "Encargos sobre pró-labore" de
+        # desp_pessoal. Os prestadores PJ também estão em desp_pessoal, mas
+        # em outro subgrupo — por isso somamos só o subgrupo, não o grupo.
+        return _sum_subgroup(matriz, "desp_pessoal", "Encargos sobre pró-labore", ym)
     if tributo == "IRPJ":
         return _sum_irpj_csll(matriz, "IRPJ", ym)
     if tributo == "CSLL":

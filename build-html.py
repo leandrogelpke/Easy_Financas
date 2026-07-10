@@ -106,31 +106,31 @@ KNOWN_SUPPLIERS: dict[str, dict] = {
     },
     "EFATA TREINAMENTO EM TECNOLOGIA LTDA": {
         "id": "efata", "n": "Efata Treinamento",
-        "cat": "Serviços PJ", "st": "Parcial", "sc": "bga",
+        "cat": "Pessoal", "st": "Parcial", "sc": "bga",
     },
     "EFATA TREINAMENTO": {
         "id": "efata", "n": "Efata Treinamento",
-        "cat": "Serviços PJ", "st": "Parcial", "sc": "bga",
+        "cat": "Pessoal", "st": "Parcial", "sc": "bga",
     },
     "M. DE Q. MACEDO - EPP": {
         "id": "macedo", "n": "M. de Q. Macedo",
-        "cat": "Serviços PJ", "st": "Não orçado", "sc": "bgr",
+        "cat": "Pessoal", "st": "Não orçado", "sc": "bgr",
     },
     "M. DE Q. MACEDO": {
         "id": "macedo", "n": "M. de Q. Macedo",
-        "cat": "Serviços PJ", "st": "Não orçado", "sc": "bgr",
+        "cat": "Pessoal", "st": "Não orçado", "sc": "bgr",
     },
     "MILAJANU CONSULTORIA EM TECNOLOGIA DE COMPUTACAO L": {
         "id": "milajanu", "n": "Milajanu Consultoria TI",
-        "cat": "Serviços PJ", "st": "Não orçado", "sc": "bgr",
+        "cat": "Pessoal", "st": "Não orçado", "sc": "bgr",
     },
     "MILAJANU CONSULTORIA EM TECNOLOGIA DE COMPUTAÇÃO L": {
         "id": "milajanu", "n": "Milajanu Consultoria TI",
-        "cat": "Serviços PJ", "st": "Não orçado", "sc": "bgr",
+        "cat": "Pessoal", "st": "Não orçado", "sc": "bgr",
     },
     "MILAJANU CONSULTORIA": {
         "id": "milajanu", "n": "Milajanu Consultoria TI",
-        "cat": "Serviços PJ", "st": "Não orçado", "sc": "bgr",
+        "cat": "Pessoal", "st": "Não orçado", "sc": "bgr",
     },
     # Polar: histórico "APORTE POLAR" — natureza de aporte de sócio/parceiro,
     # NÃO despesa operacional. Categorizada como Aporte/Sócios.
@@ -144,11 +144,11 @@ KNOWN_SUPPLIERS: dict[str, dict] = {
     },
     "EDUARDO FARIA DE GODOY 29853590824": {
         "id": "godoy", "n": "Eduardo Faria de Godoy",
-        "cat": "Serviços PJ", "st": "Não orçado", "sc": "bgr",
+        "cat": "Pessoal", "st": "Não orçado", "sc": "bgr",
     },
     "EDUARDO FARIA DE GODOY": {
         "id": "godoy", "n": "Eduardo Faria de Godoy",
-        "cat": "Serviços PJ", "st": "Não orçado", "sc": "bgr",
+        "cat": "Pessoal", "st": "Não orçado", "sc": "bgr",
     },
     "EP SERVIÇOS DE TECNOLOGIA LTDA": {
         "id": "ep", "n": "EP Serviços Tecnologia",
@@ -281,10 +281,20 @@ KNOWN_SUPPLIERS: dict[str, dict] = {
         "cat": "Software", "st": "Recorrente", "sc": "bga",
     },
 
-    # ── Reembolsos ───────────────────────────────────────────────────
+    # ── Pessoal — prestadores PJ (classificação gerencial) ───────────
+    # Contam como "Despesas com pessoal" no reporte do Leandro (não folha
+    # CLT). Mesmo grupo no DRE (desp_pessoal) e na aba Gastos (cat Pessoal).
     "ISABEL FELIX": {
         "id": "isabel", "n": "Isabel Felix",
-        "cat": "Reembolsos", "st": "Reembolso", "sc": "bga",
+        "cat": "Pessoal", "st": "Reembolso", "sc": "bga",
+    },
+    "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL": {
+        "id": "alan", "n": "Alan Barbosa",
+        "cat": "Pessoal", "st": "Recorrente", "sc": "bgr",
+    },
+    "ALAN BARBOSA": {
+        "id": "alan", "n": "Alan Barbosa",
+        "cat": "Pessoal", "st": "Recorrente", "sc": "bgr",
     },
 }
 
@@ -293,15 +303,16 @@ KNOWN_SUPPLIERS: dict[str, dict] = {
 # em Tributos, Parceria TOTVS, Aporte e Outros (resíduo).
 STACK_GROUPS = [
     {"label": "Buy-out",     "ids": ["romulo"]},
-    {"label": "Serv. PJ",    "ids": ["efata", "milajanu", "macedo", "ep",
-                                     "godoy", "vtconn", "victor", "plentech",
+    {"label": "Pessoal",     "ids": ["alan", "isabel", "macedo", "efata",
+                                     "milajanu", "godoy"]},
+    {"label": "Serv. PJ",    "ids": ["ep", "vtconn", "victor", "plentech",
                                      "cralus"]},
     {"label": "Tributos",    "ids": ["irpj", "csll", "serrano", "receita",
                                      "prefeitura", "municipio_sbc"]},
     {"label": "Parc. TOTVS", "ids": ["totvs"]},
     {"label": "Aporte",      "ids": ["polar"]},
     {"label": "Outros",      "ids": ["geremias", "cartao", "ivy", "cbyk",
-                                     "lwsa", "isabel", "_outros"]},
+                                     "lwsa", "_outros"]},
 ]
 
 
