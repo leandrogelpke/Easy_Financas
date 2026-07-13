@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-07-13 09:43:55",
+    "fetched_at": "2026-07-13 14:23:57",
     "today": "2026-07-13"
   },
   "categorias": [
@@ -2619,26 +2619,6 @@
       "portador_id": 14892107625
     },
     {
-      "id": 25500461196,
-      "situacao_codigo": 1,
-      "situacao": "Em aberto",
-      "vencimento": "2026-07-20",
-      "vencimento_original": "2026-07-20",
-      "data_emissao": "2026-04-07",
-      "competencia": "2026-07-07",
-      "valor": "6500,00",
-      "saldo": "6500,00",
-      "numero_documento": "",
-      "historico": "PREVISÃO",
-      "contato_id": 17358962597,
-      "contato_nome": "Eduardo Faria de Godoy 29853590824",
-      "contato_documento": "31968032000109",
-      "categoria_id": 14737459294,
-      "categoria_descricao": "Salários Operação",
-      "categoria_tipo": 1,
-      "portador_id": 14892107625
-    },
-    {
       "id": 25500461219,
       "situacao_codigo": 1,
       "situacao": "Em aberto",
@@ -2793,8 +2773,8 @@
       "contato_id": 16593154786,
       "contato_nome": "M. DE Q. MACEDO - EPP",
       "contato_documento": "29137740000156",
-      "categoria_id": 14665159865,
-      "categoria_descricao": "Serviços de terceiros",
+      "categoria_id": 14737459294,
+      "categoria_descricao": "Salários Operação",
       "categoria_tipo": 1,
       "portador_id": 14892107625
     },
@@ -3253,8 +3233,8 @@
       "contato_id": 16593154786,
       "contato_nome": "M. DE Q. MACEDO - EPP",
       "contato_documento": "29137740000156",
-      "categoria_id": 14665159865,
-      "categoria_descricao": "Serviços de terceiros",
+      "categoria_id": 14737459294,
+      "categoria_descricao": "Salários Operação",
       "categoria_tipo": 1,
       "portador_id": 14892107625
     },
@@ -3573,9 +3553,29 @@
       "contato_id": 17144642941,
       "contato_nome": "CRALUS INFORMATICA LTDA",
       "contato_documento": "13211001000127",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
+      "categoria_id": 14737459393,
+      "categoria_descricao": "Hosting/Sistemas",
+      "categoria_tipo": 1,
+      "portador_id": 14892107625
+    },
+    {
+      "id": 26318870677,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-07-20",
+      "vencimento_original": "2026-07-20",
+      "data_emissao": "2026-07-13",
+      "competencia": "2026-07-10",
+      "valor": "6500,00",
+      "saldo": "6500,00",
+      "numero_documento": "000059/01",
+      "historico": "Ref. a NF nº 000059",
+      "contato_id": 17358962597,
+      "contato_nome": "Eduardo Faria de Godoy 29853590824",
+      "contato_documento": "31968032000109",
+      "categoria_id": 14665159865,
+      "categoria_descricao": "Serviços de terceiros",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     }
   ],
