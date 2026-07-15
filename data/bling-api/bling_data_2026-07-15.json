@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-07-15 14:00:39",
+    "fetched_at": "2026-07-15 17:20:16",
     "today": "2026-07-15"
   },
   "categorias": [
@@ -1791,6 +1791,12 @@
       "tipo": "F"
     },
     {
+      "id": 18212379643,
+      "nome": "LUIZ HENRIQUE AQUINO",
+      "numeroDocumento": "34554668851",
+      "tipo": "F"
+    },
+    {
       "id": 18234904217,
       "nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "numeroDocumento": "39741876000124",
@@ -3559,22 +3565,42 @@
       "portador_id": 14892107625
     },
     {
-      "id": 26337678407,
+      "id": 26341704579,
       "situacao_codigo": 1,
       "situacao": "Em aberto",
-      "vencimento": "2026-07-27",
-      "vencimento_original": "2026-07-27",
+      "vencimento": "2026-07-24",
+      "vencimento_original": "2026-07-24",
       "data_emissao": "2026-07-15",
       "competencia": "2026-07-15",
       "valor": "161,58",
       "saldo": "161,58",
       "numero_documento": "",
-      "historico": "REEMBOLSO LUIZ HENRIQUE LEITE DE AQUINO",
-      "contato_id": 17481162508,
-      "contato_nome": "EFATA TREINAMENTO EM TECNOLOGIA LTDA",
-      "contato_documento": "60829669000112",
-      "categoria_id": 14734483888,
-      "categoria_descricao": "2010000008 - REEMBOLSOS KM",
+      "historico": "REEMBOLSO RESCISÃO DO CONTRATO DE ESTACIONAMENTO COM A TOTVS",
+      "contato_id": 18212379643,
+      "contato_nome": "LUIZ HENRIQUE AQUINO",
+      "contato_documento": "34554668851",
+      "categoria_id": 0,
+      "categoria_descricao": "",
+      "categoria_tipo": "",
+      "portador_id": 14892107625
+    },
+    {
+      "id": 26342723451,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-07-20",
+      "vencimento_original": "2026-07-20",
+      "data_emissao": "2026-07-15",
+      "competencia": "2026-07-02",
+      "valor": "785,00",
+      "saldo": "785,00",
+      "numero_documento": "011004/01",
+      "historico": "Ref. a NF nº 011004",
+      "contato_id": 16547098383,
+      "contato_nome": "SERRANO CONTABILIDADE LIMITADA",
+      "contato_documento": "11048310000100",
+      "categoria_id": 14665159864,
+      "categoria_descricao": "Serviços contábeis",
       "categoria_tipo": 1,
       "portador_id": 14892107625
     }
