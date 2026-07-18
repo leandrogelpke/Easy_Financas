@@ -1,0 +1,38 @@
+{
+  "run": {
+    "workflow": "update",
+    "agente": "principal",
+    "trigger": "schedule",
+    "run_id": "29659082156",
+    "run_number": "149",
+    "run_url": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/29659082156",
+    "started_at_utc": "2026-07-18 20:07:00",
+    "ended_at_utc": "2026-07-18 20:09:55",
+    "ended_at_brt": "2026-07-18 17:09:55",
+    "duration_s": 175
+  },
+  "steps": {
+    "fetch": "success",
+    "token_refresh": "rotated_saved",
+    "build": "success",
+    "gate_test_audit": "success",
+    "gate_test_build": "success",
+    "precommit": "success",
+    "push": "success"
+  },
+  "records": {
+    "snapshot_file": "bling_data_2026-07-18.json",
+    "fetched_at": "2026-07-18 17:09:45",
+    "total": 318,
+    "contas_pagar_em_aberto": 89,
+    "contas_pagar_pagas": 135,
+    "contas_receber_em_aberto": 17,
+    "contas_receber_recebidas": 77,
+    "categorias": 219,
+    "contatos": 45
+  },
+  "commit_hash": "c4034c834a52eaa40dbf58ebef8bcef86e582f96",
+  "warnings": [],
+  "errors": [],
+  "ok": true
+}
