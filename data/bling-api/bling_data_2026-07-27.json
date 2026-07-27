@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-07-27 14:26:54",
+    "fetched_at": "2026-07-27 17:43:38",
     "today": "2026-07-27"
   },
   "categorias": [
@@ -1807,6 +1807,12 @@
       "id": 18234904217,
       "nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "numeroDocumento": "39741876000124",
+      "tipo": "J"
+    },
+    {
+      "id": 18288350760,
+      "nome": "Atlantis Distribuidora de Produtos de Higiene Ltda",
+      "numeroDocumento": "55633304000188",
       "tipo": "J"
     }
   ],
@@ -3688,6 +3694,66 @@
       "contato_id": 16605292185,
       "contato_nome": "TOTVS S.A.",
       "contato_documento": "53113791000122",
+      "categoria_id": "",
+      "categoria_descricao": "",
+      "categoria_tipo": "",
+      "portador_id": ""
+    },
+    {
+      "id": 26438068438,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-07-28",
+      "vencimento_original": "",
+      "data_emissao": "2026-07-27",
+      "competencia": "",
+      "valor": "3832,21",
+      "saldo": "",
+      "numero_documento": "",
+      "historico": "",
+      "contato_id": 18288350760,
+      "contato_nome": "Atlantis Distribuidora de Produtos de Higiene Ltda",
+      "contato_documento": "55633304000188",
+      "categoria_id": "",
+      "categoria_descricao": "",
+      "categoria_tipo": "",
+      "portador_id": ""
+    },
+    {
+      "id": 26438068480,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-08-26",
+      "vencimento_original": "",
+      "data_emissao": "2026-07-27",
+      "competencia": "",
+      "valor": "3832,21",
+      "saldo": "",
+      "numero_documento": "",
+      "historico": "",
+      "contato_id": 18288350760,
+      "contato_nome": "Atlantis Distribuidora de Produtos de Higiene Ltda",
+      "contato_documento": "55633304000188",
+      "categoria_id": "",
+      "categoria_descricao": "",
+      "categoria_tipo": "",
+      "portador_id": ""
+    },
+    {
+      "id": 26438068520,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-09-25",
+      "vencimento_original": "",
+      "data_emissao": "2026-07-27",
+      "competencia": "",
+      "valor": "3832,21",
+      "saldo": "",
+      "numero_documento": "",
+      "historico": "",
+      "contato_id": 18288350760,
+      "contato_nome": "Atlantis Distribuidora de Produtos de Higiene Ltda",
+      "contato_documento": "55633304000188",
       "categoria_id": "",
       "categoria_descricao": "",
       "categoria_tipo": "",
