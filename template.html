@@ -175,6 +175,24 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 @media(max-width:760px){.dre-detail-grid{grid-template-columns:1fr}}
 .dre-row:hover{background:var(--s2)!important;transition:background .12s}
 @media(max-width:560px){.g5{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}.htitle{font-size:18px}}
+
+/* ── PLAN. CAIXA — CSS ── */
+.cat-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:500;font-family:var(--mono);cursor:pointer;transition:all .15s;white-space:nowrap;user-select:none;-webkit-user-select:none}
+.cat-fixo{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-br)}
+.cat-var{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-br)}
+.cat-elim{background:var(--red-bg);color:var(--red);border:1px solid var(--red-br)}
+.plan-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--bd);transition:all .15s;border-radius:6px}
+.plan-row:last-child{border-bottom:none}
+.plan-row.elim{opacity:.35}
+.plan-row:hover{background:var(--s2)}
+.plan-nome{flex:1;font-size:12px;font-weight:500;color:var(--t1);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plan-valor{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--t1);width:90px;text-align:right;flex-shrink:0}
+.plan-valor.red{color:var(--red)}.plan-valor.green{color:var(--green)}
+.plan-vig{font-family:var(--mono);font-size:10px;color:var(--t3);width:80px;text-align:center;flex-shrink:0}
+.cycle-btn{background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;flex-shrink:0}
+.scen-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.scen-tab{padding:5px 14px;border-radius:999px;font-size:11px;font-family:var(--mono);font-weight:500;cursor:pointer;border:1px solid var(--bd);background:var(--s2);color:var(--t2);transition:all .15s;user-select:none;-webkit-user-select:none;white-space:nowrap}
+.scen-tab.active{background:var(--blue);border-color:var(--blue);color:#fff}
 </style>
 </head>
 <body>
