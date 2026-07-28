@@ -1931,16 +1931,20 @@ projDreRender();
 var PLAN_STORAGE='ea_plan_v4';
 
 var PLAN_DESPS=[
-  {id:'milajanu',n:'Milajanu Consultoria TI',   valor:24617, cat:'fixo', vigFim:null,     obs:'Consultoria TI'},
   {id:'macedo',  n:'M. de Q. Macedo — EPP',     valor:23000, cat:'fixo', vigFim:null,     obs:'Serviços PJ'},
+  {id:'cartao',  n:'Cartão de crédito',         valor:12362, cat:'fixo', vigFim:null,     obs:'Média jun/26 — Hosting/Sistemas'},
   {id:'ep',      n:'EP Serviços de Tecnologia', valor:10556, cat:'fixo', vigFim:null,     obs:'TI / Sistemas'},
   {id:'geremias',n:'Geremias Ferreira Lima',    valor:10000, cat:'fixo', vigFim:'ago/27', obs:'Encerra ago/27'},
+  {id:'isabel',  n:'Isabel Felix',              valor:10000, cat:'fixo', vigFim:null,     obs:'Salário R$8K + comissão ~R$2K/mês'},
   {id:'godoy',   n:'Eduardo Faria de Godoy',    valor:6500,  cat:'fixo', vigFim:null,     obs:'Serviços PJ'},
-  {id:'cartao',  n:'Cartão de crédito',         valor:7036,  cat:'fixo', vigFim:null,     obs:'Sistemas e hosting'},
   {id:'irpj',    n:'IRPJ + CSLL',              valor:6562,  cat:'fixo', vigFim:null,     obs:'~7,7% da receita'},
-  {id:'outros',  n:'Outros (Bling, ISS, adm.)', valor:3500,  cat:'fixo', vigFim:null,     obs:'Despesas adm.'},
+  {id:'outros',  n:'Outros (ISS, adm.)',        valor:3500,  cat:'fixo', vigFim:null,     obs:'Despesas adm.'},
+  {id:'cralus',  n:'Cralus Informática',        valor:938,   cat:'fixo', vigFim:null,     obs:'TI recorrente'},
+  {id:'serrano', n:'Serrano Contabilidade',     valor:785,   cat:'fixo', vigFim:null,     obs:'Honorários contábeis'},
+  {id:'lwsa',    n:'LWSA (Bling)',              valor:120,   cat:'fixo', vigFim:null,     obs:'Software recorrente'},
   {id:'efata',   n:'Efata Treinamento',         valor:35000, cat:'spot', vigFim:null,     obs:'Decisão pendente'},
   {id:'romulo',  n:'Rômulo Lima — buy-out',     valor:59814, cat:'elim', vigFim:'jun/26', obs:'ENCERRADO jun/26'},
+  {id:'milajanu',n:'Milajanu Consultoria TI',   valor:24617, cat:'elim', vigFim:'abr/26', obs:'Encerrou mai/26'},
   {id:'ivy',     n:'IVY Group Holding',         valor:10521, cat:'spot', vigFim:null,     obs:'Identificar contrato'},
   {id:'cbyk',    n:'CBYK Consultoria',          valor:5523,  cat:'spot', vigFim:null,     obs:'Identificar contrato'},
   {id:'vtconn',  n:'Vtconn Consultoria',        valor:5410,  cat:'elim', vigFim:'abr/26', obs:'Encerrou abr/26'},
@@ -2232,22 +2236,26 @@ function pfLoadState(){
 // ── PLAN. CAIXA (PF JS) ──
 // vigFim: mês de encerramento (null = indefinido)
 var PF_DESPS=[
-  {id:'milajanu', n:'Milajanu Consultoria TI',   valor:24617, cat:'fixo', vigFim:null,  obs:'Consultoria TI recorrente'},
-  {id:'macedo',   n:'M. de Q. Macedo — EPP',      valor:23000, cat:'fixo', vigFim:null,  obs:'Serviços PJ'},
-  {id:'ep',       n:'EP Serviços de Tecnologia',  valor:10556, cat:'fixo', vigFim:null,  obs:'TI / Sistemas'},
-  {id:'geremias', n:'Geremias Ferreira Lima',     valor:10000, cat:'fixo', vigFim:'ago/27',obs:'Acordo trabalhista'},
-  {id:'godoy',    n:'Eduardo Faria de Godoy',     valor:6500,  cat:'fixo', vigFim:null,  obs:'Serviços PJ'},
-  {id:'cartao',   n:'Cartão de crédito',          valor:7036,  cat:'fixo', vigFim:null,  obs:'Sistemas e hosting'},
-  {id:'irpj',     n:'IRPJ + CSLL (mensal)',       valor:6562,  cat:'fixo', vigFim:null,  obs:'Imposto direto ~7,7% receita'},
-  {id:'outros',   n:'Outros (Bling, ISS, adm.)',  valor:3500,  cat:'fixo', vigFim:null,  obs:'Despesas administrativas'},
+  {id:'macedo',   n:'M. de Q. Macedo — EPP',      valor:23000, cat:'fixo', vigFim:null,      obs:'Serviços PJ'},
+  {id:'cartao',   n:'Cartão de crédito',          valor:12362, cat:'fixo', vigFim:null,      obs:'Média jun/26 — Hosting/Sistemas'},
+  {id:'ep',       n:'EP Serviços de Tecnologia',  valor:10556, cat:'fixo', vigFim:null,      obs:'TI / Sistemas'},
+  {id:'geremias', n:'Geremias Ferreira Lima',     valor:10000, cat:'fixo', vigFim:'ago/27',  obs:'Acordo trabalhista'},
+  {id:'isabel',   n:'Isabel Felix',               valor:10000, cat:'fixo', vigFim:null,      obs:'Salário R$8K + comissão ~R$2K/mês'},
+  {id:'godoy',    n:'Eduardo Faria de Godoy',     valor:6500,  cat:'fixo', vigFim:null,      obs:'Serviços PJ'},
+  {id:'irpj',     n:'IRPJ + CSLL (mensal)',       valor:6562,  cat:'fixo', vigFim:null,      obs:'Imposto direto ~7,7% receita'},
+  {id:'outros',   n:'Outros (ISS, adm.)',         valor:3500,  cat:'fixo', vigFim:null,      obs:'Despesas administrativas'},
+  {id:'cralus',   n:'Cralus Informática',         valor:938,   cat:'fixo', vigFim:null,      obs:'TI recorrente'},
+  {id:'serrano',  n:'Serrano Contabilidade',      valor:785,   cat:'fixo', vigFim:null,      obs:'Honorários contábeis'},
+  {id:'lwsa',     n:'LWSA (Bling)',               valor:120,   cat:'fixo', vigFim:null,      obs:'Software recorrente'},
   // SPOT — encerram
-  {id:'romulo',   n:'Rômulo Lima — buy-out',      valor:59814, cat:'elim', vigFim:'jun/26',obs:'ENCERRADO em jun/26'},
-  {id:'efata',    n:'Efata Treinamento',           valor:35000, cat:'var',  vigFim:null,  obs:'Decisão pendente — renegociar?'},
-  {id:'vtconn',   n:'Vtconn Consultoria',         valor:5410,  cat:'elim', vigFim:'mar/26',obs:'Encerrou abr/26'},
-  {id:'victor',   n:'Victor Hugo de Oliveira',    valor:3333,  cat:'elim', vigFim:'mar/26',obs:'Encerrou abr/26'},
-  {id:'ivy',      n:'IVY Group Holding',          valor:10521, cat:'var',  vigFim:null,  obs:'Identificar contrato'},
-  {id:'cbyk',     n:'CBYK Consultoria',           valor:5523,  cat:'var',  vigFim:null,  obs:'Identificar contrato'},
-  {id:'polar',    n:'Polar Técnica (aporte?)',    valor:0,     cat:'var',  vigFim:null,  obs:'Classificar com contador'}
+  {id:'milajanu', n:'Milajanu Consultoria TI',   valor:24617, cat:'elim', vigFim:'abr/26',  obs:'Encerrou mai/26'},
+  {id:'romulo',   n:'Rômulo Lima — buy-out',      valor:59814, cat:'elim', vigFim:'jun/26',  obs:'ENCERRADO em jun/26'},
+  {id:'efata',    n:'Efata Treinamento',           valor:35000, cat:'var',  vigFim:null,      obs:'Decisão pendente — renegociar?'},
+  {id:'vtconn',   n:'Vtconn Consultoria',         valor:5410,  cat:'elim', vigFim:'mar/26',  obs:'Encerrou abr/26'},
+  {id:'victor',   n:'Victor Hugo de Oliveira',    valor:3333,  cat:'elim', vigFim:'mar/26',  obs:'Encerrou abr/26'},
+  {id:'ivy',      n:'IVY Group Holding',          valor:10521, cat:'var',  vigFim:null,      obs:'Identificar contrato'},
+  {id:'cbyk',     n:'CBYK Consultoria',           valor:5523,  cat:'var',  vigFim:null,      obs:'Identificar contrato'},
+  {id:'polar',    n:'Polar Técnica (aporte?)',    valor:0,     cat:'var',  vigFim:null,      obs:'Classificar com contador'}
 ];
 
 // Novas contratações — sempre visíveis, ativadas por cenário
