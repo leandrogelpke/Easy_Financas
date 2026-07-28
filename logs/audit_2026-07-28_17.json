@@ -1,16 +1,22 @@
 {
-  "generated_at_brt": "2026-07-28 17:15:38",
+  "generated_at_brt": "2026-07-28 17:26:20",
   "auditor": "ci_auditor.py",
   "target_update_log": "update_2026-07-28_17.json",
   "upstream_conclusion": "success",
   "summary": {
-    "error": 0,
+    "error": 1,
     "warn": 0,
     "info": 0,
-    "ok": 12
+    "ok": 11
   },
-  "ok": true,
+  "ok": false,
   "findings": [
+    {
+      "check": "push_pages",
+      "severity": "error",
+      "detail": "Push não confirmado (status=failure).",
+      "recommendation": "Conferir permissão contents:write e conflito de push."
+    },
     {
       "check": "fetch_bling",
       "severity": "ok",
@@ -48,12 +54,6 @@
       "recommendation": ""
     },
     {
-      "check": "push_pages",
-      "severity": "ok",
-      "detail": "Publicado. Commit a74820c01331b9ca2d92c983307a600be9975f27.",
-      "recommendation": ""
-    },
-    {
       "check": "dados_nome_vazio",
       "severity": "ok",
       "detail": "Nomes de contato preenchidos (320/320).",
@@ -84,10 +84,12 @@
       "recommendation": ""
     }
   ],
-  "recommendations": [],
+  "recommendations": [
+    "Conferir permissão contents:write e conflito de push."
+  ],
   "links": {
     "dashboard": "https://leandrogelpke.github.io/Easy_Financas/",
-    "audit_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/30395536572",
-    "update_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/30395277399"
+    "audit_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/30396316516",
+    "update_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/30396059445"
   }
 }
