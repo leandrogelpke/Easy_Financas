@@ -1,8 +1,8 @@
 {
-  "generated_at_brt": "2026-07-28 17:26:20",
+  "generated_at_brt": "2026-07-28 17:29:28",
   "auditor": "ci_auditor.py",
   "target_update_log": "update_2026-07-28_17.json",
-  "upstream_conclusion": "success",
+  "upstream_conclusion": "failure",
   "summary": {
     "error": 1,
     "warn": 0,
@@ -89,7 +89,7 @@
   ],
   "links": {
     "dashboard": "https://leandrogelpke.github.io/Easy_Financas/",
-    "audit_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/30396316516",
-    "update_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/30396059445"
+    "audit_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/30396541206",
+    "update_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/30396114196"
   }
 }
