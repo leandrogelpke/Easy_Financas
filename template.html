@@ -830,11 +830,11 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 ════════════════════ -->
 <div class="sl">Cenário de equipe — selecione para projetar</div>
 <div class="scen-tabs">
-  <div class="scen-tab active" onclick="setScenario('base')" id="pfScBase">Base (sem Alan e sem Marcão)</div>
-  <div class="scen-tab" onclick="setScenario('alan')" id="pfScAlan">+ Alan (R$ 22K/mês)</div>
-  <div class="scen-tab" onclick="setScenario('alan_marcao')" id="pfScAlanMarcao">+ Alan + Marcão (R$ 22K + R$ 15K)</div>
-  <div class="scen-tab" onclick="setScenario('sem_macedo')" id="pfScSemMacedo">Base sem Macedo</div>
-  <div class="scen-tab" onclick="setScenario('alan_sem_macedo')" id="pfScAlanSemMacedo">+ Alan sem Macedo</div>
+  <div class="scen-tab active" onclick="pfSetScenario('base')" id="pfSc-base">Base (sem Alan e sem Marcão)</div>
+  <div class="scen-tab" onclick="pfSetScenario('alan')" id="pfSc-alan">+ Alan (R$ 22K/mês)</div>
+  <div class="scen-tab" onclick="pfSetScenario('alan_marcao')" id="pfSc-alan_marcao">+ Alan + Marcão (R$ 22K + R$ 15K)</div>
+  <div class="scen-tab" onclick="pfSetScenario('sem_macedo')" id="pfSc-sem_macedo">Base sem Macedo</div>
+  <div class="scen-tab" onclick="pfSetScenario('alan_sem_macedo')" id="pfSc-alan_sem_macedo">+ Alan sem Macedo</div>
 </div>
 
 <!-- KPIs dinâmicos -->
@@ -2275,10 +2275,10 @@ var PF_RECS=[
   {id:'vetor',   n:'Vetor Editora (pipeline)', valor:7500,  cat:'var',  obs:'Em avaliação'}
 ];
 
-var PF_PF_SCENARIO='base';
-var PF_PF_CAT_LABELS={fixo:'Fixo',var:'Variável',elim:'Eliminar'};
-var PF_PF_CAT_NEXT={fixo:'var',var:'elim',elim:'fixo'};
-var PF_PF_CAT_CLASS={fixo:'cat-fixo',var:'cat-var',elim:'cat-elim'};
+var PF_SCENARIO='base';
+var PF_CAT_LABELS={fixo:'Fixo',var:'Variável',elim:'Eliminar'};
+var PF_CAT_NEXT={fixo:'var',var:'elim',elim:'fixo'};
+var PF_CAT_CLASS={fixo:'cat-fixo',var:'cat-var',elim:'cat-elim'};
 
 pfLoadState();
 
@@ -2320,8 +2320,8 @@ function pfRenderList(containerId,list,type){
       '<div class="plan-nome" style="'+nomeCor+'" title="'+item.obs+'">'+item.n+'</div>'
       +'<div class="plan-vig" style="font-size:9.5px">'+(item.vigFim||item.obs||'')+'</div>'
       +'<div class="plan-valor '+(type==='rec'?'green':'red')+'">'+fBR(item.valor)+'</div>'
-      +'<button class="cycle-btn" onclick="cycleCat('+
-        (type==='novas'?'NOVAS':'type==="rec"?PF_RECS:PF_DESPS')
+      +'<button class="cycle-btn" onclick="pfCycleCat('+
+        (type==='novas'?'PF_NOVAS':type==='rec'?'PF_RECS':'PF_DESPS')
         +','+i+')">'
       +'<span class="cat-pill '+catClass+'">'+PF_CAT_LABELS[item.cat]+'</span></button>';
     el.appendChild(row);
@@ -2496,9 +2496,9 @@ function pfRender(){
   document.getElementById('pfKvProgSub').textContent=prog>0?'disponível para contratar programação':'sem margem no cenário atual';
 
   // Lists
-  pfRenderList('despList',DESPS,'desp');
-  pfRenderList('novasList',NOVAS,'novas');
-  pfRenderList('recList',RECS,'rec');
+  pfRenderList('pfDespList',PF_DESPS,'desp');
+  pfRenderList('pfNovasList',PF_NOVAS,'novas');
+  pfRenderList('pfRecList',PF_RECS,'rec');
 
   // Totals DESP
   var df=0,dv=0,de=0;
@@ -2545,7 +2545,7 @@ window.pfCycleCat=function(arr,i){
 
 // Corrigir onclick nos botões dinamicamente
 window.pfCycleDespCat=function(i){PF_DESPS[i].cat=PF_CAT_NEXT[PF_DESPS[i].cat];pfSaveState();pfRender();};
-window.pfCycleRecCat=function(i){RECS[i].cat=PF_CAT_NEXT[RECS[i].cat];pfSaveState();pfRender();};
+window.pfCycleRecCat=function(i){PF_RECS[i].cat=PF_CAT_NEXT[PF_RECS[i].cat];pfSaveState();pfRender();};
 window.pfCycleNovasCat=function(i){PF_NOVAS[i].cat=PF_CAT_NEXT[PF_NOVAS[i].cat];pfSaveState();pfRender();};
 
 // Re-render list com onclick correto
