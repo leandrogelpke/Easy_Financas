@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-08-02 08:34:54",
+    "fetched_at": "2026-08-02 13:12:44",
     "today": "2026-08-02"
   },
   "categorias": [
@@ -5678,26 +5678,6 @@
       "portador_id": 14892107625
     },
     {
-      "id": 22693745505,
-      "situacao_codigo": 2,
-      "situacao": "Paga",
-      "vencimento": "2026-03-20",
-      "vencimento_original": "2026-03-17",
-      "data_emissao": "2026-03-01",
-      "competencia": "2026-03-01",
-      "valor": "423,42",
-      "saldo": "0,00",
-      "numero_documento": "",
-      "historico": "DCTFWEB - FEV/2026",
-      "contato_id": 16925497223,
-      "contato_nome": "RECEITA FEDERAL",
-      "contato_documento": "",
-      "categoria_id": 0,
-      "categoria_descricao": "",
-      "categoria_tipo": "",
-      "portador_id": 14892107625
-    },
-    {
       "id": 22827566771,
       "situacao_codigo": 2,
       "situacao": "Paga",
@@ -5809,6 +5789,26 @@
       "saldo": "0,00",
       "numero_documento": "",
       "historico": "DCTFWEB - ABRIL/2026",
+      "contato_id": 16925497223,
+      "contato_nome": "RECEITA FEDERAL",
+      "contato_documento": "",
+      "categoria_id": 0,
+      "categoria_descricao": "",
+      "categoria_tipo": "",
+      "portador_id": 14892107625
+    },
+    {
+      "id": 22693745505,
+      "situacao_codigo": 2,
+      "situacao": "Paga",
+      "vencimento": "2026-03-20",
+      "vencimento_original": "2026-03-17",
+      "data_emissao": "2026-03-01",
+      "competencia": "2026-03-01",
+      "valor": "423,42",
+      "saldo": "0,00",
+      "numero_documento": "",
+      "historico": "DCTFWEB - FEV/2026",
       "contato_id": 16925497223,
       "contato_nome": "RECEITA FEDERAL",
       "contato_documento": "",
