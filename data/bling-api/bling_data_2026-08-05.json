@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-08-05 13:51:33",
+    "fetched_at": "2026-08-05 14:15:36",
     "today": "2026-08-05"
   },
   "categorias": [
@@ -3452,6 +3452,26 @@
       "categoria_descricao": "Hosting/Sistemas",
       "categoria_tipo": 1,
       "portador_id": 14890076957
+    },
+    {
+      "id": 26518351457,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-08-17",
+      "vencimento_original": "2026-08-17",
+      "data_emissao": "2026-08-05",
+      "competencia": "2026-08-03",
+      "valor": "684,00",
+      "saldo": "684,00",
+      "numero_documento": "005976/01",
+      "historico": "Ref. a NF nº 005976",
+      "contato_id": 17532272445,
+      "contato_nome": "SAO PAULO MARCAS E PATENTES LTDA",
+      "contato_documento": "48791313000131",
+      "categoria_id": 0,
+      "categoria_descricao": "",
+      "categoria_tipo": "",
+      "portador_id": 14892107625
     }
   ],
   "contas_receber_em_aberto": [
