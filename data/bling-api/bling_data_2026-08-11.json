@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-08-11 13:43:06",
+    "fetched_at": "2026-08-11 17:06:15",
     "today": "2026-08-11"
   },
   "categorias": [
@@ -1823,12 +1823,12 @@
       "id": 24771251808,
       "situacao_codigo": 1,
       "situacao": "Em aberto",
-      "vencimento": "2026-08-15",
+      "vencimento": "2026-08-17",
       "vencimento_original": "2026-08-15",
       "data_emissao": "2026-01-07",
       "competencia": "2026-08-05",
-      "valor": "10918,27",
-      "saldo": "10918,27",
+      "valor": "1016,29",
+      "saldo": "1016,29",
       "numero_documento": "",
       "historico": "CARTÃO DE CREDITO - DÉBITO AUTOMATICO",
       "contato_id": 16596986114,
@@ -3518,6 +3518,26 @@
       "categoria_descricao": "Serviços de terceiros",
       "categoria_tipo": 1,
       "portador_id": 14892107625
+    },
+    {
+      "id": 26576381435,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-08-17",
+      "vencimento_original": "2026-08-17",
+      "data_emissao": "2026-08-11",
+      "competencia": "2026-08-11",
+      "valor": "22,95",
+      "saldo": "22,95",
+      "numero_documento": "",
+      "historico": "CUSTOS TRANS. EXTERIOR - IOF",
+      "contato_id": 16596986114,
+      "contato_nome": "CARTAO DE CREDITO",
+      "contato_documento": "",
+      "categoria_id": 14672839295,
+      "categoria_descricao": "IOF",
+      "categoria_tipo": 1,
+      "portador_id": 14890076957
     }
   ],
   "contas_receber_em_aberto": [
