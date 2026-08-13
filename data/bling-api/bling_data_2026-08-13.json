@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-08-13 08:11:45",
+    "fetched_at": "2026-08-13 13:09:00",
     "today": "2026-08-13"
   },
   "categorias": [
@@ -1796,12 +1796,6 @@
       "nome": "ISABEL CRISTINA FELIX DA SILVA ME",
       "numeroDocumento": "13209832000164",
       "tipo": "J"
-    },
-    {
-      "id": 18324171549,
-      "nome": "HOSTGATOR BRASIL LTDA.",
-      "numeroDocumento": "15754475000140",
-      "tipo": "J"
     }
   ],
   "contas_pagar_em_aberto": [
@@ -2382,26 +2376,6 @@
       "contato_documento": "",
       "categoria_id": 14665159843,
       "categoria_descricao": "Impostos sobre vendas",
-      "categoria_tipo": 1,
-      "portador_id": 14892107625
-    },
-    {
-      "id": 25500441677,
-      "situacao_codigo": 1,
-      "situacao": "Em aberto",
-      "vencimento": "2026-08-20",
-      "vencimento_original": "2026-08-20",
-      "data_emissao": "2026-04-07",
-      "competencia": "2026-08-07",
-      "valor": "785,00",
-      "saldo": "785,00",
-      "numero_documento": "",
-      "historico": "HONORÁRIOS CONTABÉS - PREVISÃO",
-      "contato_id": 16547098383,
-      "contato_nome": "SERRANO CONTABILIDADE LIMITADA",
-      "contato_documento": "11048310000100",
-      "categoria_id": 14665159864,
-      "categoria_descricao": "Serviços contábeis",
       "categoria_tipo": 1,
       "portador_id": 14892107625
     },
@@ -3546,22 +3520,22 @@
       "portador_id": 14890076957
     },
     {
-      "id": 26587885459,
+      "id": 26594163613,
       "situacao_codigo": 1,
       "situacao": "Em aberto",
-      "vencimento": "2026-08-15",
-      "vencimento_original": "2026-08-15",
-      "data_emissao": "2026-08-12",
-      "competencia": "2026-08-06",
-      "valor": "132,78",
-      "saldo": "132,78",
-      "numero_documento": "4294403/01",
-      "historico": "Ref. a NF nº 4294403",
-      "contato_id": 18324171549,
-      "contato_nome": "HOSTGATOR BRASIL LTDA.",
-      "contato_documento": "15754475000140",
-      "categoria_id": 14737459393,
-      "categoria_descricao": "Hosting/Sistemas",
+      "vencimento": "2026-08-20",
+      "vencimento_original": "2026-08-20",
+      "data_emissao": "2026-08-13",
+      "competencia": "2026-08-07",
+      "valor": "785,00",
+      "saldo": "785,00",
+      "numero_documento": "011313/01",
+      "historico": "Ref. a NF nº 011313",
+      "contato_id": 16547098383,
+      "contato_nome": "SERRANO CONTABILIDADE LIMITADA",
+      "contato_documento": "11048310000100",
+      "categoria_id": 14734483903,
+      "categoria_descricao": "2010000023 - HONORARIOS CONTABEIS",
       "categoria_tipo": 1,
       "portador_id": 14892107625
     }
