@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-08-19 13:14:29",
+    "fetched_at": "2026-08-19 16:38:11",
     "today": "2026-08-19"
   },
   "categorias": [
@@ -3396,6 +3396,46 @@
       "contato_documento": "39741876000124",
       "categoria_id": 14734483888,
       "categoria_descricao": "2010000008 - REEMBOLSOS KM",
+      "categoria_tipo": 1,
+      "portador_id": 14892107625
+    },
+    {
+      "id": 26647597842,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-08-31",
+      "vencimento_original": "2026-08-31",
+      "data_emissao": "2026-08-19",
+      "competencia": "2026-08-19",
+      "valor": "2021,32",
+      "saldo": "2021,32",
+      "numero_documento": "",
+      "historico": "IRPJ - LUCRO PRESUMIDO - 2º TRIMETRE/2026 - 07/2026",
+      "contato_id": 16681427358,
+      "contato_nome": "IRPJ",
+      "contato_documento": "",
+      "categoria_id": 14738278779,
+      "categoria_descricao": "IRPJ",
+      "categoria_tipo": 1,
+      "portador_id": 14892107625
+    },
+    {
+      "id": 26647603687,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-08-31",
+      "vencimento_original": "2026-08-31",
+      "data_emissao": "2026-08-19",
+      "competencia": "2026-08-19",
+      "valor": "1151,53",
+      "saldo": "1151,53",
+      "numero_documento": "",
+      "historico": "CSLL - DEMAIS - 2º TRIMETRE/2026 - 07/2026",
+      "contato_id": 16594684987,
+      "contato_nome": "CSLL",
+      "contato_documento": "",
+      "categoria_id": 14665159886,
+      "categoria_descricao": "Contribuição social sobre lucro líquido",
       "categoria_tipo": 1,
       "portador_id": 14892107625
     }
