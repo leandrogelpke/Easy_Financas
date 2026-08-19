@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-08-19 07:45:54",
+    "fetched_at": "2026-08-19 12:43:51",
     "today": "2026-08-19"
   },
   "categorias": [
@@ -3685,7 +3685,7 @@
       "id": 26558812091,
       "situacao_codigo": 1,
       "situacao": "Em aberto",
-      "vencimento": "2026-08-16",
+      "vencimento": "2026-08-25",
       "vencimento_original": "",
       "data_emissao": "2026-08-10",
       "competencia": "",
@@ -3705,7 +3705,7 @@
       "id": 26559012823,
       "situacao_codigo": 1,
       "situacao": "Em aberto",
-      "vencimento": "2026-08-16",
+      "vencimento": "2026-08-25",
       "vencimento_original": "",
       "data_emissao": "2026-08-10",
       "competencia": "",
@@ -3725,7 +3725,7 @@
       "id": 26559062580,
       "situacao_codigo": 1,
       "situacao": "Em aberto",
-      "vencimento": "2026-08-16",
+      "vencimento": "2026-08-25",
       "vencimento_original": "",
       "data_emissao": "2026-08-10",
       "competencia": "",
@@ -3745,7 +3745,7 @@
       "id": 26559242952,
       "situacao_codigo": 1,
       "situacao": "Em aberto",
-      "vencimento": "2026-08-19",
+      "vencimento": "2026-08-25",
       "vencimento_original": "",
       "data_emissao": "2026-08-10",
       "competencia": "",
