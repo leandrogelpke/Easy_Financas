@@ -88,9 +88,12 @@ PARES_LIQUIDACAO = [
 
 # Mesma lista de colunas do fetch-bling.py::CONTAS_COLS. Duplicada de
 # propósito: este script precisa rodar mesmo se o fetch falhar.
+# ATENÇÃO: mudou lá → muda AQUI, senão o merge reescreve os CSVs sem a
+# coluna nova e ela some do pipeline.
 CONTAS_COLS = [
     "id", "situacao_codigo", "situacao",
-    "vencimento", "vencimento_original", "data_emissao", "competencia",
+    "vencimento", "vencimento_original", "data_emissao", "data_pagamento",
+    "competencia",
     "valor", "saldo",
     "numero_documento", "historico",
     "contato_id", "contato_nome", "contato_documento",

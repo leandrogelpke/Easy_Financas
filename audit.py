@@ -865,6 +865,12 @@ def _recon_money(v: Any) -> float:
     s = str(v).strip()
     if not s:
         return 0.0
+    # Guarda de formato (P2): decimal americano sem vírgula não pode virar 100x
+    if "," not in s and re.fullmatch(r"-?\d+\.\d{1,2}", s):
+        try:
+            return float(s)
+        except Exception:
+            return 0.0
     s = s.replace(".", "").replace(",", ".")
     try:
         return float(s)
@@ -931,7 +937,14 @@ def reconcile_em_aberto(
             continue
 
         # (B) provisão genérica já coberta por realizado no mês de vencimento
-        if v > 0 and _RE_PROVISAO.search(_norm(hist)):
+        #     Cobertura total (>= 90%): remove.
+        #     Cobertura PARCIAL: abate o realizado e mantém só o saldo
+        #     remanescente — antes era tudo-ou-nada e um mês com NF real de
+        #     R$ 22K + provisão de R$ 35K somava R$ 57K de "despesa" para um
+        #     custo real de R$ 35K (caso Efata jul/26 — auditoria P0.5).
+        #     A flag _provisao_abatida garante idempotência: linha já abatida
+        #     não é abatida de novo numa segunda passada.
+        if v > 0 and _RE_PROVISAO.search(_norm(hist)) and not r.get("_provisao_abatida"):
             realizado = paid_by_cm.get((ck, vc[:7]), 0.0)
             if realizado >= v * 0.9:
                 ajustes.append({
@@ -939,6 +952,21 @@ def reconcile_em_aberto(
                     "contato_id": r.get("contato_id"), "venc": vc, "valor": v,
                     "historico": hist[:80], "realizado_mes": round(realizado, 2),
                 })
+                continue
+            if realizado > 0:
+                restante = round(v - realizado, 2)
+                r2 = dict(r)
+                r2["valor"] = f"{restante:.2f}".replace(".", ",")
+                r2["saldo"] = r2["valor"]
+                r2["_provisao_abatida"] = round(v, 2)  # valor original, p/ trilha
+                ajustes.append({
+                    "tipo": "PROVISAO_ABATIDA", "contato": r.get("contato_nome", ""),
+                    "contato_id": r.get("contato_id"), "venc": vc,
+                    "valor": round(realizado, 2),  # quanto foi abatido
+                    "historico": hist[:80], "realizado_mes": round(realizado, 2),
+                    "restante": restante,
+                })
+                limpo.append(r2)
                 continue
 
         limpo.append(r)
@@ -1062,8 +1090,10 @@ def check_reconciliacao_pagar(bling_dir: Path, today: date) -> list[AuditFinding
 
     n_dup = sum(1 for a in ajustes if a["tipo"] == "DUPLICATA_PAGA")
     n_prov = sum(1 for a in ajustes if a["tipo"] == "PROVISAO_COBERTA")
+    n_abat = sum(1 for a in ajustes if a["tipo"] == "PROVISAO_ABATIDA")
     tot_dup = sum(a["valor"] for a in ajustes if a["tipo"] == "DUPLICATA_PAGA")
     tot_prov = sum(a["valor"] for a in ajustes if a["tipo"] == "PROVISAO_COBERTA")
+    tot_abat = sum(a["valor"] for a in ajustes if a["tipo"] == "PROVISAO_ABATIDA")
     nomes = ", ".join(dict.fromkeys(
         (a["contato"] or "")[:24] for a in sorted(ajustes, key=lambda x: -x["valor"])
     ))[:140]
@@ -1072,6 +1102,9 @@ def check_reconciliacao_pagar(bling_dir: Path, today: date) -> list[AuditFinding
         partes.append(f"{n_dup} duplicata(s) já paga(s) ({_fmt_brl(tot_dup)})")
     if n_prov:
         partes.append(f"{n_prov} provisão(ões) coberta(s) por NF paga ({_fmt_brl(tot_prov)})")
+    if n_abat:
+        partes.append(f"{n_abat} provisão(ões) parcialmente coberta(s) — "
+                      f"{_fmt_brl(tot_abat)} abatido(s) do saldo em aberto")
     return [AuditFinding(
         check_id="reconc_pagar", status="info",
         title=f"{len(ajustes)} lançamento(s) fantasma removidos do a pagar",

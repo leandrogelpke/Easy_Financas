@@ -62,6 +62,10 @@ FORNECEDOR_MAP = [
     ("MILAJANU CONSULTORIA",      "desp_pessoal", "Prestadores PJ", "Milajanu (PJ)"),
     ("EDUARDO FARIA DE GODOY",    "desp_pessoal", "Prestadores PJ", "Eduardo Godoy (PJ)"),
     ("ISABEL FELIX",              "desp_pessoal", "Prestadores PJ", "Isabel Felix (PJ)"),
+    # razão social completa não contém "ISABEL FELIX" (tem CRISTINA no meio) —
+    # sem este alias o lançamento caía em desp_admin (P1.3)
+    ("ISABEL CRISTINA FELIX",     "desp_pessoal", "Prestadores PJ", "Isabel Felix (PJ)"),
+    ("LUIZ HENRIQUE AQUINO",      "desp_admin",   "Administrativas", "Reembolso visitas (L. Aquino)"),
 
     # Serviços estratégicos / operação core (despesas administrativas)
     ("EP SERVIÇOS DE TECNOLOGIA", "desp_admin", "Serviços estratégicos", "EP Serviços"),
@@ -191,7 +195,15 @@ def _parse_money(s: Any) -> float:
         return 0.0
     if isinstance(s, (int, float)):
         return float(s)
-    s = str(s).replace(".", "").replace(",", ".")
+    s = str(s).strip()
+    # Guarda de formato (P2): "1234.56" americano — ponto decimal, sem vírgula
+    # — viraria 123456 com o replace cego (inflação de 100x silenciosa).
+    if "," not in s and re.fullmatch(r"-?\d+\.\d{1,2}", s):
+        try:
+            return float(s)
+        except ValueError:
+            return 0.0
+    s = s.replace(".", "").replace(",", ".")
     try:
         return float(s)
     except ValueError:
@@ -299,12 +311,12 @@ def _build_matriz(
         receita_por_mes[ym] += v
 
     # cutoff aqui = mês atual. Tratamento:
-    #   - meses passados (ym < cutoff): só "real" (pagas/recebidas).
-    #     em_aberto com vencimento passado = atrasado, entra no realizado também
-    #     (caso contrário some do DRE).
-    #   - mês atual (ym == cutoff): mistura — pagas/recebidas que já aconteceram +
-    #     em_aberto que ainda falta pagar (= projeção do fim de mês).
-    #   - meses futuros (ym > cutoff): só "projetado" (em_aberto / receber_em_aberto).
+    #   - pagas/recebidas: "real" (dinheiro que se moveu).
+    #   - em_aberto: SEMPRE "em_aberto"/"projetado" — inclusive vencido.
+    #     Vencido não pago fica no mês de vencimento (senão some do DRE), mas
+    #     JAMAIS herda o rótulo "real": rótulo de pago em conta não paga fazia
+    #     junho/26 exibir R$ 59,8K do Rômulo como desembolsado quando o caixa
+    #     nunca viu esse dinheiro sair (auditoria 21/ago, P0.4).
     for r in pagas:
         ym = (r.get("vencimento") or "")[:7]
         if ym in month_types and ym <= cutoff:
@@ -317,12 +329,12 @@ def _build_matriz(
     for r in em_aberto:
         ym = (r.get("vencimento") or "")[:7]
         if ym in month_types:
-            tipo = "real" if ym < cutoff else "projetado"
+            tipo = "em_aberto" if ym <= cutoff else "projetado"
             add_desp(r, ym, tipo)
     for r in receber_em_aberto:
         ym = (r.get("vencimento") or "")[:7]
         if ym in month_types:
-            tipo = "real" if ym < cutoff else "projetado"
+            tipo = "em_aberto" if ym <= cutoff else "projetado"
             add_rec(r, ym, tipo)
 
     # Calcula PIS/COFINS esperado (alíquotas Lucro Presumido) — só quando NÃO
@@ -454,16 +466,17 @@ def _build_matriz_2y(
         ym = (r.get("vencimento") or "")[:7]
         if ym in months_set and ym <= cutoff:
             add_rec(r, ym, "real")
+    # Em aberto NUNCA vira "real" — nem quando o vencimento já passou. Vencido
+    # não pago permanece no mês (compromisso), mas com a marca de em aberto;
+    # rotular como pago escondia R$ 95K de inadimplência própria (P0.4).
     for r in em_aberto:
         ym = (r.get("vencimento") or "")[:7]
         if ym in months_set:
-            kind = "real" if ym < cutoff else "em_aberto"
-            add_desp(r, ym, kind)
+            add_desp(r, ym, "em_aberto")
     for r in receber_em_aberto:
         ym = (r.get("vencimento") or "")[:7]
         if ym in months_set:
-            kind = "real" if ym < cutoff else "em_aberto"
-            add_rec(r, ym, kind)
+            add_rec(r, ym, "em_aberto")
 
     # PIS/COFINS esperado (só nos meses reais com receita)
     pis_alq = _AUDIT_CFG["pis_aliq"]

@@ -43,7 +43,15 @@ def parse_money(s: Any) -> float:
         return 0.0
     if isinstance(s, (int, float)):
         return float(s)
-    s = str(s).replace(".", "").replace(",", ".")
+    s = str(s).strip()
+    # Guarda de formato (P2): "1234.56" americano — ponto decimal, sem vírgula
+    # — viraria 123456 com o replace cego (inflação de 100x silenciosa).
+    if "," not in s and re.fullmatch(r"-?\d+\.\d{1,2}", s):
+        try:
+            return float(s)
+        except ValueError:
+            return 0.0
+    s = s.replace(".", "").replace(",", ".")
     try:
         return float(s)
     except ValueError:
@@ -158,13 +166,15 @@ KNOWN_SUPPLIERS: dict[str, dict] = {
         "id": "ep", "n": "EP Serviços Tecnologia",
         "cat": "Serviços PJ", "st": "Não orçado", "sc": "bgr",
     },
+    # Acordo trabalhista (20 parcelas de R$ 10K até ago/27) — estrutural como
+    # o buy-out; em "Outros" o valor sumia no bucket genérico (auditoria P1.3)
     "GEREMIAS FERREIRA LIMA 37305076805": {
-        "id": "geremias", "n": "Geremias Ferreira Lima",
-        "cat": "Outros", "st": "Não orçado", "sc": "bgr",
+        "id": "geremias", "n": "Geremias Lima (acordo)",
+        "cat": "Buy-out", "st": "Acordo trabalhista", "sc": "bgr",
     },
     "GEREMIAS FERREIRA LIMA": {
-        "id": "geremias", "n": "Geremias Ferreira Lima",
-        "cat": "Outros", "st": "Não orçado", "sc": "bgr",
+        "id": "geremias", "n": "Geremias Lima (acordo)",
+        "cat": "Buy-out", "st": "Acordo trabalhista", "sc": "bgr",
     },
     "CARTAO DE CREDITO": {
         "id": "cartao", "n": "Cartão de Crédito",
@@ -288,6 +298,16 @@ KNOWN_SUPPLIERS: dict[str, dict] = {
         "id": "isabel", "n": "Isabel Felix",
         "cat": "Pessoal", "st": "Reembolso", "sc": "bga",
     },
+    # razão social completa no Bling — sem este alias caía em "Outros" (P1.3)
+    "ISABEL CRISTINA FELIX DA SILVA ME": {
+        "id": "isabel", "n": "Isabel Felix",
+        "cat": "Pessoal", "st": "Reembolso", "sc": "bga",
+    },
+    # reembolso de visitas do consultor da Efata (paga direto à PF)
+    "LUIZ HENRIQUE AQUINO": {
+        "id": "luizaquino", "n": "Luiz Aquino (reembolso)",
+        "cat": "Reembolsos", "st": "Eventual", "sc": "bgb",
+    },
     "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL": {
         "id": "alan", "n": "Alan Barbosa",
         "cat": "Pessoal", "st": "Recorrente", "sc": "bgr",
@@ -302,7 +322,7 @@ KNOWN_SUPPLIERS: dict[str, dict] = {
 # Estrutura redesenhada em jun/2026 — bucket "Outros" antigo foi explodido
 # em Tributos, Parceria TOTVS, Aporte e Outros (resíduo).
 STACK_GROUPS = [
-    {"label": "Buy-out",     "ids": ["romulo"]},
+    {"label": "Buy-out/Acordo", "ids": ["romulo", "geremias"]},
     {"label": "Pessoal",     "ids": ["alan", "isabel", "macedo", "efata",
                                      "milajanu", "godoy"]},
     {"label": "Serv. PJ",    "ids": ["ep", "vtconn", "victor", "plentech",
@@ -311,8 +331,8 @@ STACK_GROUPS = [
                                      "prefeitura", "municipio_sbc"]},
     {"label": "Parc. TOTVS", "ids": ["totvs"]},
     {"label": "Aporte",      "ids": ["polar"]},
-    {"label": "Outros",      "ids": ["geremias", "cartao", "ivy", "cbyk",
-                                     "lwsa", "_outros"]},
+    {"label": "Outros",      "ids": ["cartao", "ivy", "cbyk",
+                                     "lwsa", "luizaquino", "_outros"]},
 ]
 
 
@@ -327,16 +347,27 @@ def find_supplier(name: str) -> dict | None:
     name_up = name.upper().strip()
     if name_up in KNOWN_SUPPLIERS:
         return KNOWN_SUPPLIERS[name_up]
-    # prefixo: procura chave que é prefixo do nome ou vice-versa
+    # Prefixo em duas direções, mas SÓ com o nome completo:
+    #   - name_up.startswith(key): alias curto casa nome longo do Bling;
+    #   - key.startswith(name_up): nome truncado pelo Bling (80 chars) casa
+    #     alias completo — exige nome razoavelmente longo pra não virar
+    #     roleta com nomes curtos (o antigo `name_up[:20]` fazia o vencedor
+    #     depender da ordem de inserção do dict — P1.4).
     for key, info in KNOWN_SUPPLIERS.items():
-        if name_up.startswith(key) or key.startswith(name_up[:20]):
+        if name_up.startswith(key):
+            return info
+        if len(name_up) >= 12 and key.startswith(name_up):
             return info
     return None
 
 
-def compute_last_4_months(pagas: list[dict]) -> list[date]:
-    """YTD: jan do ano corrente até o mês atual (inclusive). Cresce a cada mês."""
-    today = date.today()
+def compute_last_4_months(pagas: list[dict], today: date | None = None) -> list[date]:
+    """YTD: jan do ano corrente até o mês atual (inclusive). Cresce a cada mês.
+
+    `today` deve vir do snapshot (`_metadata.today`) — usar o relógio da
+    máquina fazia um build sobre snapshot antigo montar a janela errada (P1.6).
+    """
+    today = today or date.today()
     return [date(today.year, m, 1) for m in range(1, today.month + 1)]
 
 
@@ -401,7 +432,10 @@ def compute_cx_data(receber: list[dict], today: date) -> list[dict]:
         nome = (c.get("contato_nome") or c.get("nomeContato") or "(sem cliente)").strip()
         doc = c.get("numeroDocumento") or c.get("documento") or str(i + 1)
         venc = parse_date(c.get("vencimento") or c.get("dataVencimento") or "")
-        valor = parse_money(c.get("valor"))
+        # saldo primeiro: num recebimento parcial é o que ainda falta entrar.
+        # Usar `valor` superestimava KPIs (a receber, vencidos, gap 30d) em
+        # relação ao próprio drill-down, que já usava saldo (P1.9).
+        valor = parse_money(c.get("saldo") or c.get("valor"))
         if valor == 0:
             continue
 
@@ -432,6 +466,10 @@ def compute_cx_data(receber: list[dict], today: date) -> list[dict]:
             "sit":  sit,
             "val":  round(valor),
             "bgc":  bgc,
+            # dias de atraso — consumido por compute_next_actions ("Atraso
+            # máximo: N dias"). Antes a chave não existia e o card degradava
+            # pra "vencido" sem número (P0.9).
+            "dias": (today - venc).days if venc and venc < today else 0,
         })
 
     # Ordenar: Atrasadas → Parcial → Em aberto → Previsto
@@ -596,13 +634,15 @@ def render_pagar_mensal_html(em_aberto: list[dict], today: date,
             venc_label = (f"{vencs[0]:02d}/{MN_ABREV[mo-1]}"
                           if len(vencs) == 1
                           else f"{vencs[0]:02d}–{vencs[-1]:02d}/{MN_ABREV[mo-1]}")
-            # Categoria (semáforo amber/red para alguns nomes-chave)
+            # Semáforo derivado da categoria do fornecedor (P1.7). A lista de
+            # nomes hardcoded anterior incluía até ATACADÃO — que é cliente.
             color = ""
             nome_up = _strip_accents_upper(nome)
-            if "ROMULO" in nome_up or "ATACADAO" in nome_up:
+            _info = find_supplier(nome_up)
+            _cat = (_info or {}).get("cat", "")
+            if _cat == "Buy-out":
                 color = "color:var(--red)"
-            elif "EFATA" in nome_up or "MACEDO" in nome_up or "MILAJANU" in nome_up \
-                    or "GEREMIAS" in nome_up or "TOTVS" in nome_up:
+            elif _cat in ("Pessoal", "Serviços PJ", "Parceria TOTVS"):
                 color = "color:var(--amber)"
             display_name = _trunc(nome, 32)
             # Datas de lançamento (data de emissão Bling), todas, ordenadas únicas
@@ -771,9 +811,21 @@ def render_cashflow_html(pagas: list[dict], recebidas: list[dict],
     rows = []
     for (yy_, mm_) in janela:
         key = f"{yy_:04d}-{mm_:02d}"
-        is_proj = (yy_ * 12 + mm_) >= cur_key
-        ent = re_open.get(key, 0) if is_proj else re_real.get(key, 0)
-        sai = pa_open.get(key, 0) if is_proj else pa_real.get(key, 0)
+        k_num = yy_ * 12 + mm_
+        is_cur = k_num == cur_key
+        is_proj = k_num >= cur_key
+        if is_cur:
+            # Mês corrente = realizado até agora + em aberto restante (P1.2).
+            # Antes usava SÓ o em aberto e a barra do mês encolhia conforme as
+            # contas iam sendo pagas — o realizado sumia do gráfico.
+            ent = re_real.get(key, 0) + re_open.get(key, 0)
+            sai = pa_real.get(key, 0) + pa_open.get(key, 0)
+        elif is_proj:
+            ent = re_open.get(key, 0)
+            sai = pa_open.get(key, 0)
+        else:
+            ent = re_real.get(key, 0)
+            sai = pa_real.get(key, 0)
         rows.append({"ano": yy_, "mes": mm_, "ent": ent, "sai": sai,
                      "proj": is_proj})
 
@@ -1374,9 +1426,16 @@ def compute_dre_data(
 
     cutoff = today.strftime("%Y-%m")   # mês atual não é "real" ainda
 
+    # Aporte/distribuição de sócio NÃO é despesa operacional (P0.2): entra no
+    # fluxo de caixa (render_cashflow_html), mas não neste gráfico rec×desp —
+    # senão mar/26 mostra R$ 65K de "despesa" que é movimentação patrimonial.
+    def _eh_aporte(r: dict) -> bool:
+        info = find_supplier((r.get("contato_nome") or "").upper())
+        return bool(info) and info.get("cat") == "Aporte/Sócios"
+
     for r in pagas:
         m = (r.get("vencimento") or "")[:7]
-        if m:
+        if m and not _eh_aporte(r):
             desp_real[m] += parse_money(r.get("valor", 0))
 
     for r in recebidas:
@@ -1386,7 +1445,7 @@ def compute_dre_data(
 
     for r in em_aberto:
         m = (r.get("vencimento") or "")[:7]
-        if m:
+        if m and not _eh_aporte(r):
             v = parse_money(r.get("saldo") or r.get("valor", 0))
             desp_plan[m] += v
 
@@ -1483,29 +1542,34 @@ def compute_dre_detail(
             "tipo": tipo,
         }
 
-    # Pagos/recebidos vão em qualquer mês (passado ou atual)
+    # Mesmas regras do compute_dre_data — a abertura TEM que somar igual à
+    # barra do gráfico (P1.2): aporte de sócio fora (P0.2), mês atual entra
+    # como "projetado" (>= cutoff, não >), vencido em aberto nunca é "real".
+    def _eh_aporte(r: dict) -> bool:
+        info = find_supplier((r.get("contato_nome") or "").upper())
+        return bool(info) and info.get("cat") == "Aporte/Sócios"
+
     for r in pagas:
         m = (r.get("vencimento") or "")[:7]
-        if m:
+        if m and not _eh_aporte(r):
             result[m]["desp"].append(to_item(r, "real"))
     for r in recebidas:
         m = (r.get("vencimento") or "")[:7]
         if m:
             result[m]["rec"].append(to_item(r, "real"))
 
-    # Em aberto: futuro = projetado; passado ou atual = real (atrasado/pendente)
+    # Em aberto: sempre "projetado" (compromisso, não desembolso) — inclusive
+    # vencido; o gráfico soma tudo no mês, a abertura marca a origem.
     for r in em_aberto:
         m = (r.get("vencimento") or "")[:7]
-        if not m:
+        if not m or _eh_aporte(r):
             continue
-        tipo = "projetado" if m > cutoff else "real"
-        result[m]["desp"].append(to_item(r, tipo))
+        result[m]["desp"].append(to_item(r, "projetado"))
     for r in receber_em_aberto:
         m = (r.get("vencimento") or "")[:7]
         if not m:
             continue
-        tipo = "projetado" if m > cutoff else "real"
-        result[m]["rec"].append(to_item(r, tipo))
+        result[m]["rec"].append(to_item(r, "projetado"))
 
     # Ordena por valor desc dentro de cada mês
     for m in result:
@@ -1596,7 +1660,11 @@ def compute_overview_kpis_html(rows: list, pagar_data: list, cx_data: list, mont
                                saldo_caixa: float | None = None) -> str:
     n = len(months) or 1
     total_pago   = sum(r["total"] for r in rows)
-    media        = total_pago / n
+    # Burn OPERACIONAL: aporte/distribuição de sócio é movimentação
+    # patrimonial, não custo recorrente — incluí-lo inflava o burn em
+    # ~R$ 28K/mês e derrubava o runway (P0.2).
+    aportes      = sum(r["total"] for r in rows if r.get("cat") == "Aporte/Sócios")
+    media        = (total_pago - aportes) / n
     total_rec    = sum(r["val"] for r in cx_data)
     venc_rec     = sum(r["val"] for r in cx_data if r["sit"] == "Atrasada")
     n_rec        = len(cx_data)
@@ -1616,11 +1684,11 @@ def compute_overview_kpis_html(rows: list, pagar_data: list, cx_data: list, mont
     cards = [
         f'<div class="met blue"><div class="ml">Total pago ({n} meses)</div>'
         f'<div class="mv blue" title="{_brl(total_pago)}">{_kbrl(total_pago)}</div>'
-        f'<div class="ms">fonte: Bling · confirmados</div></div>',
+        f'<div class="ms">{"inclui " + _kbrl(aportes) + " de aportes/distrib." if aportes > 0 else "fonte: Bling · confirmados"}</div></div>',
 
-        f'<div class="met blue"><div class="ml">Média mensal</div>'
+        f'<div class="met blue"><div class="ml">Média mensal operacional</div>'
         f'<div class="mv blue" title="{_brl(media)}">{_kbrl(media)}</div>'
-        f'<div class="ms">últimos {n} meses</div></div>',
+        f'<div class="ms">últimos {n} meses · sem aportes</div></div>',
 
         f'<div class="met {rec_cor}"><div class="ml">A receber em aberto</div>'
         f'<div class="mv {rec_cor}" title="{_brl(total_rec)}">{_kbrl(total_rec)}</div>'
@@ -1640,7 +1708,7 @@ def compute_overview_kpis_html(rows: list, pagar_data: list, cx_data: list, mont
         runway = saldo_caixa / media
         rw_cor = "red" if runway < 3 else ("amber" if runway < 6 else "green")
         rw_val = (f"{runway:.1f}".replace(".", ",") + " meses") if runway < 100 else "99+ meses"
-        rw_sub = f"caixa {_kbrl(saldo_caixa)} ÷ burn {_kbrl(media)}/mês"
+        rw_sub = f"caixa {_kbrl(saldo_caixa)} ÷ burn operacional {_kbrl(media)}/mês"
     else:
         rw_cor = "amber"
         rw_val = "—"
@@ -2087,9 +2155,14 @@ def compute_gastos_header(months: list[date], rows: list) -> tuple[str, str]:
     inicio = month_label(months[0])
     fim    = month_label(months[-1])
     total  = sum(r["total"] for r in rows)
+    aportes = sum(r["total"] for r in rows if r.get("cat") == "Aporte/Sócios")
     n_forn = len(rows)
     title  = f"Gastos Reais — {inicio} a {fim}"
     sub    = f"fonte: Bling ERP · total: {_brl(total)} · {n_forn} fornecedores"
+    if aportes > 0:
+        # o total inclui aportes/distribuições (são saída de caixa), mas o
+        # leitor precisa saber que não é tudo custo operacional (P0.2)
+        sub += f" · inclui {_brl(aportes)} de aportes/distrib."
     return title, sub
 
 
@@ -2141,7 +2214,7 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
         print(f"[dedup-receber] ignorado: {_e}", file=sys.stderr)
 
     # ── Computar dados ──
-    months = compute_last_4_months(pagas)
+    months = compute_last_4_months(pagas, today)
     if not months:
         print("[warn] sem meses computados — usando YTD do calendário")
         months = [date(today.year, mm, 1) for mm in range(1, today.month + 1)]
@@ -2244,6 +2317,31 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     html = template.read_text(encoding="utf-8")
 
     # Marcadores JS (dados para os gráficos)
+    # CF_CATS gerado das categorias realmente presentes nos ROWS (P0.1).
+    # A lista fixa de 4 no template escondia Aporte/Tributos/TOTVS/Software da
+    # rosca de Gastos e quebrava os percentuais (grand somava tudo, fatias não).
+    _cat_colors = {
+        "Buy-out":             "#c0392b",
+        "Pessoal":             "#8e44ad",
+        "Serviços PJ":         "#b7650a",
+        "Tributos e Contábil": "#1f6f5c",
+        "Parceria TOTVS":      "#2262a0",
+        "Aporte/Sócios":       "#5b6770",
+        "Software":            "#7a5c9e",
+        "Reembolsos":          "#8a8f3c",
+        "Outros":              "#3d5a80",
+    }
+    _cats_presentes: dict[str, float] = {}
+    for _r in rows:
+        _cats_presentes[_r.get("cat") or "Outros"] = \
+            _cats_presentes.get(_r.get("cat") or "Outros", 0) + _r.get("total", 0)
+    _cf_cats = sorted(_cats_presentes, key=lambda c: -_cats_presentes[c])
+    if "Outros" not in _cf_cats:
+        _cf_cats.append("Outros")
+    js_cf_cats = json.dumps(
+        [{"cat": c, "color": _cat_colors.get(c, "#3d5a80")} for c in _cf_cats],
+        ensure_ascii=False)
+    html = html.replace("@@CF_CATS@@",         js_cf_cats)
     html = html.replace("@@ROWS@@",            js_rows)
     html = html.replace("@@CF_MONTHS@@",       js_months)
     html = html.replace("@@CF_MONTH_LABELS@@", js_month_lbls)
@@ -2583,10 +2681,16 @@ def main() -> int:
     except Exception:
         pass
     # log DRE months preview
-    dre_preview = compute_dre_data(pagas, recebidas, em_aberto, receber, date.today())
+    # `today` do snapshot, não do relógio: build sobre snapshot antigo deve
+    # reproduzir a janela daquele dia (P1.6). Fallback: hoje.
+    try:
+        today = parse_date((data.get("_metadata") or {}).get("today") or "") or date.today()
+    except Exception:
+        today = date.today()
+
+    dre_preview = compute_dre_data(pagas, recebidas, em_aberto, receber, today)
     print(f"[ok] dre_data: {len(dre_preview)} meses ({dre_preview[0]['label'] if dre_preview else '—'} → {dre_preview[-1]['label'] if dre_preview else '—'})")
 
-    today = date.today()
     html_out = render(data, snapshot, args.template, today)
 
     # Verificar se todos os marcadores foram substituídos

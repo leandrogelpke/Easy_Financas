@@ -340,6 +340,13 @@ def enrich_and_dump(
             "vencimento": c.get("vencimento", ""),
             "vencimento_original": c.get("vencimentoOriginal", ""),
             "data_emissao": c.get("dataEmissao", ""),
+            # data em que o dinheiro se moveu de fato (borderô). Hoje as visões
+            # alocam por vencimento; capturar isto permite migrar as visões de
+            # caixa pro regime de pagamento real quando houver histórico
+            # acumulado (auditoria 21/ago, P1.1). Vazio quando em aberto.
+            "data_pagamento": c.get("dataPagamento", "") or (
+                (c.get("borderos") or [{}])[0].get("data", "")
+                if isinstance(c.get("borderos"), list) else ""),
             "competencia": c.get("competencia", ""),
             "valor": fmt_money(c.get("valor", "")),
             "saldo": fmt_money(c.get("saldo", "")),
@@ -358,7 +365,8 @@ def enrich_and_dump(
 
 CONTAS_COLS = [
     "id", "situacao_codigo", "situacao",
-    "vencimento", "vencimento_original", "data_emissao", "competencia",
+    "vencimento", "vencimento_original", "data_emissao", "data_pagamento",
+    "competencia",
     "valor", "saldo",
     "numero_documento", "historico",
     "contato_id", "contato_nome", "contato_documento",

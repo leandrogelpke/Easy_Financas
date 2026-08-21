@@ -188,6 +188,42 @@ def test_reconcile_provisao_coberta() -> None:
     assert len(aj) == 1 and aj[0]["tipo"] == "PROVISAO_COBERTA"
 
 
+def test_reconcile_provisao_abatida_parcial() -> None:
+    """Cobertura parcial (< 90%): abate o realizado, mantém só o restante.
+
+    Caso real Efata jul/26: NF paga de R$ 22.167 + provisão de R$ 35.000 no
+    mesmo mês somavam R$ 57K de 'despesa' para um custo real de R$ 35K.
+    """
+    pagas = [
+        {"contato_id": "9", "contato_nome": "EFATA", "vencimento": "2026-07-20",
+         "valor": "22.167,00", "historico": "Ref. a NF nº 000028"},
+    ]
+    em_aberto = [
+        {"contato_id": "9", "contato_nome": "EFATA", "vencimento": "2026-07-20",
+         "valor": "35.000,00", "historico": "PRESTAÇÃO SERVIÇOS XX/2026"},
+    ]
+    limpo, aj = audit.reconcile_em_aberto(pagas, em_aberto)
+    assert len(aj) == 1 and aj[0]["tipo"] == "PROVISAO_ABATIDA", aj
+    assert abs(aj[0]["restante"] - 12833.0) < 0.01, aj[0]
+    assert len(limpo) == 1
+    assert abs(audit._recon_money(limpo[0]["valor"]) - 12833.0) < 0.01, limpo[0]
+    # idempotência: segunda passada sobre o resultado não abate de novo
+    limpo2, aj2 = audit.reconcile_em_aberto(pagas, limpo)
+    assert aj2 == [] and len(limpo2) == 1, (aj2, limpo2)
+    assert abs(audit._recon_money(limpo2[0]["valor"]) - 12833.0) < 0.01
+
+
+def test_recon_money_formato_americano() -> None:
+    """Guarda contra decimal americano: '1234.56' não pode virar 123456."""
+    assert audit._recon_money("1234.56") == 1234.56
+    assert audit._recon_money("-99.9") == -99.9
+    # formatos BR continuam intactos
+    assert audit._recon_money("1.234,56") == 1234.56
+    assert audit._recon_money("59.814,26") == 59814.26
+    assert audit._recon_money("35.000") == 35000.0   # milhar sem centavos
+    assert audit._recon_money(120.5) == 120.5
+
+
 def test_reconcile_preserva_legitimo() -> None:
     """Vencido real (sem gêmeo pago, sem provisão coberta) é preservado."""
     pagas = [
@@ -273,6 +309,8 @@ TESTS = [
     test_aliquotas_config,
     test_reconcile_duplicata_paga,
     test_reconcile_provisao_coberta,
+    test_reconcile_provisao_abatida_parcial,
+    test_recon_money_formato_americano,
     test_reconcile_preserva_legitimo,
     test_reconcile_idempotente,
     test_dedupe_receber_remove_identicas,
