@@ -226,11 +226,28 @@ def fetch_saldo_caixa(client: BlingClient, today: str) -> Optional[Dict[str, Any
     """
     log("[fetch] saldos de caixa (contas contábeis)...", client.quiet)
     try:
+        return _fetch_saldo_caixa_inner(client, today)
+    except Exception as e:  # NUNCA derruba o fetch principal (regra fail-soft)
+        log(f"  [warn] sonda de saldos explodiu ({type(e).__name__}: {e}) — saldo fica manual",
+            client.quiet)
+        return None
+
+
+def _fetch_saldo_caixa_inner(client: BlingClient, today: str) -> Optional[Dict[str, Any]]:
+    try:
         contas_raw = client.list_all("/contas-contabeis")
     except Exception as e:
         log(f"  [warn] /contas-contabeis indisponível ({e}) — saldo fica manual", client.quiet)
         return None
-    contas_idx = {int(c["id"]): (c.get("descricao") or "") for c in contas_raw if c.get("id")}
+
+    def _cid(c: Any) -> Optional[int]:
+        try:
+            return int(c)
+        except (TypeError, ValueError):
+            return None
+
+    contas_idx = {_cid(c.get("id")): (c.get("descricao") or "")
+                  for c in contas_raw if _cid(c.get("id")) is not None}
     if not contas_idx:
         log("  [warn] nenhuma conta contábil listada — saldo fica manual", client.quiet)
         return None
@@ -254,7 +271,7 @@ def fetch_saldo_caixa(client: BlingClient, today: str) -> Optional[Dict[str, Any
         for item in data:
             if not isinstance(item, dict):
                 continue
-            cid = item.get("id") or (item.get("contaContabil") or {}).get("id")
+            cid = _cid(item.get("id") or (item.get("contaContabil") or {}).get("id"))
             saldo = None
             for k in ("saldo", "saldoFinal", "saldoAtual", "valor"):
                 if k in item:
@@ -263,9 +280,8 @@ def fetch_saldo_caixa(client: BlingClient, today: str) -> Optional[Dict[str, Any
             if saldo is None:
                 continue
             out.append({
-                "id": int(cid) if cid else None,
-                "descricao": contas_idx.get(int(cid), "") if cid else
-                             (item.get("descricao") or ""),
+                "id": cid,
+                "descricao": contas_idx.get(cid, "") or (item.get("descricao") or ""),
                 "saldo": round(saldo, 2),
             })
         return out

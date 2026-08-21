@@ -96,7 +96,15 @@ def main() -> int:
     errors: list[str] = []
 
     if steps["fetch"] != "success":
-        errors.append("Fetch do Bling não concluiu com sucesso.")
+        msg = "Fetch do Bling não concluiu com sucesso."
+        try:  # tail do fetch_run.log → diagnóstico direto no logs/update_*.json
+            _tail = Path("fetch_run.log").read_text(encoding="utf-8",
+                                                    errors="replace").splitlines()[-12:]
+            if _tail:
+                msg += " Últimas linhas: " + " | ".join(t.strip() for t in _tail if t.strip())[:900]
+        except Exception:
+            pass
+        errors.append(msg)
     if steps["merge_historico"] not in ("success", "skipped", ""):
         errors.append("Merge com o histórico acumulado falhou — lançamentos "
                       "fora da janela do fetch (parcelamentos longos) podem "

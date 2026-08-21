@@ -14,6 +14,11 @@ on:
     - cron: '11 19 * * *'
     # TEMPORÁRIO — teste de fumaça do agendador (remover após confirmar):
     - cron: '50 15 * * *'
+    # TEMPORÁRIO (21/08) — reexecuta o bootstrap de 24m que falhou às 16h11
+    # e valida a captura de erro do fetch. REMOVER depois de 1-2 rodadas ok.
+    # Cron do GitHub é best-effort: pode atrasar 5-15 min.
+    - cron: '0 21 * * *'
+    - cron: '40 21 * * *'
   workflow_dispatch:
     inputs:
       janela_meses:
@@ -105,7 +110,11 @@ jobs:
           echo "WINDOW_START=$DI" >> "$GITHUB_ENV"
           echo "[fetch] janela: $DI → hoje ($N meses · $MOTIVO)"
           mkdir -p data/bling-api
-          python3 fetch-bling.py --out data/bling-api --data-inicial "$DI" --no-detail-receber
+          # stdout+stderr vão pro fetch_run.log; write_update_log anexa o tail
+          # ao logs/update_*.json quando o fetch falha — a rodada de 21/08 16h
+          # morreu em 14s e o log só dizia "não concluiu" (cegueira operacional).
+          set -o pipefail
+          python3 fetch-bling.py --out data/bling-api --data-inicial "$DI" --no-detail-receber 2>&1 | tee fetch_run.log
 
       - name: Merge com o histórico acumulado
         id: merge
