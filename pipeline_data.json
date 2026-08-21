@@ -1,0 +1,254 @@
+{
+ "_nota": "Pipeline comercial — snapshot MANUAL. Edite este arquivo e rode o build (ou espere o CI) pra atualizar a aba. Campos: id unico, n (nome), st (Proposta/Apresentacao/Parado/Perdido/Nao iniciado), impl (R$ implantacao), saas (R$ mensal), obs. As contagens dos KPIs e do donut sao CALCULADAS destes dados — nao existem numeros hardcoded no template.",
+ "atualizado_em": "2026-05 (extraído do template em 21/08/2026 — dados de mar–mai/2026)",
+ "oportunidades": [
+  {
+   "id": "baianao",
+   "n": "Baianão Móveis",
+   "st": "Proposta",
+   "impl": 37370.0,
+   "saas": 18639.0,
+   "obs": "150–300M fat. · em avaliação"
+  },
+  {
+   "id": "sesi",
+   "n": "SESI",
+   "st": "Proposta",
+   "impl": 37914.0,
+   "saas": 2502.0,
+   "obs": "Instituição · enviada 30/abr"
+  },
+  {
+   "id": "hyundai",
+   "n": "Hyundai",
+   "st": "Proposta",
+   "impl": 37914.0,
+   "saas": 950.0,
+   "obs": "Feiras · proposta abr"
+  },
+  {
+   "id": "vetor",
+   "n": "Vetor Editora Psico",
+   "st": "Proposta",
+   "impl": 25000.0,
+   "saas": 7500.0,
+   "obs": "Em avaliação interna"
+  },
+  {
+   "id": "pinaco",
+   "n": "Pinacoteca",
+   "st": "Proposta",
+   "impl": 22500.0,
+   "saas": 2504.0,
+   "obs": "Aguardando retorno"
+  },
+  {
+   "id": "inhotim",
+   "n": "Inhotim + Nova Aliança",
+   "st": "Proposta",
+   "impl": 40000.0,
+   "saas": 1380.0,
+   "obs": "Em negociação"
+  },
+  {
+   "id": "mapfre",
+   "n": "Mapfre",
+   "st": "Proposta",
+   "impl": 25000.0,
+   "saas": 1000.0,
+   "obs": "Em análise"
+  },
+  {
+   "id": "sesi2",
+   "n": "SESI Loja São Paulo",
+   "st": "Apresentação",
+   "impl": 15000.0,
+   "saas": 2000.0,
+   "obs": "Apresentação agendada"
+  },
+  {
+   "id": "sebrae",
+   "n": "Sebrae Nacional",
+   "st": "Apresentação",
+   "impl": 50000.0,
+   "saas": 0.0,
+   "obs": "Aguardando definição modelo"
+  },
+  {
+   "id": "esn1",
+   "n": "ESN TOTVS — oport. 1",
+   "st": "Parado",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Sem retorno ESN"
+  },
+  {
+   "id": "esn2",
+   "n": "ESN TOTVS — oport. 2",
+   "st": "Parado",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Sem retorno ESN"
+  },
+  {
+   "id": "esn3",
+   "n": "ESN TOTVS — oport. 3",
+   "st": "Parado",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Sem retorno ESN"
+  },
+  {
+   "id": "esn4",
+   "n": "ESN TOTVS — oport. 4",
+   "st": "Parado",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Sem retorno ESN"
+  },
+  {
+   "id": "esn5",
+   "n": "ESN TOTVS — oport. 5",
+   "st": "Parado",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Sem retorno ESN"
+  },
+  {
+   "id": "esn6",
+   "n": "ESN TOTVS — oport. 6",
+   "st": "Parado",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Sem retorno ESN"
+  },
+  {
+   "id": "esn7",
+   "n": "ESN TOTVS — oport. 7",
+   "st": "Parado",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Sem retorno ESN"
+  },
+  {
+   "id": "esn8",
+   "n": "ESN TOTVS — oport. 8",
+   "st": "Parado",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Sem retorno ESN"
+  },
+  {
+   "id": "esn9",
+   "n": "ESN TOTVS — oport. 9",
+   "st": "Parado",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Sem retorno ESN"
+  },
+  {
+   "id": "esn10",
+   "n": "ESN TOTVS — oport. 10",
+   "st": "Parado",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Sem retorno ESN"
+  },
+  {
+   "id": "perd1",
+   "n": "Perdido 1",
+   "st": "Perdido",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Concorrência"
+  },
+  {
+   "id": "perd2",
+   "n": "Perdido 2",
+   "st": "Perdido",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Desistência"
+  },
+  {
+   "id": "perd3",
+   "n": "Perdido 3",
+   "st": "Perdido",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Sem resposta"
+  },
+  {
+   "id": "perd4",
+   "n": "Perdido 4",
+   "st": "Perdido",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Orçamento"
+  },
+  {
+   "id": "perd5",
+   "n": "Perdido 5",
+   "st": "Perdido",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Concorrência"
+  },
+  {
+   "id": "perd6",
+   "n": "Perdido 6",
+   "st": "Perdido",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Prazo"
+  },
+  {
+   "id": "perd7",
+   "n": "Perdido 7",
+   "st": "Perdido",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Sem resposta"
+  },
+  {
+   "id": "perd8",
+   "n": "Perdido 8",
+   "st": "Perdido",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Orçamento"
+  },
+  {
+   "id": "perd9",
+   "n": "Perdido 9",
+   "st": "Perdido",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Concorrência"
+  },
+  {
+   "id": "perd10",
+   "n": "Perdido 10",
+   "st": "Perdido",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Desistência"
+  },
+  {
+   "id": "ninit1",
+   "n": "Não iniciado 1",
+   "st": "Não iniciado",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Aguardando contato"
+  },
+  {
+   "id": "ninit2",
+   "n": "Não iniciado 2",
+   "st": "Não iniciado",
+   "impl": 0.0,
+   "saas": 0.0,
+   "obs": "Aguardando contato"
+  }
+ ]
+}

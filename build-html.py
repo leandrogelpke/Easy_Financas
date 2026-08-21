@@ -58,6 +58,36 @@ def parse_money(s: Any) -> float:
         return 0.0
 
 
+# ── LIMIARES DE ALERTA (P2) ───────────────────────────────
+# Fonte única dos cortes usados em alertas/heurísticas do dashboard.
+# Antes espalhados como números mágicos pelo código; mudar AQUI.
+LIMIARES = {
+    "forn_estavel_var":   0.05,    # variância p/ "fornecedor estável"
+    "forn_estavel_min":   5_000,   # R$ médio mínimo p/ o alerta acima
+    "churn_risco_min":    5_000,   # R$ mínimo p/ alertar cliente cat=alto
+    "sem_categoria_min": 10_000,   # R$ mínimo p/ alertar "sem categoria"
+    "acompanhar_min":     3_000,   # R$ mínimo p/ card "acompanhar 30d"
+    "conc_top3_alto":     50,      # % receita top-3 → risco alto
+    "conc_top3_medio":    35,      # % receita top-3 → atenção
+    "runway_critico_m":   3,       # meses de runway → vermelho
+    "runway_atencao_m":   6,       # meses de runway → âmbar
+    "aberto_janela_d":    60,      # dias p/ "Em aberto" vs "Previsto"
+}
+
+def data_caixa(r: dict) -> str:
+    """Data de CAIXA de um lançamento liquidado (regra, não constante).
+
+    Usa a data de pagamento real quando o Bling a fornece (campo
+    `data_pagamento`, capturado desde 21/ago/2026) e cai no vencimento
+    quando não há. Conforme o histórico acumula pagamentos com data real,
+    as visões de caixa migram sozinhas do regime de vencimento pro regime
+    de pagamento — sem flag, sem migração manual (auditoria P1.1).
+
+    Só faz sentido para pagas/recebidas; em aberto não tem pagamento.
+    """
+    return (r.get("data_pagamento") or "").strip() or (r.get("vencimento") or "")
+
+
 def parse_date(s: str) -> date | None:
     if not s:
         return None
@@ -321,6 +351,34 @@ KNOWN_SUPPLIERS: dict[str, dict] = {
 # Grupos para o stack chart (top fornecedores agrupados).
 # Estrutura redesenhada em jun/2026 — bucket "Outros" antigo foi explodido
 # em Tributos, Parceria TOTVS, Aporte e Outros (resíduo).
+# ── FONTE ÚNICA (P1.3): fornecedores_classificacao.json ──
+# O dicionário literal acima virou FALLBACK. O arquivo JSON é a fonte
+# compartilhada com dre_render.py — editar lá, não aqui. Se o arquivo
+# faltar/corromper, o fallback in-code mantém o dashboard de pé.
+def _load_fornecedores_json() -> dict[str, dict]:
+    try:
+        d = json.loads((Path(__file__).resolve().parent /
+                        "fornecedores_classificacao.json").read_text(encoding="utf-8"))
+        out: dict[str, dict] = {}
+        for e in d.get("fornecedores", []):
+            if not e.get("id"):
+                continue  # entrada só-DRE (sem visão de Gastos)
+            info = {"id": e["id"], "n": e.get("display") or e["id"],
+                    "cat": e.get("cat") or "Outros", "st": e.get("st") or "",
+                    "sc": e.get("sc") or "bgb"}
+            for al in e.get("aliases", []):
+                out[al.upper().strip()] = info
+        return out
+    except Exception as _e:
+        print(f"[classif] fornecedores_classificacao.json indisponível ({_e}) "
+              f"— usando fallback in-code", file=sys.stderr)
+        return {}
+
+
+_ks_json = _load_fornecedores_json()
+if _ks_json:
+    KNOWN_SUPPLIERS = _ks_json
+
 STACK_GROUPS = [
     {"label": "Buy-out/Acordo", "ids": ["romulo", "geremias"]},
     {"label": "Pessoal",     "ids": ["alan", "isabel", "macedo", "efata",
@@ -381,7 +439,7 @@ def compute_rows(pagas: list[dict], months: list[date]) -> list[dict]:
 
     for p in pagas:
         name = (p.get("contato_nome") or p.get("nomeContato") or "").strip()
-        d = parse_date(p.get("vencimento") or p.get("dataVencimento") or "")
+        d = parse_date(data_caixa(p) or p.get("dataVencimento") or "")
         valor = parse_money(p.get("valor"))
         if not d or valor == 0:
             continue
@@ -443,7 +501,7 @@ def compute_cx_data(receber: list[dict], today: date) -> list[dict]:
         if venc and venc < today:
             sit = "Atrasada"
             bgc = "bgr"
-        elif venc and venc <= today + timedelta(days=60):
+        elif venc and venc <= today + timedelta(days=LIMIARES["aberto_janela_d"]):
             sit = "Em aberto"
             bgc = "bgb"
         else:
@@ -772,15 +830,18 @@ def render_cashflow_html(pagas: list[dict], recebidas: list[dict],
         return parse_money(v)
 
     def _bucket(rows: list[dict], use_saldo: bool) -> dict[str, float]:
+        # use_saldo=True → em aberto (agrupa por vencimento);
+        # use_saldo=False → liquidado (agrupa pela data de CAIXA — pagamento
+        # real quando o Bling fornece, vencimento como fallback; P1.1).
         b: dict[str, float] = defaultdict(float)
         for r in rows:
-            venc = parse_date(r.get("vencimento") or "")
-            if not venc:
+            ref = parse_date((r.get("vencimento") or "") if use_saldo else data_caixa(r))
+            if not ref:
                 continue
             val = parse_money(r.get("saldo")) if use_saldo else parse_money(r.get("valor"))
             if use_saldo and val == 0:
                 val = parse_money(r.get("valor"))
-            b[f"{venc.year}-{venc.month:02d}"] += val
+            b[f"{ref.year}-{ref.month:02d}"] += val
         return b
 
     re_real = _bucket(recebidas, False)
@@ -1135,6 +1196,10 @@ def compute_cli_data_totvs(totvs_snapshot_path: Path,
             "id":            cid,
             "n":             rec["n"],
             "cat":           cat,
+            # rótulo automático ≠ revisão humana (P1.5): sem override no
+            # clientes_classificacao.json, a categoria veio da regra — o
+            # subtítulo da aba expõe a contagem de não-revisados.
+            "auto":          0 if rec["override"] else 1,
             "valor":         valor_mes,
             "uso":           uso,
             "abr":           abr_label,
@@ -1406,6 +1471,144 @@ def recebido_to_js(items: list[dict]) -> str:
 # DRE — RECEITA VS DESPESAS (REAL + PROJETADO)
 # ──────────────────────────────────────────────
 
+def compute_proj_cfg(pagas: list[dict], recebidas: list[dict],
+                     em_aberto: list[dict], today: date,
+                     saldo_caixa: float | None, saldo_fonte: str) -> dict:
+    """Premissas da aba Projeção — TODAS derivadas dos dados (auditoria P0.7).
+
+    A versão anterior era um modelo de constantes JS (`OP=31244, EF=35000,
+    S0=48000...`) escrito em mai/26 e nunca mais atualizado: assumia despesa
+    operacional de R$ 66K/mês quando a real rodava R$ 75–90K, um caixa
+    inicial de R$ 48K de origem desconhecida e cenários de Efata que o
+    encerramento do contrato (ago/26) tornou fictícios.
+
+    Regras (nenhum número literal):
+      - receita_base   = média das recebidas dos últimos 6 meses FECHADOS;
+        cenários do select = 80% / 100% / 120% da base (arredondados a R$ 1K).
+      - extra (ex-"Atacadão") = média mensal histórica do próprio cliente nos
+        últimos 12 meses fechados (meses com receita > 0); opções 0/50%/100%.
+        Sem histórico → só a opção 0.
+      - desp_op        = média dos últimos 3 meses FECHADOS de pagas,
+        excluindo Aporte/Sócios e Buy-out/Acordo (que entram à parte).
+        3 meses e não 6: reage mais rápido a cortes reais (ex.: fim da Efata).
+      - estrutural[m]  = parcelas REAIS em aberto (pós-reconcile) de cat
+        Buy-out (Rômulo remanescente + acordo Geremias), mês a mês.
+      - caixa_inicial  = saldo do Bling (fallback manual); ausente → 0 com
+        aviso explícito no card.
+      - horizonte      = do mês seguinte ao atual até o último estrutural
+        agendado + 2 meses (mínimo 12).
+      - estrutural_medio_1s = média mensal do realizado não-recorrente no
+        1º semestre do ano corrente (linha "se a estrutura continuasse").
+    """
+    cutoff = today.strftime("%Y-%m")
+
+    def _fechado(ym: str) -> bool:
+        return bool(ym) and ym < cutoff
+
+    def _ym_list(n_back: int) -> list[str]:
+        out, y, m = [], today.year, today.month
+        for _ in range(n_back):
+            m -= 1
+            if m == 0:
+                y, m = y - 1, 12
+            out.append(f"{y:04d}-{m:02d}")
+        return list(reversed(out))
+
+    def _eh_cat(r: dict, *cats: str) -> bool:
+        info = find_supplier((r.get("contato_nome") or "").upper())
+        return bool(info) and info.get("cat") in cats
+
+    # receita base — média 6m fechados
+    rec_pm: dict[str, float] = defaultdict(float)
+    for r in recebidas:
+        ym = (r.get("vencimento") or "")[:7]
+        if _fechado(ym):
+            rec_pm[ym] += parse_money(r.get("valor"))
+    ult6 = _ym_list(6)
+    receita_base = sum(rec_pm.get(m, 0) for m in ult6) / (len(ult6) or 1)
+    receita_base = round(receita_base / 1000) * 1000
+
+    # extra — média mensal do Atacadão (meses com receita) nos últimos 12m
+    atac_vals = [v for ym, v in (
+        (ym, sum(parse_money(r.get("valor")) for r in recebidas
+                 if "ATACADA" in (r.get("contato_nome") or "").upper()
+                 and (r.get("vencimento") or "")[:7] == ym))
+        for ym in _ym_list(12)) if v > 0]
+    extra_base = round(sum(atac_vals) / len(atac_vals)) if atac_vals else 0
+
+    # despesa operacional — média 3m fechados sem aporte/estrutural
+    desp_pm: dict[str, float] = defaultdict(float)
+    for r in pagas:
+        ym = (r.get("vencimento") or "")[:7]
+        if _fechado(ym) and not _eh_cat(r, "Aporte/Sócios", "Buy-out"):
+            desp_pm[ym] += parse_money(r.get("valor"))
+    ult3 = _ym_list(3)
+    desp_op = round(sum(desp_pm.get(m, 0) for m in ult3) / (len(ult3) or 1))
+
+    # estruturais agendados (em aberto reconciliado, cat Buy-out)
+    estrutural: dict[str, float] = defaultdict(float)
+    for r in em_aberto:
+        ym = (r.get("vencimento") or "")[:7]
+        if ym > cutoff and _eh_cat(r, "Buy-out"):
+            estrutural[ym] += parse_money(r.get("saldo") or r.get("valor"))
+
+    # média do não-recorrente realizado no 1º semestre do ano corrente
+    s1 = [f"{today.year:04d}-{m:02d}" for m in range(1, 7)]
+    bo_vals = [sum(parse_money(r.get("valor")) for r in pagas
+                   if (r.get("vencimento") or "")[:7] == ym and _eh_cat(r, "Buy-out"))
+               for ym in s1]
+    bo_meses = [v for v in bo_vals if v > 0]
+    estrutural_medio = round(sum(bo_meses) / len(bo_meses)) if bo_meses else 0
+
+    # horizonte: mês seguinte → último estrutural + 2 (mín. 12)
+    MN = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+          "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
+    last_est = max(estrutural.keys(), default="")
+    y, m = today.year, today.month
+    months: list[dict] = []
+    while len(months) < 30:  # trava de sanidade
+        m += 1
+        if m > 12:
+            y, m = y + 1, 1
+        ym = f"{y:04d}-{m:02d}"
+        months.append({"ym": ym, "label": f"{MN[m-1]}/{str(y)[-2:]}"})
+        cobriu_estrutural = (not last_est) or (ym >= last_est)
+        if len(months) >= 12 and cobriu_estrutural:
+            break
+    for _ in range(2):  # folga após o último estrutural
+        m += 1
+        if m > 12:
+            y, m = y + 1, 1
+        months.append({"ym": f"{y:04d}-{m:02d}", "label": f"{MN[m-1]}/{str(y)[-2:]}"})
+
+    def _opt(v: float, label: str, sel: bool = False) -> dict:
+        return {"v": round(v), "label": label, "sel": sel}
+
+    receita_opts = [
+        _opt(receita_base * 0.8, f"{_kbrl(receita_base*0.8)} — conservador (80% da média 6m)"),
+        _opt(receita_base, f"{_kbrl(receita_base)} — base (média 6m fechados)", True),
+        _opt(receita_base * 1.2, f"{_kbrl(receita_base*1.2)} — otimista (120% da média 6m)"),
+    ]
+    extra_opts = [_opt(0, "Não recupera", extra_base == 0)]
+    if extra_base > 0:
+        extra_opts.append(_opt(extra_base * 0.5, f"50% — {_kbrl(extra_base*0.5)}/mês", True))
+        extra_opts.append(_opt(extra_base, f"100% — {_kbrl(extra_base)}/mês"))
+
+    return {
+        "months": months,
+        "ano_corrente": today.year,
+        "receita_opts": receita_opts,
+        "extra_opts": extra_opts,
+        "desp_op": desp_op,
+        "desp_op_nota": f"média {'–'.join(ult3[i][5:7] for i in (0, -1))} "
+                        f"({len(ult3)}m fechados, sem aportes/estruturais)",
+        "estrutural": dict(estrutural),
+        "estrutural_medio_1s": estrutural_medio,
+        "caixa_inicial": round(saldo_caixa, 2) if saldo_caixa else 0,
+        "caixa_fonte": saldo_fonte or "",
+    }
+
+
 def compute_dre_data(
     pagas: list[dict],
     recebidas: list[dict],
@@ -1434,12 +1637,12 @@ def compute_dre_data(
         return bool(info) and info.get("cat") == "Aporte/Sócios"
 
     for r in pagas:
-        m = (r.get("vencimento") or "")[:7]
+        m = data_caixa(r)[:7]
         if m and not _eh_aporte(r):
             desp_real[m] += parse_money(r.get("valor", 0))
 
     for r in recebidas:
-        m = (r.get("vencimento") or "")[:7]
+        m = data_caixa(r)[:7]
         if m:
             rec_real[m] += parse_money(r.get("valor", 0))
 
@@ -1550,11 +1753,11 @@ def compute_dre_detail(
         return bool(info) and info.get("cat") == "Aporte/Sócios"
 
     for r in pagas:
-        m = (r.get("vencimento") or "")[:7]
+        m = data_caixa(r)[:7]
         if m and not _eh_aporte(r):
             result[m]["desp"].append(to_item(r, "real"))
     for r in recebidas:
-        m = (r.get("vencimento") or "")[:7]
+        m = data_caixa(r)[:7]
         if m:
             result[m]["rec"].append(to_item(r, "real"))
 
@@ -1725,7 +1928,8 @@ def compute_overview_kpis_html(rows: list, pagar_data: list, cx_data: list, mont
     # porque o manual vivia desatualizado (pedido do Leandro, 21/ago).
     if saldo_caixa and media > 0:
         runway = saldo_caixa / media
-        rw_cor = "red" if runway < 3 else ("amber" if runway < 6 else "green")
+        rw_cor = ("red" if runway < LIMIARES["runway_critico_m"]
+                  else ("amber" if runway < LIMIARES["runway_atencao_m"] else "green"))
         rw_val = (f"{runway:.1f}".replace(".", ",") + " meses") if runway < 100 else "99+ meses"
         _fonte = "Bling" if saldo_fonte == "bling" else "manual — desatualizado?"
         rw_sub = f"caixa {_kbrl(saldo_caixa)} ({_fonte}) ÷ burn {_kbrl(media)}/mês"
@@ -1755,12 +1959,12 @@ def compute_overview_riscos_html(cx_data: list, pagar_data: list,
         if top3:
             pct = round(100 * sum(x.get("total", 0) for x in top3) / tot)
             nomes = ", ".join(x["n"] for x in top3)
-            if pct >= 50:
+            if pct >= LIMIARES["conc_top3_alto"]:
                 alerts.append(
                     f'<div class="alt alr"><div class="ats">Concentração de receita: top 3 = {pct}%</div>'
                     f'<div class="asd">{nomes} — dependência alta; diversificar reduz risco de caixa.</div></div>'
                 )
-            elif pct >= 35:
+            elif pct >= LIMIARES["conc_top3_medio"]:
                 alerts.append(
                     f'<div class="alt ala"><div class="ats">Concentração moderada: top 3 = {pct}%</div>'
                     f'<div class="asd">{nomes} — monitorar dependência da carteira.</div></div>'
@@ -1825,7 +2029,7 @@ def compute_overview_positivos_html(cx_data: list, pagar_data: list, rows: list,
         tot = sum(x.get("total", 0) for x in cli_data) or 1
         ranked = sorted(cli_data, key=lambda x: -x.get("total", 0))[:3]
         pct = round(100 * sum(x.get("total", 0) for x in ranked) / tot)
-        if pct < 35 and tot > 1:
+        if pct < LIMIARES["conc_top3_medio"] and tot > 1:
             positivos.append(
                 '<div class="alt alg"><div class="ats">Carteira diversificada</div>'
                 f'<div class="asd">Top 3 clientes = {pct}% da receita — baixa dependência.</div></div>'
@@ -1858,7 +2062,7 @@ def compute_overview_positivos_html(cx_data: list, pagar_data: list, rows: list,
         if len(vals) >= 3:
             avg = sum(vals) / len(vals)
             variance_pct = max(abs(v - avg) / avg for v in vals) if avg else 1
-            if variance_pct < 0.05 and avg > 5_000:
+            if variance_pct < LIMIARES["forn_estavel_var"] and avg > LIMIARES["forn_estavel_min"]:
                 stable.append((r["n"], avg))
     if stable:
         stable.sort(key=lambda x: -x[1])
@@ -1988,7 +2192,7 @@ def compute_next_actions(
 
     # ── Clientes "alto" risco com receita relevante (amber) ──
     high_risk_cli = [c for c in (cli_data or [])
-                     if c.get("cat") == "alto" and c.get("valor", 0) >= 5000]
+                     if c.get("cat") == "alto" and c.get("valor", 0) >= LIMIARES["churn_risco_min"]]
     for c in sorted(high_risk_cli, key=lambda c: -c["valor"])[:2]:
         imediatas.append({
             "nivel": "amber",
@@ -2011,7 +2215,7 @@ def compute_next_actions(
         sem_cat[nome]["n"] += 1
     for nome, info in sorted(
             sem_cat.items(), key=lambda x: -x[1]["val"])[:2]:
-        if info["val"] < 10_000:
+        if info["val"] < LIMIARES["sem_categoria_min"]:
             continue
         imediatas.append({
             "nivel": "amber",
@@ -2025,7 +2229,7 @@ def compute_next_actions(
     prox30 = [r for r in pagar_data if r.get("window") == "30d"]
     top_30 = sorted(prox30, key=lambda r: -r.get("val", 0))[:4]
     for r in top_30:
-        if r.get("val", 0) < 3000:
+        if r.get("val", 0) < LIMIARES["acompanhar_min"]:
             continue
         cat = r.get("cat", "?") or ""
         cat_txt = (f"Categoria: {cat}" if cat and cat != "(sem categoria)"
@@ -2068,7 +2272,7 @@ def compute_next_actions(
         })
 
     # ── ACOMPANHAR: clientes "medio" inativos (sem pagar >60d) ──
-    cutoff_ym = (today.replace(day=1) - timedelta(days=60)).strftime("%Y-%m")
+    cutoff_ym = (today.replace(day=1) - timedelta(days=LIMIARES["aberto_janela_d"])).strftime("%Y-%m")
     medio_inativo = [c for c in (cli_data or [])
                      if c.get("cat") == "medio"
                      and (c.get("last_mes") or "") <= cutoff_ym]
@@ -2321,6 +2525,8 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     overview_hero_sub   = compute_overview_hero_sub(months, total_pago)
     overview_pills      = compute_overview_pills(pagar_data, cx_data)
     saldo_caixa, saldo_fonte = resolve_saldo_caixa(data)
+    proj_cfg = compute_proj_cfg(pagas, recebidas, em_aberto, today,
+                                saldo_caixa, saldo_fonte)
     overview_kpis       = compute_overview_kpis_html(rows, pagar_data, cx_data, months,
                                                      saldo_caixa, saldo_fonte)
     overview_riscos     = compute_overview_riscos_html(cx_data, pagar_data, cli_data)
@@ -2362,6 +2568,37 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     js_cf_cats = json.dumps(
         [{"cat": c, "color": _cat_colors.get(c, "#3d5a80")} for c in _cf_cats],
         ensure_ascii=False)
+    # ── Pipeline (P0.6): dados saem de pipeline_data.json (versionado,
+    #    editável sem tocar no template); contagens calculadas no JS ──
+    try:
+        _pp = json.loads((Path(__file__).resolve().parent / "pipeline_data.json")
+                         .read_text(encoding="utf-8"))
+        _pp_rows = _pp.get("oportunidades", [])
+        _pp_upd = _pp.get("atualizado_em", "data desconhecida")
+    except Exception as _e:
+        print(f"[pipeline] pipeline_data.json ilegível ({_e}) — aba vazia", file=sys.stderr)
+        _pp_rows, _pp_upd = [], "arquivo ausente"
+    html = html.replace("@@PP_DATA@@", json.dumps(_pp_rows, ensure_ascii=False))
+    html = html.replace("@@PP_ATUALIZADO@@", _pp_upd)
+
+    # ── Projeção (P0.7): premissas calculadas, zero hardcode ──
+    from html import escape as _e
+    def _opts_html(opts: list[dict]) -> str:
+        return "".join(
+            f'<option value="{o["v"]}"{" selected" if o.get("sel") else ""}>'
+            f'{_e(o["label"])}</option>' for o in opts)
+    _pm = proj_cfg["months"]
+    _est_ms = sorted(proj_cfg["estrutural"])
+    _est_fim = next((mo["label"] for mo in _pm if _est_ms and mo["ym"] == _est_ms[-1]),
+                    _est_ms[-1] if _est_ms else "")
+    html = html.replace("@@PROJ_CFG@@", json.dumps(proj_cfg, ensure_ascii=False))
+    html = html.replace("@@PROJ_RSEL_OPTS@@", _opts_html(proj_cfg["receita_opts"]))
+    html = html.replace("@@PROJ_ASEL_OPTS@@", _opts_html(proj_cfg["extra_opts"]))
+    html = html.replace("@@PROJ_HORIZONTE@@", f"{_pm[0]['label']} → {_pm[-1]['label']}")
+    html = html.replace("@@PROJ_PILL@@",
+                        (f"parcelas estruturais reais até {_est_fim}" if _est_ms
+                         else "sem parcelas estruturais futuras agendadas"))
+
     html = html.replace("@@CF_CATS@@",         js_cf_cats)
     html = html.replace("@@ROWS@@",            js_rows)
     html = html.replace("@@CF_MONTHS@@",       js_months)
@@ -2412,6 +2649,10 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     cli_sub = (f"{cli_kpi['n_tot']} clientes ativos · "
                f"R$ {_brl_num(cli_kpi['tot_val'])}/mês mapeado · "
                f"janela: últimos 12 meses fechados (rolling)")
+    _n_auto = sum(1 for r in cli_data if r.get("auto"))
+    if _n_auto:
+        cli_sub += (f" · ⚠ {_n_auto} classificado(s) por regra automática "
+                    f"(sem revisão manual — adicionar ao clientes_classificacao.json)")
     html = html.replace("@@CLI_HSUB@@", cli_sub)
 
     html = html.replace("@@DRE_DATA@@",        js_dre)

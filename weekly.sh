@@ -1,9 +1,20 @@
 #!/usr/bin/env bash
-# weekly.sh — runbook semanal automatizado.
-# Rodar via: bash ~/Documents/Easy_Financas/weekly.sh
-# Ou em sessao Cowork: "rode o runbook semanal" e eu invoco isso pela bash.
+# weekly.sh — runbook semanal automatizado. **DEPRECADO desde 20/06/2026.**
+#
+# O pipeline roda no GitHub Actions (update.yml, 3x/dia) com token próprio.
+# Rodar isto localmente é perigoso: o refresh do token Bling AQUI rotaciona
+# o refresh_token e QUEBRA o Secret do CI (próxima rodada falha com
+# invalid_grant). Use apenas se souber exatamente o que está fazendo:
+#     EF_FORCE_LOCAL=1 bash weekly.sh
 
 set -euo pipefail
+
+if [ "${EF_FORCE_LOCAL:-}" != "1" ]; then
+    echo "ERRO: weekly.sh está deprecado — o CI (update.yml) já faz este trabalho 3x/dia."
+    echo "Rodar localmente pode invalidar o token Bling do CI (rotação do refresh_token)."
+    echo "Se realmente precisar: EF_FORCE_LOCAL=1 bash weekly.sh"
+    exit 2
+fi
 
 # Resolver paths — Cowork sandbox tem prioridade pq o mount pode estar
 # montado simultaneamente com o $HOME local (caso da sessao agentica).

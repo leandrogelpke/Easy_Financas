@@ -1,0 +1,491 @@
+{
+ "_nota": "FONTE UNICA de classificacao de fornecedores (auditoria P1.3). Consumida por build-html.py (KNOWN_SUPPLIERS: cat/st/sc para Gastos/donut/semaforo) e dre_render.py (FORNECEDOR_MAP: grupo/sub/label do DRE). A ORDEM importa: o match do DRE e por substring na ordem do array. Novo fornecedor: adicionar aqui (todos os aliases que o Bling usa, com e sem acento/sufixo de CPF — o Bling trunca nomes em 80 chars). Os mapas in-code nos dois modulos viraram FALLBACK usado so se este arquivo faltar/corromper.",
+ "fornecedores": [
+  {
+   "aliases": [
+    "ROMULO FERREIRA LIMA"
+   ],
+   "id": "romulo",
+   "display": "Rômulo Ferreira Lima",
+   "cat": "Buy-out",
+   "st": "Não orçado",
+   "sc": "bgr",
+   "dre": {
+    "grupo": "nao_recorrente",
+    "sub": "Buy-out de quotas",
+    "label": "Rômulo Lima (buy-out)"
+   }
+  },
+  {
+   "aliases": [
+    "EFATA TREINAMENTO EM TECNOLOGIA LTDA",
+    "EFATA TREINAMENTO"
+   ],
+   "id": "efata",
+   "display": "Efata Treinamento",
+   "cat": "Pessoal",
+   "st": "Parcial",
+   "sc": "bga",
+   "dre": {
+    "grupo": "desp_pessoal",
+    "sub": "Prestadores PJ",
+    "label": "Efata (PJ)"
+   }
+  },
+  {
+   "aliases": [
+    "M. DE Q. MACEDO - EPP",
+    "M. DE Q. MACEDO"
+   ],
+   "id": "macedo",
+   "display": "M. de Q. Macedo",
+   "cat": "Pessoal",
+   "st": "Não orçado",
+   "sc": "bgr",
+   "dre": {
+    "grupo": "desp_pessoal",
+    "sub": "Prestadores PJ",
+    "label": "Macedo (PJ)"
+   }
+  },
+  {
+   "aliases": [
+    "MILAJANU CONSULTORIA EM TECNOLOGIA DE COMPUTACAO L",
+    "MILAJANU CONSULTORIA EM TECNOLOGIA DE COMPUTAÇÃO L",
+    "MILAJANU CONSULTORIA"
+   ],
+   "id": "milajanu",
+   "display": "Milajanu Consultoria TI",
+   "cat": "Pessoal",
+   "st": "Não orçado",
+   "sc": "bgr",
+   "dre": {
+    "grupo": "desp_pessoal",
+    "sub": "Prestadores PJ",
+    "label": "Milajanu (PJ)"
+   }
+  },
+  {
+   "aliases": [
+    "POLAR TECNICA COMERCIAL E INDUSTRIAL LTDA",
+    "POLAR TECNICA"
+   ],
+   "id": "polar",
+   "display": "Polar Técnica Comercial",
+   "cat": "Aporte/Sócios",
+   "st": "Aporte",
+   "sc": "bga",
+   "dre": {
+    "grupo": "aporte_socio",
+    "sub": "Aporte/Distribuição",
+    "label": "Polar (aporte sócio)"
+   }
+  },
+  {
+   "aliases": [
+    "EDUARDO FARIA DE GODOY 29853590824",
+    "EDUARDO FARIA DE GODOY"
+   ],
+   "id": "godoy",
+   "display": "Eduardo Faria de Godoy",
+   "cat": "Pessoal",
+   "st": "Não orçado",
+   "sc": "bgr",
+   "dre": {
+    "grupo": "desp_pessoal",
+    "sub": "Prestadores PJ",
+    "label": "Eduardo Godoy (PJ)"
+   }
+  },
+  {
+   "aliases": [
+    "EP SERVIÇOS DE TECNOLOGIA LTDA",
+    "EP SERVICOS DE TECNOLOGIA LTDA",
+    "EP SERVIÇOS DE TECNOLOGIA"
+   ],
+   "id": "ep",
+   "display": "EP Serviços Tecnologia",
+   "cat": "Serviços PJ",
+   "st": "Não orçado",
+   "sc": "bgr",
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Serviços estratégicos",
+    "label": "EP Serviços"
+   }
+  },
+  {
+   "aliases": [
+    "GEREMIAS FERREIRA LIMA 37305076805",
+    "GEREMIAS FERREIRA LIMA"
+   ],
+   "id": "geremias",
+   "display": "Geremias Lima (acordo)",
+   "cat": "Buy-out",
+   "st": "Acordo trabalhista",
+   "sc": "bgr",
+   "dre": {
+    "grupo": "nao_recorrente",
+    "sub": "Acordo trabalhista",
+    "label": "Geremias Lima (acordo)"
+   }
+  },
+  {
+   "aliases": [
+    "CARTAO DE CREDITO",
+    "CARTÃO DE CRÉDITO"
+   ],
+   "id": "cartao",
+   "display": "Cartão de Crédito",
+   "cat": "Outros",
+   "st": "Não orçado",
+   "sc": "bgr",
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Administrativas",
+    "label": "Cartão de crédito"
+   }
+  },
+  {
+   "aliases": [
+    "IRPJ"
+   ],
+   "id": "irpj",
+   "display": "IRPJ",
+   "cat": "Tributos e Contábil",
+   "st": "Imposto",
+   "sc": "bga",
+   "dre": {
+    "grupo": "impostos_lucro",
+    "sub": "Impostos sobre lucro",
+    "label": "IRPJ"
+   }
+  },
+  {
+   "aliases": [
+    "VTCONN CONSULTORIA E SISTEMAS LTDA",
+    "VTCONN CONSULTORIA"
+   ],
+   "id": "vtconn",
+   "display": "Vtconn Consultoria",
+   "cat": "Serviços PJ",
+   "st": "Encerrou?",
+   "sc": "bga",
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Serviços estratégicos",
+    "label": "Vtconn (encerrado)"
+   }
+  },
+  {
+   "aliases": [
+    "IVY GROUP HOLDING S/A",
+    "IVY GROUP HOLDING",
+    "IVY GROUP"
+   ],
+   "id": "ivy",
+   "display": "IVY Group Holding S/A",
+   "cat": "Outros",
+   "st": "Identificar",
+   "sc": "bgr",
+   "dre": {
+    "grupo": "aporte_socio",
+    "sub": "Aporte/Distribuição",
+    "label": "IVY Group (a classificar)"
+   }
+  },
+  {
+   "aliases": [
+    "PLENTECH LTDA",
+    "PLENTECH"
+   ],
+   "id": "plentech",
+   "display": "Plentech LTDA",
+   "cat": "Serviços PJ",
+   "st": "Não orçado",
+   "sc": "bgr",
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Serviços estratégicos",
+    "label": "Plentech"
+   }
+  },
+  {
+   "aliases": [
+    "VICTOR HUGO DE OLIVEIRA",
+    "VICTOR HUGO"
+   ],
+   "id": "victor",
+   "display": "Victor Hugo de Oliveira",
+   "cat": "Serviços PJ",
+   "st": "Encerrou?",
+   "sc": "bga",
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Serviços estratégicos",
+    "label": "Victor Hugo (advogado)"
+   }
+  },
+  {
+   "aliases": [
+    "CBYK CONSULTORIA EM GESTAO E TECNOLOGIA LTDA",
+    "CBYK CONSULTORIA"
+   ],
+   "id": "cbyk",
+   "display": "CBYK Consultoria",
+   "cat": "Outros",
+   "st": "Identificar",
+   "sc": "bgr",
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Serviços estratégicos",
+    "label": "CBYK Consultoria"
+   }
+  },
+  {
+   "aliases": [
+    "CSLL"
+   ],
+   "id": "csll",
+   "display": "CSLL",
+   "cat": "Tributos e Contábil",
+   "st": "Imposto",
+   "sc": "bga",
+   "dre": {
+    "grupo": "impostos_lucro",
+    "sub": "Impostos sobre lucro",
+    "label": "CSLL"
+   }
+  },
+  {
+   "aliases": [
+    "SERRANO CONTABILIDADE LIMITADA",
+    "SERRANO CONTABILIDADE"
+   ],
+   "id": "serrano",
+   "display": "Serrano Contabilidade",
+   "cat": "Tributos e Contábil",
+   "st": "Recorrente",
+   "sc": "bga",
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Administrativas",
+    "label": "Serrano (contabilidade)"
+   }
+  },
+  {
+   "aliases": [
+    "RECEITA FEDERAL"
+   ],
+   "id": "receita",
+   "display": "Receita Federal",
+   "cat": "Tributos e Contábil",
+   "st": "Imposto",
+   "sc": "bga",
+   "dre": {
+    "grupo": "desp_pessoal",
+    "sub": "Encargos sobre pró-labore",
+    "label": "DCTFWEB (INSS)"
+   }
+  },
+  {
+   "aliases": [
+    "PREFEITURA DO MUNICIPIO DE SAO BERNARDO DO CAMPO",
+    "PREFEITURA DO MUNICIPIO DE SAO BERNARDO",
+    "PREFEITURA DO MUNICIPIO"
+   ],
+   "id": "prefeitura",
+   "display": "Prefeitura SBC (ISS)",
+   "cat": "Tributos e Contábil",
+   "st": "Imposto",
+   "sc": "bga",
+   "dre": {
+    "grupo": "deducoes_iss",
+    "sub": "Impostos sobre vendas",
+    "label": "ISS"
+   }
+  },
+  {
+   "aliases": [
+    "MUNICIPIO DE SAO BERNARDO DO CAMPO"
+   ],
+   "id": "municipio_sbc",
+   "display": "Município SBC (TFE)",
+   "cat": "Tributos e Contábil",
+   "st": "Anual",
+   "sc": "bga"
+  },
+  {
+   "aliases": [
+    "TOTVS S.A.",
+    "TOTVS SA"
+   ],
+   "id": "totvs",
+   "display": "TOTVS S.A.",
+   "cat": "Parceria TOTVS",
+   "st": "Anual",
+   "sc": "bga",
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Administrativas",
+    "label": "Totvs (parceria)"
+   }
+  },
+  {
+   "aliases": [
+    "CRALUS INFORMATICA LTDA",
+    "CRALUS INFORMATICA"
+   ],
+   "id": "cralus",
+   "display": "Cralus Informática",
+   "cat": "Serviços PJ",
+   "st": "Recorrente",
+   "sc": "bga",
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Serviços estratégicos",
+    "label": "Cralus Informática"
+   }
+  },
+  {
+   "aliases": [
+    "LWSA S/A",
+    "LWSA SA",
+    "LWSA"
+   ],
+   "id": "lwsa",
+   "display": "LWSA (Bling)",
+   "cat": "Software",
+   "st": "Recorrente",
+   "sc": "bga",
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Administrativas",
+    "label": "LWSA / Bling"
+   }
+  },
+  {
+   "aliases": [
+    "ISABEL FELIX",
+    "ISABEL CRISTINA FELIX DA SILVA ME",
+    "ISABEL CRISTINA FELIX"
+   ],
+   "id": "isabel",
+   "display": "Isabel Felix",
+   "cat": "Pessoal",
+   "st": "Reembolso",
+   "sc": "bga",
+   "dre": {
+    "grupo": "desp_pessoal",
+    "sub": "Prestadores PJ",
+    "label": "Isabel Felix (PJ)"
+   }
+  },
+  {
+   "aliases": [
+    "LUIZ HENRIQUE AQUINO"
+   ],
+   "id": "luizaquino",
+   "display": "Luiz Aquino (reembolso)",
+   "cat": "Reembolsos",
+   "st": "Eventual",
+   "sc": "bgb",
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Administrativas",
+    "label": "Reembolso visitas (L. Aquino)"
+   }
+  },
+  {
+   "aliases": [
+    "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
+    "ALAN BARBOSA"
+   ],
+   "id": "alan",
+   "display": "Alan Barbosa",
+   "cat": "Pessoal",
+   "st": "Recorrente",
+   "sc": "bgr",
+   "dre": {
+    "grupo": "desp_pessoal",
+    "sub": "Prestadores PJ",
+    "label": "Alan Barbosa (PJ)"
+   }
+  },
+  {
+   "aliases": [
+    "ATRIA SERVICOS"
+   ],
+   "id": null,
+   "display": "Atria Serviços",
+   "cat": null,
+   "st": null,
+   "sc": null,
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Serviços estratégicos",
+    "label": "Atria Serviços"
+   }
+  },
+  {
+   "aliases": [
+    "INNOVA LOG"
+   ],
+   "id": null,
+   "display": "Innova Log",
+   "cat": null,
+   "st": null,
+   "sc": null,
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Serviços estratégicos",
+    "label": "Innova Log"
+   }
+  },
+  {
+   "aliases": [
+    "SAO PAULO MARCAS"
+   ],
+   "id": null,
+   "display": "SP Marcas e Patentes",
+   "cat": null,
+   "st": null,
+   "sc": null,
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Administrativas",
+    "label": "SP Marcas e Patentes"
+   }
+  },
+  {
+   "aliases": [
+    "GOVERNO DO ESTADO"
+   ],
+   "id": null,
+   "display": "Taxas estaduais (Jucesp)",
+   "cat": null,
+   "st": null,
+   "sc": null,
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Administrativas",
+    "label": "Taxas estaduais (Jucesp)"
+   }
+  },
+  {
+   "aliases": [
+    "MUNICIPIO DE SAO BERNARDO"
+   ],
+   "id": "municipio_sbc",
+   "display": "TFE / Taxas municipais",
+   "cat": "Tributos e Contábil",
+   "st": "Anual",
+   "sc": "bgb",
+   "dre": {
+    "grupo": "desp_admin",
+    "sub": "Administrativas",
+    "label": "TFE / Taxas municipais"
+   }
+  }
+ ]
+}

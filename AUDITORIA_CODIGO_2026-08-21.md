@@ -12,9 +12,15 @@
 > `provisoes_encerradas.json` (R$ 210K removidos; só gasto real fica).
 > Recomendo ainda inativar as provisões no próprio Bling quando conveniente
 > — o arquivo compensa, mas dado limpo na origem é melhor.
-> **Pende de refactor futuro (Lote C):** P0.7 (Projeção data-driven), P1.3
-> completo (JSON único de fornecedores), P1.5 (auto vs manual em clientes),
-> P1.8 (banner de horizonte), demais P2.
+> **Lote final executado (21/ago, noite):** P0.7 (Projeção 100% calculada —
+> `@@PROJ_CFG@@`), P0.6 completo (Pipeline → `pipeline_data.json`, contagens
+> derivadas), P1.1 completo (regra `data_caixa()`: pagamento real quando
+> existir), P1.3 completo (`fornecedores_classificacao.json` fonte única),
+> P1.5 (contagem de clientes "auto" no subtítulo), P2 (LIMIARES nomeados,
+> seed do donut, fBRx, weekly.sh bloqueado, gate node --check).
+> **Não feito de propósito:** P1.8 (banner de horizonte no gráfico DRE — o
+> aviso de "comparativo parcial" da matriz já cobre o essencial); PWD_HASH
+> segue como proteção de fachada (decisão de produto, não bug).
 
 Escopo: `build-html.py`, `dre_render.py`, `audit.py`, `template.html`,
 `fetch-bling.py`, dados mesclados pós-`merge_historico`. Cada achado tem

@@ -339,7 +339,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <!-- ═══ CAIXA ═══ -->
 <div class="pg" id="pg-cashflow">
 <div class="hero">
-  <div><div class="htitle">Fluxo de Caixa</div><div class="hsub">jan–abr/2026 histórico · mai–jun/2026 projetado</div></div>
+  <div><div class="htitle">Fluxo de Caixa</div><div class="hsub">histórico + projeção — janelas calculadas dos dados Bling</div></div>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
     <span class="sel-lbl" id="cxSelLbl"></span>
     <button class="reset-btn" id="cxResetBtn" onclick="cxReset()">✕ Limpar</button>
@@ -583,7 +583,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <!-- ═══ PIPELINE ═══ -->
 <div class="pg" id="pg-pipeline">
 <div class="hero">
-  <div><div class="htitle">Pipeline Comercial & Propostas</div><div class="hsub">snapshot manual de mar–mai/2026 — não atualizado automaticamente</div></div>
+  <div><div class="htitle">Pipeline Comercial & Propostas</div><div class="hsub">snapshot manual · @@PP_ATUALIZADO@@ · edite pipeline_data.json pra atualizar</div></div>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
     <span class="sel-lbl" id="ppSelLbl"></span>
     <button class="reset-btn" id="ppResetBtn" onclick="ppReset()">✕ Limpar</button>
@@ -591,10 +591,10 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 </div>
 <div class="cf-hint">💡 Toque no gráfico de status, nas barras ou nas linhas da tabela para filtrar todas as oportunidades</div>
 <div class="g4">
-  <div class="met blue" id="ppkpi-Proposta" onclick="ppSt('Proposta')"><div class="ml">Proposta</div><div class="mv blue">7</div><div class="ms">Toque para filtrar</div></div>
-  <div class="met green" id="ppkpi-Apresentação" onclick="ppSt('Apresentação')"><div class="ml">Apresentação</div><div class="mv green">2</div><div class="ms">Toque para filtrar</div></div>
-  <div class="met amber" id="ppkpi-Parado" onclick="ppSt('Parado')"><div class="ml">Parado</div><div class="mv amber">10</div><div class="ms">ESN TOTVS — gargalo</div></div>
-  <div class="met red" id="ppkpi-Perdido" onclick="ppSt('Perdido')"><div class="ml">Perdido</div><div class="mv red">10</div><div class="ms">Toque para filtrar</div></div>
+  <div class="met blue" id="ppkpi-Proposta" onclick="ppSt('Proposta')"><div class="ml">Proposta</div><div class="mv blue">—</div><div class="ms">Toque para filtrar</div></div>
+  <div class="met green" id="ppkpi-Apresentação" onclick="ppSt('Apresentação')"><div class="ml">Apresentação</div><div class="mv green">—</div><div class="ms">Toque para filtrar</div></div>
+  <div class="met amber" id="ppkpi-Parado" onclick="ppSt('Parado')"><div class="ml">Parado</div><div class="mv amber">—</div><div class="ms">ESN TOTVS — gargalo</div></div>
+  <div class="met red" id="ppkpi-Perdido" onclick="ppSt('Perdido')"><div class="ml">Perdido</div><div class="mv red">—</div><div class="ms">Toque para filtrar</div></div>
 </div>
 <div class="g2" style="margin-bottom:12px">
   <div class="card">
@@ -622,23 +622,23 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <!-- ═══ PROJEÇÃO ═══ -->
 <div class="pg" id="pg-projecao">
 <div class="hero">
-  <div><div class="htitle">Projeção de Caixa — H2/2026 e 2027</div><div class="hsub">modelo interativo · ajuste as premissas abaixo</div></div>
-  <span class="pill pg2"><span class="pdot"></span>Buy-out encerrado jun/26 · acordo trabalhista até ago/27</span>
+  <div><div class="htitle">Projeção de Caixa — @@PROJ_HORIZONTE@@</div><div class="hsub">premissas calculadas dos dados do Bling a cada atualização · ajuste os cenários abaixo</div></div>
+  <span class="pill pg2"><span class="pdot"></span>@@PROJ_PILL@@</span>
 </div>
-<div class="sl">Premissas</div>
+<div class="sl">Premissas (derivadas dos dados — ver rótulos)</div>
 <div class="card" style="margin-bottom:12px">
   <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center">
-    <div><div style="font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em">Receita mensal</div>
-      <select class="ctrl-select" id="rSel" onchange="updProj()"><option value="65000">R$ 65 K — conservador</option><option value="80000" selected>R$ 80 K — base</option><option value="100000">R$ 100 K — otimista</option><option value="120000">R$ 120 K — agressivo</option></select>
+    <div><div style="font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em">Receita mensal (cenário)</div>
+      <select class="ctrl-select" id="rSel" onchange="updProj()">@@PROJ_RSEL_OPTS@@</select>
     </div>
-    <div><div style="font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em">Recuperação Atacadão</div>
-      <select class="ctrl-select" id="aSel" onchange="updProj()"><option value="0">Não recupera</option><option value="17428" selected>50% — R$ 17 K</option><option value="34856">100% — R$ 34 K</option></select>
+    <div><div style="font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em">Recuperação Atacadão (média hist.)</div>
+      <select class="ctrl-select" id="aSel" onchange="updProj()">@@PROJ_ASEL_OPTS@@</select>
     </div>
-    <div><div style="font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em">Efata em 2027</div>
-      <select class="ctrl-select" id="eSel" onchange="updProj()"><option value="12" selected>Mantém o ano todo</option><option value="3">Encerra mar/27</option><option value="6">Encerra jun/27</option><option value="9">Encerra set/27</option></select>
+    <div><div style="font-size:10px;color:var(--t3);margin-bottom:5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em">Despesa op. (calculada)</div>
+      <div id="pDespOp" style="font-family:var(--mono);font-size:14px;color:var(--t1);padding-top:4px">—</div>
     </div>
     <div style="margin-left:auto;text-align:right">
-      <div style="font-size:10px;color:var(--t3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em">Caixa estimado dez/27</div>
+      <div style="font-size:10px;color:var(--t3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em">Caixa no fim do horizonte</div>
       <div id="pFinal" style="font-family:var(--mono);font-size:22px;font-weight:500;color:var(--green)">—</div>
     </div>
   </div>
@@ -667,12 +667,12 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 
 <div class="sl">Modelo de projeção de caixa</div>
 <div class="card" style="margin-bottom:12px">
-  <div class="ct">Resultado mensal — H2/2026 + 2027</div>
+  <div class="ct">Resultado mensal — horizonte projetado</div>
   <div class="cw" style="height:255px"><canvas id="pBar"></canvas></div>
   <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;font-size:10.5px;color:var(--t2)">
     <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--green)"></span>Resultado positivo</span>
     <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--red)"></span>Resultado negativo</span>
-    <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:2px;border-top:2px dashed var(--red);display:inline-block"></span>Se buy-out continuasse</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:2px;border-top:2px dashed var(--red);display:inline-block"></span>Se estrutura do 1º sem. continuasse</span>
   </div>
 </div>
 <div class="card">
@@ -769,12 +769,11 @@ var CX_SITS=[
 ];
 var CX_AS='all', CX_AR=null;
 function cxVis(r){return (CX_AS==='all'||r.sit===CX_AS)&&(!CX_AR||r.id===CX_AR);}
-function fBRx(v){return 'R $ '+Math.round(v).toLocaleString('pt-BR');}
 
 var cxDonut=new Chart(document.getElementById('cxDonut'),{
   type:'doughnut',
   data:{labels:CX_SITS.map(function(s){return s.sit;}),
-    datasets:[{data:[28278,6578,17926,50000],backgroundColor:CX_SITS.map(function(s){return s.color;}),borderWidth:2,borderColor:'#fff'}]},
+    datasets:[{data:[],backgroundColor:CX_SITS.map(function(s){return s.color;}),borderWidth:2,borderColor:'#fff'}]},
   options:{responsive:true,maintainAspectRatio:false,cutout:'64%',animation:{duration:250},
     plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.label+': R$ '+Math.round(c.parsed).toLocaleString('pt-BR');}}},},
     onClick:function(_,els){if(els&&els.length>0){var s=CX_SITS[els[0].index].sit;CX_AS=CX_AS===s?'all':s;CX_AR=null;cxRender();}}
@@ -1259,46 +1258,17 @@ function projDreRender(){
 
 
 // ── PIPELINE CROSS FILTER ──
-var PP_DATA=[
-  {id:'baianao',  n:'Baianão Móveis',          st:'Proposta',     impl:37370, saas:18639,obs:'150–300M fat. · em avaliação'},
-  {id:'sesi',     n:'SESI',                     st:'Proposta',     impl:37914, saas:2502, obs:'Instituição · enviada 30/abr'},
-  {id:'hyundai',  n:'Hyundai',                  st:'Proposta',     impl:37914, saas:950,  obs:'Feiras · proposta abr'},
-  {id:'vetor',    n:'Vetor Editora Psico',       st:'Proposta',     impl:25000, saas:7500, obs:'Em avaliação interna'},
-  {id:'pinaco',   n:'Pinacoteca',               st:'Proposta',     impl:22500, saas:2504, obs:'Aguardando retorno'},
-  {id:'inhotim',  n:'Inhotim + Nova Aliança',   st:'Proposta',     impl:40000, saas:1380, obs:'Em negociação'},
-  {id:'mapfre',   n:'Mapfre',                   st:'Proposta',     impl:25000, saas:1000, obs:'Em análise'},
-  {id:'sesi2',    n:'SESI Loja São Paulo',      st:'Apresentação', impl:15000, saas:2000, obs:'Apresentação agendada'},
-  {id:'sebrae',   n:'Sebrae Nacional',           st:'Apresentação', impl:50000, saas:0,    obs:'Aguardando definição modelo'},
-  {id:'esn1',     n:'ESN TOTVS — oport. 1',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
-  {id:'esn2',     n:'ESN TOTVS — oport. 2',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
-  {id:'esn3',     n:'ESN TOTVS — oport. 3',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
-  {id:'esn4',     n:'ESN TOTVS — oport. 4',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
-  {id:'esn5',     n:'ESN TOTVS — oport. 5',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
-  {id:'esn6',     n:'ESN TOTVS — oport. 6',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
-  {id:'esn7',     n:'ESN TOTVS — oport. 7',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
-  {id:'esn8',     n:'ESN TOTVS — oport. 8',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
-  {id:'esn9',     n:'ESN TOTVS — oport. 9',    st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
-  {id:'esn10',    n:'ESN TOTVS — oport. 10',   st:'Parado',       impl:0,     saas:0,    obs:'Sem retorno ESN'},
-  {id:'perd1',    n:'Perdido 1',                st:'Perdido',      impl:0,     saas:0,    obs:'Concorrência'},
-  {id:'perd2',    n:'Perdido 2',                st:'Perdido',      impl:0,     saas:0,    obs:'Desistência'},
-  {id:'perd3',    n:'Perdido 3',                st:'Perdido',      impl:0,     saas:0,    obs:'Sem resposta'},
-  {id:'perd4',    n:'Perdido 4',                st:'Perdido',      impl:0,     saas:0,    obs:'Orçamento'},
-  {id:'perd5',    n:'Perdido 5',                st:'Perdido',      impl:0,     saas:0,    obs:'Concorrência'},
-  {id:'perd6',    n:'Perdido 6',                st:'Perdido',      impl:0,     saas:0,    obs:'Prazo'},
-  {id:'perd7',    n:'Perdido 7',                st:'Perdido',      impl:0,     saas:0,    obs:'Sem resposta'},
-  {id:'perd8',    n:'Perdido 8',                st:'Perdido',      impl:0,     saas:0,    obs:'Orçamento'},
-  {id:'perd9',    n:'Perdido 9',                st:'Perdido',      impl:0,     saas:0,    obs:'Concorrência'},
-  {id:'perd10',   n:'Perdido 10',               st:'Perdido',      impl:0,     saas:0,    obs:'Desistência'},
-  {id:'ninit1',   n:'Não iniciado 1',           st:'Não iniciado', impl:0,     saas:0,    obs:'Aguardando contato'},
-  {id:'ninit2',   n:'Não iniciado 2',           st:'Não iniciado', impl:0,     saas:0,    obs:'Aguardando contato'}
-];
-var PP_CATS=[
-  {st:'Proposta',     color:'#1a5fa8',cnt:7},
-  {st:'Apresentação', color:'#1e7e4f',cnt:2},
-  {st:'Parado',       color:'#b7650a',cnt:10},
-  {st:'Perdido',      color:'#c0392b',cnt:10},
-  {st:'Não iniciado', color:'#3d5a80',cnt:2}
-];
+var PP_DATA=@@PP_DATA@@;
+// contagens derivadas de PP_DATA (nada hardcoded — auditoria P0.6)
+var PP_COLORS={'Proposta':'#1a5fa8','Apresentação':'#1e7e4f','Parado':'#b7650a','Perdido':'#c0392b','Não iniciado':'#3d5a80'};
+var PP_CATS=Object.keys(PP_COLORS).map(function(st){
+  return {st:st,color:PP_COLORS[st],cnt:PP_DATA.filter(function(r){return r.st===st;}).length};
+}).filter(function(c){return c.cnt>0;});
+// KPIs do topo: injeta as contagens reais nos cards
+PP_CATS.forEach(function(c){
+  var el=document.getElementById('ppkpi-'+c.st);
+  if(el){var mv=el.querySelector('.mv');if(mv)mv.textContent=c.cnt;}
+});
 var PP_ST=null,PP_AR=null;
 function ppVis(r){return (!PP_ST||r.st===PP_ST)&&(!PP_AR||r.id===PP_AR);}
 function fBRpp(v){return v>0?'R$ '+Math.round(v).toLocaleString('pt-BR'):'—';}
@@ -1595,37 +1565,50 @@ function cfMonth(m){CF_AM=CF_AM===m?'all':m;CF_AR=null;cfRender();}
 function cfReset(){CF_AM='all';CF_AC=null;CF_AR=null;cfRender();}
 
 // ── PROJECTION ──
-var MH2=['Jul/26','Ago/26','Set/26','Out/26','Nov/26','Dez/26'];
-var M27=['Jan/27','Fev/27','Mar/27','Abr/27','Mai/27','Jun/27','Jul/27','Ago/27','Set/27','Out/27','Nov/27','Dez/27'];
-var ALL_M=MH2.concat(M27);
-var OP=31244,EF=35000,GSTOP=8,BO=59814,S0=48000;
+// Premissas 100% calculadas no build (compute_proj_cfg) — nada hardcoded.
+// PROJ.months: horizonte rolante · PROJ.desp_op: média 3m fechados sem
+// aporte/estrutural · PROJ.estrutural: parcelas reais do em aberto ·
+// PROJ.caixa_inicial: saldo Bling (ou fallback manual).
+var PROJ=@@PROJ_CFG@@;
 var pBar=null,pLine=null;
 
 function updProj(){
   var rev=+document.getElementById('rSel').value;
-  var atac=+document.getElementById('aSel').value;
-  var efStop=+document.getElementById('eSel').value;
-  var res=[],acums=[],resBO=[];
-  var ac=S0+atac;
-  MH2.forEach(function(){var r=rev-OP-EF;res.push(r);resBO.push(r-BO);ac+=r;acums.push(ac);});
-  M27.forEach(function(_,i){var g=i<GSTOP?10000:0,e=i<efStop?EF:0,r=rev-OP-e-g;res.push(r);resBO.push(r-BO);ac+=r;acums.push(ac);});
-  var tH2=res.slice(0,6).reduce(function(a,b){return a+b;},0);
-  var t27=res.slice(6).reduce(function(a,b){return a+b;},0);
-  var fin=acums[17];
+  var extra=+document.getElementById('aSel').value;
+  var res=[],acums=[],resBO=[],labels=[];
+  var ac=PROJ.caixa_inicial||0;
+  PROJ.months.forEach(function(mo){
+    var est=PROJ.estrutural[mo.ym]||0;
+    var r=rev+extra-PROJ.desp_op-est;
+    res.push(r);resBO.push(r-(PROJ.estrutural_medio_1s||0));
+    ac+=r;acums.push(ac);labels.push(mo.label);
+  });
+  var anoCur=String(PROJ.ano_corrente);
+  var iCur=[],iNext=[];
+  PROJ.months.forEach(function(mo,i){(mo.ym.slice(0,4)===anoCur?iCur:iNext).push(i);});
+  var sum=function(idx){return idx.reduce(function(a,i){return a+res[i];},0);};
+  var tCur=sum(iCur),tNext=sum(iNext);
+  var fin=acums.length?acums[acums.length-1]:0;
+  var lastLbl=labels.length?labels[labels.length-1]:'—';
   document.getElementById('pFinal').textContent=fBR(fin);
   document.getElementById('pFinal').style.color=fin>=0?'var(--green)':'var(--red)';
-  document.getElementById('pMets').innerHTML='<div class="met '+(tH2>=0?'green':'red')+'"><div class="ml">Resultado acum. H2/26</div><div class="mv '+(tH2>=0?'green':'red')+'">'+fBR(tH2)+'</div><div class="ms">vs. '+fBR(resBO.slice(0,6).reduce(function(a,b){return a+b;},0))+' com buy-out</div></div><div class="met '+(t27>=0?'green':'red')+'"><div class="ml">Resultado acum. 2027</div><div class="mv '+(t27>=0?'green':'red')+'">'+fBR(t27)+'</div><div class="ms">Média: '+fBR(t27/12)+'/mês</div></div><div class="met '+(fin>=0?'teal':'red')+'"><div class="ml">Caixa estimado dez/27</div><div class="mv '+(fin>=0?'teal':'red')+'">'+fBR(fin)+'</div><div class="ms">Partindo de ~R$ 48 K hoje</div></div>';
+  var fonteCx=PROJ.caixa_fonte==='bling'?'saldo Bling':(PROJ.caixa_fonte==='manual'?'saldo manual':'SEM SALDO — projeção parte de R$ 0');
+  document.getElementById('pDespOp').textContent=fBR(PROJ.desp_op)+'/mês';
+  document.getElementById('pDespOp').title=PROJ.desp_op_nota||'';
+  var proxAno=String(PROJ.ano_corrente+1);
+  var tCurBO=tCur-iCur.length*(PROJ.estrutural_medio_1s||0);
+  document.getElementById('pMets').innerHTML='<div class="met '+(tCur>=0?'green':'red')+'"><div class="ml">Resultado acum. '+anoCur+' (restante)</div><div class="mv '+(tCur>=0?'green':'red')+'">'+fBR(tCur)+'</div><div class="ms">vs. '+fBR(tCurBO)+' se estrutura 1S continuasse</div></div><div class="met '+(tNext>=0?'green':'red')+'"><div class="ml">Resultado acum. '+proxAno+'</div><div class="mv '+(tNext>=0?'green':'red')+'">'+fBR(tNext)+'</div><div class="ms">Média: '+fBR(iNext.length?tNext/iNext.length:0)+'/mês</div></div><div class="met '+(fin>=0?'teal':'red')+'"><div class="ml">Caixa estimado '+lastLbl+'</div><div class="mv '+(fin>=0?'teal':'red')+'">'+fBR(fin)+'</div><div class="ms">Partindo de '+fBR(PROJ.caixa_inicial||0)+' ('+fonteCx+')</div></div>';
 
   var bc=res.map(function(r){return r>=0?'#1e7e4fcc':'#c0392bcc';});
   if(!pBar){
-    pBar=new Chart(document.getElementById('pBar'),{type:'bar',data:{labels:ALL_M,datasets:[{label:'Resultado',data:res,backgroundColor:bc,borderWidth:0,order:2},{label:'Se buy-out continuasse',data:resBO,type:'line',borderColor:'#c0392b',borderDash:[5,4],borderWidth:1.5,pointStyle:'triangle',pointRadius:3,fill:false,tension:0,order:1}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:250},plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+fBR(c.parsed.y);}}}},scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:9.5}}},y:{ticks:{callback:fK},grid:{color:'rgba(60,90,130,0.08)'}}}}});
+    pBar=new Chart(document.getElementById('pBar'),{type:'bar',data:{labels:labels,datasets:[{label:'Resultado',data:res,backgroundColor:bc,borderWidth:0,order:2},{label:'Se estrutura do 1º sem. continuasse',data:resBO,type:'line',borderColor:'#c0392b',borderDash:[5,4],borderWidth:1.5,pointStyle:'triangle',pointRadius:3,fill:false,tension:0,order:1}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:250},plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+fBR(c.parsed.y);}}}},scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:9.5}}},y:{ticks:{callback:fK},grid:{color:'rgba(60,90,130,0.08)'}}}}});
   } else {
     pBar.data.datasets[0].data=res;pBar.data.datasets[0].backgroundColor=bc;
     pBar.data.datasets[1].data=resBO;pBar.update('none');
   }
   var lc=acums.map(function(a){return a>=0?'#1a5fa8':'#c0392b';});
   if(!pLine){
-    pLine=new Chart(document.getElementById('pLine'),{type:'line',data:{labels:ALL_M,datasets:[{label:'Caixa acumulado',data:acums,borderColor:'#1a5fa8',backgroundColor:'rgba(26,95,168,0.07)',fill:true,tension:0.3,pointRadius:3,pointBackgroundColor:lc,borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:250},plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return 'Caixa: '+fBR(c.parsed.y);}}}},scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:9.5}}},y:{ticks:{callback:fK},grid:{color:'rgba(60,90,130,0.08)'}}}}});
+    pLine=new Chart(document.getElementById('pLine'),{type:'line',data:{labels:labels,datasets:[{label:'Caixa acumulado',data:acums,borderColor:'#1a5fa8',backgroundColor:'rgba(26,95,168,0.07)',fill:true,tension:0.3,pointRadius:3,pointBackgroundColor:lc,borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:250},plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return 'Caixa: '+fBR(c.parsed.y);}}}},scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:9.5}}},y:{ticks:{callback:fK},grid:{color:'rgba(60,90,130,0.08)'}}}}});
   } else {
     pLine.data.datasets[0].data=acums;pLine.data.datasets[0].pointBackgroundColor=lc;pLine.update('none');
   }

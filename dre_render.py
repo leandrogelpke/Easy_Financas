@@ -99,6 +99,29 @@ FORNECEDOR_MAP = [
     ("IVY GROUP",                 "aporte_socio", "Aporte/Distribuição", "IVY Group (a classificar)"),
 ]
 
+# ── FONTE ÚNICA (P1.3): fornecedores_classificacao.json ──
+# A lista literal acima virou FALLBACK. O JSON é compartilhado com
+# build-html.py; a ordem do array define a prioridade do match substring.
+def _load_fornecedor_map_json() -> list:
+    try:
+        p = Path(__file__).resolve().parent / "fornecedores_classificacao.json"
+        d = json.loads(p.read_text(encoding="utf-8"))
+        out = []
+        for e in d.get("fornecedores", []):
+            dre = e.get("dre")
+            if not dre:
+                continue
+            for al in e.get("aliases", []):
+                out.append((al, dre["grupo"], dre["sub"], dre["label"]))
+        return out
+    except Exception:
+        return []
+
+
+_fm_json = _load_fornecedor_map_json()
+if _fm_json:
+    FORNECEDOR_MAP = _fm_json
+
 # Catch-all pra impostos detectados via HISTÓRICO (quando o contato é genérico)
 HIST_IMPOSTO_PATTERNS = [
     (r"\bISS\b",         "deducoes_iss", "Impostos sobre vendas", "ISS"),

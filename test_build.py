@@ -156,6 +156,39 @@ def test_fstrings_compat_py311() -> None:
         + ", ".join(bad))
 
 
+def test_js_sintaxe_valida() -> None:
+    """Todos os <script> inline do index parseiam (node --check).
+
+    Pega erro de sintaxe ANTES do publish — um crash no bloco INIT derruba
+    todas as abas seguintes (bug histórico §6.9). Sem node no ambiente,
+    pula com aviso (o runner do CI tem node).
+    """
+    import re
+    import shutil
+    import subprocess
+    import tempfile
+
+    if not shutil.which("node"):
+        print("      (node ausente — teste pulado)")
+        return
+    html = _ler_index()
+    scripts = re.findall(r"<script[^>]*>(.*?)</script>", html, re.DOTALL)
+    checked = 0
+    for i, js in enumerate(scripts):
+        if not js.strip() or "src=" in js[:80]:
+            continue
+        with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False,
+                                         encoding="utf-8") as fh:
+            fh.write(js)
+            path = fh.name
+        r = subprocess.run(["node", "--check", path],
+                           capture_output=True, text=True, timeout=30)
+        assert r.returncode == 0, \
+            f"script #{i} com erro de sintaxe: {r.stderr[:300]}"
+        checked += 1
+    assert checked >= 1, "nenhum script inline encontrado pra checar"
+
+
 TESTS = [
     test_sem_marcadores_pendentes,
     test_pgs_balanceadas,
@@ -163,6 +196,7 @@ TESTS = [
     test_tamanho_index_razoavel,
     test_canvases_clientes_presentes,
     test_fstrings_compat_py311,
+    test_js_sintaxe_valida,
 ]
 
 
