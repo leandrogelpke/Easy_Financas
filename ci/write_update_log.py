@@ -80,10 +80,12 @@ def main() -> int:
 
     steps = {
         "fetch": _norm(os.environ.get("OUT_FETCH")),
+        "merge_historico": _norm(os.environ.get("OUT_MERGE")),
         "token_refresh": (os.environ.get("TOKEN_STATUS") or "skipped").strip() or "skipped",
         "build": _norm(os.environ.get("OUT_BUILD")),
         "gate_test_audit": _norm(os.environ.get("OUT_GATE_A")),
         "gate_test_build": _norm(os.environ.get("OUT_GATE_B")),
+        "gate_test_merge": _norm(os.environ.get("OUT_GATE_M")),
         "precommit": _norm(os.environ.get("OUT_PRECOMMIT")),
         "push": (os.environ.get("OUT_PUSH") or _norm(os.environ.get("PUSH_OUTCOME"))).strip(),
     }
@@ -95,17 +97,24 @@ def main() -> int:
 
     if steps["fetch"] != "success":
         errors.append("Fetch do Bling não concluiu com sucesso.")
+    if steps["merge_historico"] not in ("success", "skipped", ""):
+        errors.append("Merge com o histórico acumulado falhou — lançamentos "
+                      "fora da janela do fetch (parcelamentos longos) podem "
+                      "estar faltando na DRE.")
     if steps["build"] != "success":
         errors.append("Geração do index.html (build) falhou.")
     if steps["gate_test_audit"] == "failure":
         errors.append("Gate test_audit FALHOU (regressão tributária).")
     if steps["gate_test_build"] == "failure":
         errors.append("Gate test_build FALHOU (estrutura do HTML).")
+    if steps["gate_test_merge"] == "failure":
+        errors.append("Gate test_merge_historico FALHOU (acúmulo do histórico do Bling).")
     if steps["precommit"] == "failure":
         errors.append("Auditor pré-commit BLOQUEOU a publicação (artefato/dado inválido).")
     # publicação bloqueada pelo gate → push 'skipped'
     blocked = any(steps[k] != "success" for k in
-                  ("fetch", "build", "gate_test_audit", "gate_test_build", "precommit"))
+                  ("fetch", "build", "gate_test_audit", "gate_test_build",
+                   "gate_test_merge", "precommit"))
     if blocked and steps["push"] in ("skipped", ""):
         warnings.append("Publicação bloqueada pelo gate — última versão boa mantida no ar.")
     elif steps["push"] not in ("success", "nothing", "skipped"):

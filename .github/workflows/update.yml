@@ -15,6 +15,15 @@ on:
     # TEMPORÁRIO — teste de fumaça do agendador (remover após confirmar):
     - cron: '50 15 * * *'
   workflow_dispatch:
+    inputs:
+      janela_meses:
+        description: >-
+          Meses de histórico no fetch (filtro por data de EMISSÃO). O padrão 7
+          cobre a operação do dia a dia. Use um valor grande (ex.: 24) numa
+          rodada manual pra reconstruir o histórico — parcelamentos longos são
+          emitidos uma vez só e ficam fora de janelas curtas.
+        required: false
+        default: '7'
 
 permissions:
   contents: write
@@ -26,7 +35,10 @@ concurrency:
 jobs:
   atualizar:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # 30 min cobre a rodada normal (~3 min) com folga. O teto maior existe pro
+    # bootstrap do histórico, que busca 24 meses com detalhe item a item
+    # (~1,5s por lançamento por causa do rate limit do Bling).
+    timeout-minutes: 55
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -52,20 +64,57 @@ jobs:
           chmod 600 .bling-oauth.json .bling-tokens.json
           python3 -c "import json; json.load(open('.bling-oauth.json')); json.load(open('.bling-tokens.json')); print('[ok] credenciais válidas (JSON)')"
 
+      # Cache de retomada do fetch. Só importa no bootstrap: se a rodada de 24
+      # meses estourar o tempo, a próxima retoma de onde parou em vez de
+      # recomeçar. Na rodada normal é irrelevante (dura ~3 min).
+      - name: Cache de retomada do fetch
+        uses: actions/cache@v4
+        with:
+          path: data/bling-api/.cache
+          key: bling-fetch-cache-${{ github.run_id }}
+          restore-keys: bling-fetch-cache-
+
       - name: Fetch dados do Bling
         id: fetch
         continue-on-error: true
+        env:
+          JANELA_MESES: ${{ github.event.inputs.janela_meses || '' }}
         run: |
-          # janela deslizante: 7 meses atrás (mesma regra do weekly.sh)
-          DI=$(python3 -c "
+          # Janela deslizante por data de EMISSÃO. Cuidado: parcelamentos longos
+          # são emitidos uma única vez, então uma janela curta faz TODAS as
+          # parcelas sumirem de uma vez (ver ci/merge_historico.py). O merge com
+          # o histórico logo abaixo é o que impede isso de virar buraco na DRE.
+          #
+          # Bootstrap automático: sem historico.json ainda, a primeira rodada
+          # busca 24 meses pra semear o arquivo com dado autoritativo. Assim o
+          # backfill não depende de alguém lembrar de disparar na mão.
+          if [ -n "$JANELA_MESES" ]; then
+            N="$JANELA_MESES"; MOTIVO="pedido no workflow_dispatch"
+          elif [ ! -f data/bling-api/historico.json ]; then
+            N=24; MOTIVO="bootstrap — historico.json ainda não existe"
+          else
+            N=7;  MOTIVO="rodada normal"
+          fi
+          DI=$(N="$N" python3 -c "
+          import os
           from datetime import date, timedelta
           d = date.today().replace(day=1)
-          for _ in range(7):
+          for _ in range(int(os.environ['N'])):
               d = (d - timedelta(days=1)).replace(day=1)
           print(d.strftime('%Y-%m-%d'))")
-          echo "[fetch] janela: $DI → hoje"
+          echo "WINDOW_START=$DI" >> "$GITHUB_ENV"
+          echo "[fetch] janela: $DI → hoje ($N meses · $MOTIVO)"
           mkdir -p data/bling-api
           python3 fetch-bling.py --out data/bling-api --data-inicial "$DI" --no-detail-receber
+
+      - name: Merge com o histórico acumulado
+        id: merge
+        # Roda mesmo se o fetch falhou parcialmente: o histórico é o que garante
+        # que lançamentos fora da janela (buy-out, parcelamentos longos) sigam
+        # visíveis na DRE. Sem WINDOW_START o merge é aditivo, nunca remove.
+        if: steps.fetch.outcome == 'success'
+        continue-on-error: true
+        run: python3 ci/merge_historico.py --dir data/bling-api --window-start "$WINDOW_START"
 
       - name: Salvar token rotacionado de volta no Secret
         id: token
@@ -180,6 +229,11 @@ jobs:
         continue-on-error: true
         run: python3 test_build.py
 
+      - name: Gate — arquivo histórico (test_merge_historico)
+        id: gate_merge
+        continue-on-error: true
+        run: python3 test_merge_historico.py
+
       - name: Auditor pré-commit (gate duro de dados/artefatos)
         id: precommit
         continue-on-error: true
@@ -191,9 +245,11 @@ jobs:
         # pré-commit. Qualquer falha → mantém a última versão boa no ar.
         if: >-
           steps.fetch.outcome == 'success' &&
+          steps.merge.outcome == 'success' &&
           steps.build.outcome == 'success' &&
           steps.gate_audit.outcome == 'success' &&
           steps.gate_build.outcome == 'success' &&
+          steps.gate_merge.outcome == 'success' &&
           steps.precommit.outcome == 'success'
         continue-on-error: true
         run: |
@@ -204,6 +260,9 @@ jobs:
             | xargs -r git rm -f --ignore-unmatch
           git add index.html DRE_Projetado_Realizado.html 2>/dev/null || true
           git add data/bling-api/bling_data_*.json 2>/dev/null || true
+          # histórico acumulado: precisa ser versionado, senão cada run começa
+          # do zero e os lançamentos fora da janela somem de novo.
+          git add data/bling-api/historico.json 2>/dev/null || true
           # snapshots Totvs/Cartão: o snapshot_guard já restaurou os sem dado
           # novo, então um 'add' aqui só encena diff quando houve arquivo novo.
           git add data/bling-api/totvs_snapshot.json cartao_snapshot.json 2>/dev/null || true
@@ -224,9 +283,11 @@ jobs:
         env:
           START_TS:    ${{ steps.inicio.outputs.ts }}
           OUT_FETCH:   ${{ steps.fetch.outcome }}
+          OUT_MERGE:   ${{ steps.merge.outcome }}
           OUT_BUILD:   ${{ steps.build.outcome }}
           OUT_GATE_A:  ${{ steps.gate_audit.outcome }}
           OUT_GATE_B:  ${{ steps.gate_build.outcome }}
+          OUT_GATE_M:  ${{ steps.gate_merge.outcome }}
           OUT_PRECOMMIT: ${{ steps.precommit.outcome }}
           OUT_PUSH:    ${{ steps.push.outputs.status }}
           PUSH_OUTCOME: ${{ steps.push.outcome }}

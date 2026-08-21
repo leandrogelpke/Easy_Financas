@@ -180,6 +180,10 @@ todos os aliases que o Bling usa (com e sem acento, com e sem sufixo de
 CPF). Categorias canônicas:
 
 - `Buy-out`
+- `Pessoal` — prestadores PJ que o Leandro reporta como "Despesas com
+  pessoal" (Alan, Isabel, Macedo, Efata, Milajanu, Eduardo). Espelha o
+  grupo `desp_pessoal` do DRE (`dre_render.py::FORNECEDOR_MAP`). **Não é
+  folha CLT** — é escolha gerencial de reporte.
 - `Serviços PJ`
 - `Tributos e Contábil`
 - `Parceria TOTVS`
@@ -374,6 +378,46 @@ permitted" quando o arquivo está bloqueado pelo iCloud. **Não é fatal**
 — a limpeza de snapshots antigos no `weekly.sh` ignora esses erros.
 Avisar usuário se acumular muito.
 
+### 6.11 A janela do fetch é por EMISSÃO — parcelamento longo some inteiro
+
+**Histórico** (21/ago): o Leandro notou que a linha "Buy-out + Acordo
+trabalhista" da DRE mostrava R$ 120K em 2026 quando o real era
+R$ 478.885,56. O buy-out do Rômulo (6 parcelas de R$ 59.814,26 vencendo
+jan–jun/26) tinha sumido de **todos** os snapshots desde 1º/ago.
+
+Causa: `update.yml` chama `fetch-bling.py --data-inicial`, que vira
+`dataEmissaoInicial` na API. Um parcelamento é emitido **uma vez só** —
+o do Rômulo em `2025-12-08` — e vence por 18 meses. Enquanto a janela de
+7 meses começava em 2025-12-01, tudo aparecia. Em 1º/ago ela passou a
+começar em 2026-01-01 e as 6 parcelas evaporaram juntas. Nada quebrou:
+os gates validam consistência, não **completude histórica**.
+
+Junto foram embora Efata (R$ 210K em aberto, emissão set–nov/25),
+Milajanu, IRPJ/CSLL do 4T25 e R$ 100K a receber da TOTVS.
+
+**Regra**: nunca tratar o snapshot do dia como a verdade completa.
+`ci/merge_historico.py` mantém `data/bling-api/historico.json` (versionado)
+acumulando por `id`:
+
+- registro no snapshot novo → snapshot vence;
+- só no histórico e com emissão **fora** da janela → preserva;
+- só no histórico e com emissão **dentro** da janela → remove (ali o
+  snapshot é autoritativo, então sumiu = foi apagado no Bling).
+
+O merge roda logo após o fetch e reescreve o snapshot do dia **e os
+CSVs** — `build-html.py` lê o JSON, `dre_render.py` lê os CSVs; os dois
+precisam do conjunto completo. Testes: `test_merge_historico.py` (gate no
+`update.yml`).
+
+**Bootstrap**: sem `historico.json`, a rodada usa janela de 24 meses
+automaticamente pra semear o arquivo. Pra forçar depois, rode o workflow
+`update` pelo Actions com o input `janela_meses`.
+
+**Cuidado ao mexer**: o arquivo pode ressuscitar um lançamento que o
+Bling apagou, se a emissão dele for anterior à janela. É o preço de não
+perder parcelamento. A correção é rodar com `janela_meses` grande, que
+traz a emissão pra dentro da janela e deixa o merge podar de verdade.
+
 ---
 
 ## 7. Gate de testes obrigatório
@@ -480,6 +524,10 @@ for r in d['contas_receber_recebidas']:
 | 14/06 | **Gotcha:** `TOTVS_SNAP.parent` define o dir dos CSVs do Bling → snapshot Totvs movido p/ `data/bling-api/`. Sem isso, abas Auditoria/P&L/DRE/Contas saem vazias | `update.yml` |
 | 15/06 | **Gate pré-commit** (`ci/precommit_check.py`): bloqueia publicação de dado/artefato ruim; commit/push agora condicional a fetch+build+gates+precommit verdes | `update.yml` + `ci/` |
 | 20/06 | **Drive pull movido pro CI** — `ci/drive_pull.py` (service account Google, Secret `GDRIVE_SA_KEY`) baixa Totvs/Cartão no próprio Actions; `ci/snapshot_guard.py` só commita se houver dado novo (ignora `_meta`, piso de sanidade 80%). `weekly.sh` local fica **deprecado** (Bling já é do CI; token local quebra na rotação). No-op seguro sem o Secret | `update.yml` + `ci/drive_pull.py` + `ci/snapshot_guard.py` |
+| 10/07 | Bling: 72 lançamentos "sem categoria" classificados via UI + 3 categorias novas (Salários Comercial/Operação, Hosting/Sistemas) + categoria padrão nos contatos. **Gotcha:** recorrência do Bling não deixa editar categoria (só Inativar); as 3 mensais (Receita Federal/Cartão/Alan) seguem gerando sem categoria | Bling (fora do repo) |
+| 21/08 | **Arquivo histórico do Bling** (`ci/merge_historico.py` + `data/bling-api/historico.json`): a janela de 7 meses por data de EMISSÃO tinha derrubado o buy-out do Rômulo inteiro em 1º/ago. Buy-out 2026 R$ 120K → **R$ 478.885,56**. Bootstrap automático de 24 meses + input `janela_meses` no `workflow_dispatch` + gate `test_merge_historico.py` | ver §6.11 |
+| 21/08 | **Gap fill retroativo desligado** no `_build_matriz_2y`: mês passado sem lançamento virou `sem_dado` (travessão), não mais média. Antes o DRE fabricava a coluna 2025 inteira a partir da média de 2026 — despesas 2025 "R$ 607K" com **zero** real na base. Banner de "comparativo parcial" quando falta mês | `dre_render.py` |
+| 10/07 | **Grupo "Pessoal"**: 6 PJ (Alan, Isabel, Macedo, Efata, Milajanu, Eduardo) movidos p/ Despesas com pessoal em todo o BI. `FORNECEDOR_MAP` → `desp_pessoal`/subgrupo "Prestadores PJ"; DCTFWEB isolado via `_sum_subgroup("Encargos sobre pró-labore")` p/ não inflar auditoria INSS. `KNOWN_SUPPLIERS` cat=`Pessoal` + `STACK_GROUPS` grupo Pessoal + KPI no template. DRE pessoal R$1.8K→R$600K | `dre_render.py` + `build-html.py` + `template.html` |
 
 ---
 

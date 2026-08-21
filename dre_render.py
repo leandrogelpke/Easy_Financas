@@ -367,12 +367,27 @@ def _build_matriz_2y(
       - "real"        — mês passado com dados pagos/recebidos
       - "em_aberto"   — mês com base em contas em aberto (vencimento futuro / parcial)
       - "projetado"   — mês futuro extrapolado (gap fill)
-      - "extrapolado" — mês passado sem dados, preenchido com média (jan-abr/25)
+      - "sem_dado"    — mês passado sem nenhum lançamento no Bling
 
     Gap fill:
-      - Meses passados sem dados no Bling: extrapolado com média dos meses reais
-        do mesmo ano (ou ano anterior se nenhum dado no ano)
-      - Meses futuros: em_aberto + complemento com média YTD do ano atual
+      - Meses FUTUROS: em aberto + complemento com média dos meses reais.
+      - Meses PASSADOS sem dado: NÃO são preenchidos. Ficam zerados e são
+        marcados "sem_dado", renderizando como travessão.
+
+    Por que mês passado não é extrapolado (mudança de 21/ago/2026):
+        A versão anterior preenchia mês passado vazio com a média dos meses
+        reais — inclusive puxando a média de OUTRO ano quando o ano não tinha
+        nenhum dado. Na prática isso fabricava a coluna 2025 inteira a partir
+        de 2026: com o snapshot sem nenhuma conta a pagar de 2025, o DRE
+        exibia "2025: despesas R$ 607K" onde o valor real conhecido era zero,
+        e o buy-out aparecia como R$ 53K (= média do acordo trabalhista de
+        2026 espalhada por 8 meses de 2025). O comparativo "2025 vs 2026"
+        estava, na prática, comparando 2026 contra uma projeção dele mesmo.
+
+        Ausência de dado agora aparece como ausência de dado. Se um ano
+        antigo precisa aparecer de verdade, a correção é trazer o dado —
+        rodar o workflow `update` com `janela_meses` maior e deixar o
+        `ci/merge_historico.py` acumular — não inventar a média.
 
     Cada linha de detalhe em "items" recebe campo "kind" indicando origem.
     """
@@ -472,7 +487,8 @@ def _build_matriz_2y(
         elif m in meses_com_dado_aberto:
             month_types[m] = "em_aberto"
         elif m < cutoff:
-            month_types[m] = "extrapolado"
+            # Mês passado sem lançamento nenhum. Não extrapola (ver docstring).
+            month_types[m] = "sem_dado"
         else:
             month_types[m] = "projetado"
 
@@ -480,12 +496,13 @@ def _build_matriz_2y(
     # cell_kinds[grupo][month] = origem do valor:
     #   "real"        — vem direto de contas pagas/recebidas
     #   "em_aberto"   — vem de contas em aberto (vencimento futuro real)
-    #   "extrapolado" — valor preenchido por média histórica (mês passado sem dado)
+    #   "sem_dado"    — mês passado sem lançamento (fica zerado, vira "—")
     #   "projetado"   — valor preenchido por média histórica (mês futuro)
-    # Estratégia de fill (quando célula = 0 num mês não-real):
+    # Estratégia de fill (só para meses FUTUROS com célula = 0):
     #   1) média do MESMO grupo nos meses real do MESMO ano
     #   2) fallback: média no MESMO grupo em todos os anos
     #   3) se nada, fica 0 (sem dado histórico para projetar)
+    # Mês passado sem dado não entra no fill — ausência não vira média.
 
     # 1. Marcar todas as células que vieram de dados ingeridos (não-zero)
     cell_kinds: dict[str, dict[str, str]] = defaultdict(dict)
@@ -513,7 +530,7 @@ def _build_matriz_2y(
     all_grupo_keys = list(grupos.keys()) or []
     for ym in months:
         mt = month_types[ym]
-        if mt == "real":
+        if mt in ("real", "sem_dado"):
             continue
         year = int(ym[:4])
         for gkey in all_grupo_keys:
@@ -529,8 +546,7 @@ def _build_matriz_2y(
                 origem = "all_years"
             if media != 0:
                 grupos[gkey][ym] = round(media, 2)
-                # marca origem: extrapolado pra meses passados, projetado pra futuros
-                cell_kinds[gkey][ym] = "extrapolado" if ym < cutoff else "projetado"
+                cell_kinds[gkey][ym] = "projetado"
 
     # 4. Receita por mês: extrapola se zero
     receita_kinds: dict[str, str] = {}
@@ -539,7 +555,7 @@ def _build_matriz_2y(
             receita_kinds[m] = month_types[m]
     for ym in months:
         mt = month_types[ym]
-        if mt == "real" or receita_por_mes.get(ym, 0) > 0:
+        if mt in ("real", "sem_dado") or receita_por_mes.get(ym, 0) > 0:
             continue
         year = int(ym[:4])
         ref = real_months_by_year.get(year, []) or all_real_months
@@ -547,21 +563,21 @@ def _build_matriz_2y(
         if any(rec_vals):
             rec_media = sum(rec_vals) / len(rec_vals)
             receita_por_mes[ym] = round(rec_media, 2)
-            receita_kinds[ym] = "extrapolado" if ym < cutoff else "projetado"
+            receita_kinds[ym] = "projetado"
 
     # 5. PIS/COFINS esperado para meses não-reais com receita projetada
     for ym in months:
-        if month_types[ym] == "real":
+        if month_types[ym] in ("real", "sem_dado"):
             continue
         rec = receita_por_mes.get(ym, 0)
         if rec <= 0:
             continue
         if not grupos.get("deducoes_pis", {}).get(ym):
             grupos["deducoes_pis_esperado"][ym] = round(rec * pis_alq, 2)
-            cell_kinds["deducoes_pis_esperado"][ym] = "extrapolado" if ym < cutoff else "projetado"
+            cell_kinds["deducoes_pis_esperado"][ym] = "projetado"
         if not grupos.get("deducoes_cofins", {}).get(ym):
             grupos["deducoes_cofins_esperado"][ym] = round(rec * cofins_alq, 2)
-            cell_kinds["deducoes_cofins_esperado"][ym] = "extrapolado" if ym < cutoff else "projetado"
+            cell_kinds["deducoes_cofins_esperado"][ym] = "projetado"
 
     return {
         "months": months,
@@ -1033,8 +1049,12 @@ def _fmt_brl_compact_signed(v: float) -> str:
     return f"{sign}{s}" if sign else s
 
 
-# ─── HELPERS PARA COLORIR CÉLULAS POR ORIGEM (real / em_aberto / extrapolado / projetado) ───
-_KIND_ORDER = {"real": 0, "em_aberto": 1, "extrapolado": 2, "projetado": 3}
+# ─── HELPERS PARA COLORIR CÉLULAS POR ORIGEM ───
+# real < em_aberto < projetado < sem_dado. "sem_dado" é o pior porque não é
+# uma estimativa ruim, é a ausência de informação — o subtotal que encosta
+# nele precisa herdar isso. "extrapolado" ficou no mapa só por compatibilidade
+# com matrizes serializadas antigas; o gap fill não gera mais esse kind.
+_KIND_ORDER = {"real": 0, "em_aberto": 1, "extrapolado": 2, "projetado": 3, "sem_dado": 4}
 
 
 def _cell_kind_for_line(matriz: dict, key: str, month: str) -> str:
@@ -1069,13 +1089,18 @@ def _cell_style_for_kind(kind: str, base_color: str = "var(--t1)") -> tuple[str,
     """Retorna (color, extra_style, bg) baseado na origem da célula.
     - real        → cor normal
     - em_aberto   → cor normal + bg azul sutil
-    - extrapolado → italic + cor secundária + bg amber sutil
+    - sem_dado    → cinza, sem destaque (mês passado sem lançamento)
+    - extrapolado → italic + cor secundária + bg amber sutil (legado)
     - projetado   → italic + cor secundária + bg amber um pouco mais forte
     """
     if kind == "real":
         return base_color, "", ""
     if kind == "em_aberto":
         return base_color, "", "background:rgba(70,130,200,0.05);"
+    if kind == "sem_dado":
+        # Nada de âmbar aqui: âmbar significa "estimado". Sem dado não é
+        # estimativa, é buraco — tem que parecer buraco.
+        return "var(--t3)", "", ""
     if kind == "extrapolado":
         return "var(--t3)", "font-style:italic;", "background:rgba(190,140,80,0.06);"
     # projetado
@@ -1172,13 +1197,67 @@ def _render_matriz_2y(matriz: dict, struct_def_raw: list, mode: str, view_id: st
         '<div style="display:flex;flex-wrap:wrap;gap:10px;font-size:10px;color:var(--t3);align-items:center;margin-top:4px">'
         '<span><span style="display:inline-block;width:10px;height:10px;background:transparent;border:1px solid var(--bd);vertical-align:middle;margin-right:4px"></span>Real (pago/recebido)</span>'
         '<span><span style="display:inline-block;width:10px;height:10px;background:rgba(70,130,200,0.18);border:1px solid var(--bd);vertical-align:middle;margin-right:4px"></span>Em aberto (comprometido)</span>'
-        '<span><span style="display:inline-block;width:10px;height:10px;background:rgba(190,140,80,0.20);border:1px solid var(--bd);vertical-align:middle;margin-right:4px"></span><i>Projetado/extrapolado (média histórica)</i></span>'
+        '<span><span style="display:inline-block;width:10px;height:10px;background:rgba(190,140,80,0.20);border:1px solid var(--bd);vertical-align:middle;margin-right:4px"></span><i>Projetado (média histórica, só meses futuros)</i></span>'
+        '<span style="opacity:.6"><span style="display:inline-block;width:10px;height:10px;background:transparent;border:1px dashed var(--bd2);vertical-align:middle;margin-right:4px"></span>Sem dados no Bling — não estimado, não somado</span>'
         '</div>'
     )
 
+    # Cobertura por ano: se faltam meses, o total anual e o Δ% são parciais e
+    # precisam dizer isso. Comparar um ano cheio com um ano pela metade sem
+    # aviso foi exatamente o que produziu o falso "2025 vs 2026".
+    def _sem_dado(ms: list[str]) -> list[str]:
+        return [m for m in ms if month_types.get(m) == "sem_dado"]
+
+    def _sem_despesa(ms: list[str]) -> list[str]:
+        """
+        Meses com receita mas ZERO despesa. Tecnicamente "real" (tem
+        lançamento), na prática meio-mês: a janela do fetch trouxe o a receber
+        e deixou o a pagar pra trás. Some no gap de mês vazio, mas envenena o
+        total anual igual — precisa avisar separado.
+        """
+        gsrc = matriz.get("grupos", {})
+        # `*_esperado` (PIS/COFINS) é derivado da receita, não é lançamento do
+        # Bling. Se contar como despesa, um mês que só tem a receita parece um
+        # mês completo e o aviso nunca dispara.
+        desp_keys = [k for k in gsrc
+                     if (k.startswith(("desp_", "deducoes_", "impostos_")) or k == "nao_recorrente")
+                     and not k.endswith("_esperado")]
+        out = []
+        for m in ms:
+            if month_types.get(m) == "sem_dado":
+                continue
+            if matriz.get("receita_por_mes", {}).get(m, 0) <= 0:
+                continue
+            if sum(gsrc.get(k, {}).get(m, 0) for k in desp_keys) == 0:
+                out.append(m)
+        return out
+
+    gaps_25, gaps_26 = _sem_dado(months_25), _sem_dado(months_26)
+    meio_25, meio_26 = _sem_despesa(months_25), _sem_despesa(months_26)
+    aviso_html = ""
+    if gaps_25 or gaps_26 or meio_25 or meio_26:
+        partes = []
+        if gaps_25:
+            partes.append(f"2025 tem {len(gaps_25)} mês(es) sem lançamento no Bling")
+        if gaps_26:
+            partes.append(f"2026 tem {len(gaps_26)} mês(es) sem lançamento no Bling")
+        if meio_25:
+            partes.append(f"2025 tem {len(meio_25)} mês(es) com receita mas nenhuma despesa registrada")
+        if meio_26:
+            partes.append(f"2026 tem {len(meio_26)} mês(es) com receita mas nenhuma despesa registrada")
+        aviso_html = (
+            '<div style="margin-top:6px;padding:6px 9px;border-left:2px solid var(--amber);'
+            'background:rgba(190,140,80,0.07);font-size:10px;color:var(--t2);line-height:1.5">'
+            f'<b>Comparativo parcial.</b> {" · ".join(partes)}. '
+            'Esses meses entram como zero no total anual e no Δ — não são estimados. '
+            'Pra fechar o histórico, rode o workflow <span style="font-family:var(--mono)">update</span> '
+            'com <span style="font-family:var(--mono)">janela_meses</span> maior.'
+            '</div>'
+        )
+
     p = []
     p.append(f'<div class="card" style="margin-bottom:14px"><div class="ct"><b>{escape(title)}</b><span>2025 vs 2026 · click na linha pra abrir lançamentos</span></div>')
-    p.append(f'<div style="padding:0 14px 8px 14px">{legenda_html}</div>')
+    p.append(f'<div style="padding:0 14px 8px 14px">{legenda_html}{aviso_html}</div>')
     p.append('<div class="tbl-wrap"><table class="dt dre-mat"><thead><tr>')
     p.append('<th style="position:sticky;left:0;background:var(--s1);z-index:2;min-width:230px">Item</th>')
 
@@ -1188,18 +1267,27 @@ def _render_matriz_2y(matriz: dict, struct_def_raw: list, mode: str, view_id: st
             return "font-size:10px"
         if mt == "em_aberto":
             return "font-size:10px;color:var(--blue);background:rgba(70,130,200,0.06)"
+        if mt == "sem_dado":
+            return "font-size:10px;color:var(--t3);opacity:.55"
         # extrapolado / projetado
         return "font-size:10px;color:var(--amber);background:rgba(190,140,80,0.06);font-style:italic"
+
+    def _header_label(m: str) -> str:
+        """Mês sem dado leva marcação explícita — senão parece mês zerado."""
+        lbl = _fmt_comp(m)
+        if month_types.get(m) == "sem_dado":
+            return f'{lbl}<br><span style="font-size:8px;letter-spacing:.04em">s/ dados</span>'
+        return lbl
 
     # Headers
     if show_months_25:
         for m in months_25:
-            p.append(f'<th class="r" style="{_header_style(m)}">{_fmt_comp(m)}</th>')
+            p.append(f'<th class="r" style="{_header_style(m)}">{_header_label(m)}</th>')
     if show_t25:
         p.append('<th class="r" style="border-left:2px solid var(--bd2);background:var(--s2);font-weight:600">2025</th>')
     if show_months_26:
         for m in months_26:
-            p.append(f'<th class="r" style="{_header_style(m)}">{_fmt_comp(m)}</th>')
+            p.append(f'<th class="r" style="{_header_style(m)}">{_header_label(m)}</th>')
     if show_t26:
         p.append('<th class="r" style="border-left:2px solid var(--bd2);background:var(--s2);font-weight:600">2026</th>')
     if show_delta:
@@ -1469,7 +1557,7 @@ def render_pl_and_dre(
 <div class="hero">
   <div>
     <div class="htitle">DRE — 2025 vs 2026<br><span style="font-size:14px;color:var(--t2);font-weight:400">Comparativo anual com projeção · Lucro Presumido</span></div>
-    <div class="hsub">jan/2025 → dez/2026 · meses extrapolados em âmbar · margens calculadas (bruta · EBITDA · líquida)</div>
+    <div class="hsub">jan/2025 → dez/2026 · meses futuros projetados em âmbar · mês passado sem dado fica em branco (não é estimado) · margens calculadas (bruta · EBITDA · líquida)</div>
   </div>
   <div class="pills">
     <span class="pill pg2"><span class="pdot"></span>Real (Bling)</span>
