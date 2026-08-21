@@ -207,6 +207,90 @@ def fetch_categorias(client: BlingClient) -> List[Dict[str, Any]]:
     return items
 
 
+def fetch_saldo_caixa(client: BlingClient, today: str) -> Optional[Dict[str, Any]]:
+    """Busca o saldo das contas contábeis (caixa + bancos) na API v3.
+
+    Pedido do Leandro (21/ago/2026): o saldo de caixa deve vir SEMPRE do
+    Bling — o `caixa_config.json` manual vivia desatualizado (dizia R$ 515,75
+    com burn de R$ 150K/mês, runway zero) e ainda conflitava com outro caixa
+    hardcoded na aba Projeção.
+
+    A referência pública da API não documenta com clareza o recurso de
+    saldos, então isto é uma SONDA defensiva:
+      1. GET /contas-contabeis                → lista contas {id, descricao}
+      2. GET /contas-contabeis/saldos?data=…  → saldo por conta
+    Qualquer falha (404, 403 sem escopo, formato inesperado) → devolve None
+    com log claro; o build cai no fallback manual. Nunca derruba o fetch.
+
+    Retorno: {"data_ref", "total", "contas": [{id, descricao, saldo}]}.
+    """
+    log("[fetch] saldos de caixa (contas contábeis)...", client.quiet)
+    try:
+        contas_raw = client.list_all("/contas-contabeis")
+    except Exception as e:
+        log(f"  [warn] /contas-contabeis indisponível ({e}) — saldo fica manual", client.quiet)
+        return None
+    contas_idx = {int(c["id"]): (c.get("descricao") or "") for c in contas_raw if c.get("id")}
+    if not contas_idx:
+        log("  [warn] nenhuma conta contábil listada — saldo fica manual", client.quiet)
+        return None
+
+    def _num(v: Any) -> Optional[float]:
+        if isinstance(v, (int, float)):
+            return float(v)
+        if isinstance(v, str):
+            try:
+                return float(v.replace(".", "").replace(",", ".")) if "," in v else float(v)
+            except ValueError:
+                return None
+        return None
+
+    def _extrai(payload: Any) -> List[Dict[str, Any]]:
+        """Normaliza formatos plausíveis de resposta de saldo."""
+        data = payload.get("data") if isinstance(payload, dict) else payload
+        out: List[Dict[str, Any]] = []
+        if not isinstance(data, list):
+            return out
+        for item in data:
+            if not isinstance(item, dict):
+                continue
+            cid = item.get("id") or (item.get("contaContabil") or {}).get("id")
+            saldo = None
+            for k in ("saldo", "saldoFinal", "saldoAtual", "valor"):
+                if k in item:
+                    saldo = _num(item[k])
+                    break
+            if saldo is None:
+                continue
+            out.append({
+                "id": int(cid) if cid else None,
+                "descricao": contas_idx.get(int(cid), "") if cid else
+                             (item.get("descricao") or ""),
+                "saldo": round(saldo, 2),
+            })
+        return out
+
+    tentativas = [
+        ("/contas-contabeis/saldos", {"data": today,
+                                      "idsContasContabeis": list(contas_idx.keys())}),
+        ("/contas-contabeis/saldos", {"idsContasContabeis": list(contas_idx.keys())}),
+        ("/contas-contabeis/saldos", None),
+    ]
+    for path, params in tentativas:
+        try:
+            payload = client.get(path, params)
+        except Exception:
+            continue
+        contas = _extrai(payload)
+        if contas:
+            total = round(sum(c["saldo"] for c in contas), 2)
+            log(f"  -> {len(contas)} conta(s), saldo total R$ {total:,.2f}", client.quiet)
+            return {"data_ref": today, "total": total, "contas": contas}
+    log("  [warn] endpoint de saldos não respondeu em nenhum formato conhecido — "
+        "saldo fica manual (caixa_config.json)", client.quiet)
+    return None
+
+
 def fetch_contatos_idx(
     client: BlingClient,
     ids: Iterable[int],
@@ -417,6 +501,10 @@ def main() -> int:
         ["id", "idCategoriaPai", "descricao", "tipo", "idGrupoDre"],
     )
 
+    # 1b) saldo de caixa (contas contábeis) — sempre do Bling; falha vira
+    #     warning e o build usa o fallback manual (caixa_config.json)
+    saldos_caixa = fetch_saldo_caixa(client, today)
+
     # 2) contas a pagar e a receber em aberto + pagas/recebidas
     fetched = {}
     plan = [
@@ -469,6 +557,8 @@ def main() -> int:
         "categorias": categorias,
         "contatos": list(contatos_idx.values()),
     }
+    if saldos_caixa:
+        json_snapshot["saldos_caixa"] = saldos_caixa
     for (kind, sit), items in fetched.items():
         label = {
             ("pagar", 1): "contas_pagar_em_aberto",

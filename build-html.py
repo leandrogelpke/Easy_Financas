@@ -1618,14 +1618,32 @@ def _signed_kbrl(v: float) -> str:
 # ──────────────────────────────────────────────
 
 def load_caixa_config() -> dict:
-    """Lê caixa_config.json (mantido manualmente, como clientes_classificacao.json).
-    Contém o saldo em caixa atual p/ o cálculo de Runway. O Bling não expõe
-    saldo bancário, então esse valor é informado pelo usuário. Ausente → {}."""
+    """Lê caixa_config.json — hoje é só FALLBACK do saldo de caixa.
+
+    Desde 21/ago/2026 o saldo vem do Bling a cada fetch
+    (`fetch-bling.py::fetch_saldo_caixa` → snapshot["saldos_caixa"]).
+    Este arquivo manual só é usado quando a API não devolveu saldo
+    (sonda falhou / sem escopo). Ausente → {}."""
     try:
         p = Path(__file__).resolve().parent / "caixa_config.json"
         return json.loads(p.read_text(encoding="utf-8"))
     except Exception:
         return {}
+
+
+def resolve_saldo_caixa(data: dict) -> tuple[float | None, str]:
+    """Saldo de caixa: Bling primeiro, manual como fallback (pedido 21/ago).
+
+    Retorna (saldo, fonte) com fonte ∈ {"bling", "manual", ""}.
+    """
+    sc = data.get("saldos_caixa") or {}
+    total = sc.get("total")
+    if isinstance(total, (int, float)):
+        return float(total), "bling"
+    manual = load_caixa_config().get("saldo_caixa")
+    if isinstance(manual, (int, float)):
+        return float(manual), "manual"
+    return None, ""
 
 
 def compute_overview_hero_sub(months: list[date], total_pago: int) -> str:
@@ -1657,7 +1675,8 @@ def compute_overview_pills(pagar_data: list, cx_data: list) -> str:
 
 
 def compute_overview_kpis_html(rows: list, pagar_data: list, cx_data: list, months: list[date],
-                               saldo_caixa: float | None = None) -> str:
+                               saldo_caixa: float | None = None,
+                               saldo_fonte: str = "manual") -> str:
     n = len(months) or 1
     total_pago   = sum(r["total"] for r in rows)
     # Burn OPERACIONAL: aporte/distribuição de sócio é movimentação
@@ -1700,19 +1719,20 @@ def compute_overview_kpis_html(rows: list, pagar_data: list, cx_data: list, mont
 
     ]
 
-    # Runway = quanto o caixa atual dura se a receita parar (caixa ÷ burn bruto
-    # mensal). burn = `media` (média mensal de saídas pagas, fonte Bling).
-    # saldo_caixa vem de caixa_config.json (mantido manualmente) — sem ele,
-    # mostramos a chamada pra informar o saldo em vez de inventar número.
+    # Runway = quanto o caixa atual dura se a receita parar (caixa ÷ burn
+    # operacional mensal). saldo vem do Bling a cada fetch (contas contábeis);
+    # caixa_config.json é só fallback manual — e o card diz qual fonte usou,
+    # porque o manual vivia desatualizado (pedido do Leandro, 21/ago).
     if saldo_caixa and media > 0:
         runway = saldo_caixa / media
         rw_cor = "red" if runway < 3 else ("amber" if runway < 6 else "green")
         rw_val = (f"{runway:.1f}".replace(".", ",") + " meses") if runway < 100 else "99+ meses"
-        rw_sub = f"caixa {_kbrl(saldo_caixa)} ÷ burn operacional {_kbrl(media)}/mês"
+        _fonte = "Bling" if saldo_fonte == "bling" else "manual — desatualizado?"
+        rw_sub = f"caixa {_kbrl(saldo_caixa)} ({_fonte}) ÷ burn {_kbrl(media)}/mês"
     else:
         rw_cor = "amber"
         rw_val = "—"
-        rw_sub = "informe saldo_caixa em caixa_config.json"
+        rw_sub = "sem saldo: API não devolveu e caixa_config.json vazio"
     cards.append(
         f'<div class="met {rw_cor}"><div class="ml">Runway (caixa ÷ burn)</div>'
         f'<div class="mv {rw_cor}">{rw_val}</div>'
@@ -2300,8 +2320,9 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     # ── Marcadores dinâmicos do dashboard ──
     overview_hero_sub   = compute_overview_hero_sub(months, total_pago)
     overview_pills      = compute_overview_pills(pagar_data, cx_data)
-    saldo_caixa         = load_caixa_config().get("saldo_caixa")
-    overview_kpis       = compute_overview_kpis_html(rows, pagar_data, cx_data, months, saldo_caixa)
+    saldo_caixa, saldo_fonte = resolve_saldo_caixa(data)
+    overview_kpis       = compute_overview_kpis_html(rows, pagar_data, cx_data, months,
+                                                     saldo_caixa, saldo_fonte)
     overview_riscos     = compute_overview_riscos_html(cx_data, pagar_data, cli_data)
     overview_positivos  = compute_overview_positivos_html(cx_data, pagar_data, rows, cli_data)
     caixa_kpis          = compute_caixa_kpis_html(pagar_data, cx_data)

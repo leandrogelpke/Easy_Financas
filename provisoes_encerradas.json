@@ -1,0 +1,11 @@
+{
+  "_nota": "Provisoes/previsoes genericas encerradas por decisao do Leandro. O reconcile (audit.py::reconcile_em_aberto) REMOVE do em aberto todo lancamento que (a) case o contato por substring normalizada, (b) tenha historico de provisao (PREVISAO/PROVISAO/XX/AAAA — regex _RE_PROVISAO). NFs reais nunca casam a regra (b), entao gasto real fica intacto. Cada remocao sai na trilha do card de reconciliacao como PROVISAO_ENCERRADA. Este arquivo e versionado porque o dado 'sujo' continua vindo do Bling a cada fetch enquanto os lancamentos nao forem inativados la — o encerramento aqui sobrevive ao re-fetch.",
+  "encerradas": [
+    {
+      "contato": "EFATA TREINAMENTO",
+      "motivo": "Contrato encerrado — todos os pagamentos concluidos; provisoes 'PRESTACAO SERVICOS XX/2026' remanescentes (jul-out/26, R$ 35K cada) nao representam obrigacao real.",
+      "confirmado_por": "Leandro",
+      "confirmado_em": "2026-08-21"
+    }
+  ]
+}

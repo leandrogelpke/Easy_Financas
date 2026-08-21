@@ -889,21 +889,46 @@ def _recon_venc(r: dict) -> str:
     return (r.get("vencimento") or r.get("dataVencimento") or "").strip()
 
 
+def _load_provisoes_encerradas() -> list[dict]:
+    """Carrega provisoes_encerradas.json (decisões manuais do Leandro).
+
+    Encerramento manual de provisões que o Bling ainda devolve como em
+    aberto — ex.: Efata, contrato encerrado em jul/26 com provisões
+    "XX/2026" órfãs até out/26. Arquivo ausente/ilegível → lista vazia.
+    """
+    try:
+        p = Path(__file__).resolve().parent / "provisoes_encerradas.json"
+        d = json.loads(p.read_text(encoding="utf-8"))
+        return [e for e in d.get("encerradas", []) if e.get("contato")]
+    except Exception:
+        return []
+
+
 def reconcile_em_aberto(
     pagas: list[dict],
     em_aberto: list[dict],
     today: date | None = None,
+    encerradas: list[dict] | None = None,
 ) -> tuple[list[dict], list[dict]]:
     """Remove lançamentos fantasma de `em_aberto` (a pagar).
 
     Retorna (em_aberto_limpo, ajustes), onde cada ajuste é um dict:
       {tipo, contato, contato_id, venc, valor, historico[, realizado_mes]}
-    `tipo` ∈ {"DUPLICATA_PAGA", "PROVISAO_COBERTA"}.
+    `tipo` ∈ {"DUPLICATA_PAGA", "PROVISAO_COBERTA", "PROVISAO_ABATIDA",
+              "PROVISAO_ENCERRADA"}.
+
+    `encerradas`: lista de {contato, motivo} — default lê
+    provisoes_encerradas.json. Remove provisões genéricas (regex
+    _RE_PROVISAO) do contato indicado; NF real nunca casa a regex, então
+    gasto realizado não é afetado.
 
     Não altera as listas recebidas. Determinística → idempotente: rodar
     duas vezes sobre o resultado já limpo não remove nada a mais.
     """
     today = today or date.today()
+    if encerradas is None:
+        encerradas = _load_provisoes_encerradas()
+    encerradas_norm = [(_norm(e["contato"]), e.get("motivo", "")) for e in encerradas]
 
     # índice de gêmeos pagos (consumíveis) + realizado por contato×mês-venc
     paid_twins: dict[tuple, int] = defaultdict(int)
@@ -925,6 +950,20 @@ def reconcile_em_aberto(
         vc = _recon_venc(r)
         hist = (r.get("historico") or r.get("historico_descricao") or "")
         key = (ck, vc, v)
+
+        # (0) provisão de contrato encerrado (decisão manual versionada em
+        #     provisoes_encerradas.json) — some por inteiro, com trilha.
+        #     Só provisões genéricas caem aqui; NF real não casa _RE_PROVISAO.
+        if v > 0 and _RE_PROVISAO.search(_norm(hist)):
+            _nome = _norm(r.get("contato_nome") or r.get("nomeContato") or "")
+            _enc = next((mot for pat, mot in encerradas_norm if pat and pat in _nome), None)
+            if _enc is not None:
+                ajustes.append({
+                    "tipo": "PROVISAO_ENCERRADA", "contato": r.get("contato_nome", ""),
+                    "contato_id": r.get("contato_id"), "venc": vc, "valor": v,
+                    "historico": hist[:80], "motivo": _enc[:120],
+                })
+                continue
 
         # (A) duplicata de algo já pago — consome um gêmeo
         if v > 0 and paid_twins.get(key, 0) - used[key] > 0:
@@ -1091,6 +1130,8 @@ def check_reconciliacao_pagar(bling_dir: Path, today: date) -> list[AuditFinding
     n_dup = sum(1 for a in ajustes if a["tipo"] == "DUPLICATA_PAGA")
     n_prov = sum(1 for a in ajustes if a["tipo"] == "PROVISAO_COBERTA")
     n_abat = sum(1 for a in ajustes if a["tipo"] == "PROVISAO_ABATIDA")
+    n_enc = sum(1 for a in ajustes if a["tipo"] == "PROVISAO_ENCERRADA")
+    tot_enc = sum(a["valor"] for a in ajustes if a["tipo"] == "PROVISAO_ENCERRADA")
     tot_dup = sum(a["valor"] for a in ajustes if a["tipo"] == "DUPLICATA_PAGA")
     tot_prov = sum(a["valor"] for a in ajustes if a["tipo"] == "PROVISAO_COBERTA")
     tot_abat = sum(a["valor"] for a in ajustes if a["tipo"] == "PROVISAO_ABATIDA")
@@ -1105,6 +1146,9 @@ def check_reconciliacao_pagar(bling_dir: Path, today: date) -> list[AuditFinding
     if n_abat:
         partes.append(f"{n_abat} provisão(ões) parcialmente coberta(s) — "
                       f"{_fmt_brl(tot_abat)} abatido(s) do saldo em aberto")
+    if n_enc:
+        partes.append(f"{n_enc} provisão(ões) de contrato encerrado removida(s) "
+                      f"({_fmt_brl(tot_enc)}) — ver provisoes_encerradas.json")
     return [AuditFinding(
         check_id="reconc_pagar", status="info",
         title=f"{len(ajustes)} lançamento(s) fantasma removidos do a pagar",

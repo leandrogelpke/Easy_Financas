@@ -59,6 +59,13 @@ vivos do Bling / Totvs / auditoria. Nada deve ser hardcoded no template
 
 - `clientes_classificacao.json` — mapeia nome Bling → {id, display, cat
   (garantido/medio/alto), uso, abr, obs}.
+- `provisoes_encerradas.json` — provisões genéricas encerradas por decisão
+  manual (ex.: Efata). O reconcile remove do em aberto TODA provisão
+  (regex PREVISÃO/PROVISÃO/XX-AAAA) do contato listado; NF real nunca casa
+  a regex. Trilha: `PROVISAO_ENCERRADA` no card de reconciliação.
+- `caixa_config.json` — **fallback** do saldo de caixa. O saldo vem do
+  Bling a cada fetch (`fetch_saldo_caixa`, contas contábeis); este arquivo
+  só é lido se a API não devolver saldo.
 - `KNOWN_SUPPLIERS` em `build-html.py` — fornecedores: mapeia nome Bling
   upper → {id, display, cat (Buy-out/Serviços PJ/Tributos e
   Contábil/Aporte/Sócios/Parceria TOTVS/Software/Reembolsos/Outros), st,
@@ -527,6 +534,8 @@ for r in d['contas_receber_recebidas']:
 | 10/07 | Bling: 72 lançamentos "sem categoria" classificados via UI + 3 categorias novas (Salários Comercial/Operação, Hosting/Sistemas) + categoria padrão nos contatos. **Gotcha:** recorrência do Bling não deixa editar categoria (só Inativar); as 3 mensais (Receita Federal/Cartão/Alan) seguem gerando sem categoria | Bling (fora do repo) |
 | 21/08 | **Arquivo histórico do Bling** (`ci/merge_historico.py` + `data/bling-api/historico.json`): a janela de 7 meses por data de EMISSÃO tinha derrubado o buy-out do Rômulo inteiro em 1º/ago. Buy-out 2026 R$ 120K → **R$ 478.885,56**. Bootstrap automático de 24 meses + input `janela_meses` no `workflow_dispatch` + gate `test_merge_historico.py` | ver §6.11 |
 | 21/08 | **Gap fill retroativo desligado** no `_build_matriz_2y`: mês passado sem lançamento virou `sem_dado` (travessão), não mais média. Antes o DRE fabricava a coluna 2025 inteira a partir da média de 2026 — despesas 2025 "R$ 607K" com **zero** real na base. Banner de "comparativo parcial" quando falta mês | `dre_render.py` |
+| 21/08 | **Saldo de caixa do Bling** (`fetch-bling.py::fetch_saldo_caixa`): sonda GET /contas-contabeis + /saldos com fallback pro `caixa_config.json` (que virou fallback declarado no card Runway). ATENÇÃO: endpoint de saldos não confirmado na doc pública — conferir log `[fetch] saldos de caixa` no 1º run do CI; se falhar, o card mostra "sem saldo" e o fallback manual assume | `fetch-bling.py` + `build-html.py::resolve_saldo_caixa` |
+| 21/08 | **Provisões Efata encerradas** (`provisoes_encerradas.json` + `PROVISAO_ENCERRADA` no reconcile): Leandro confirmou contrato concluído; 6 provisões "XX/2026" (R$ 210K, mai–out/26) removidas de todas as visões, só gasto real fica. Sobrevive ao re-fetch (o Bling ainda devolve as provisões) | `audit.py` + teste |
 | 21/08 | **Auditoria de código executada** (ver `AUDITORIA_CODIGO_2026-08-21.md`): aporte de sócio fora do burn/DRE_DATA (era contado como despesa operacional em 3 visões); vencido em aberto nunca mais rotulado "real" na matriz; provisão parcialmente coberta é **abatida** do realizado (`PROVISAO_ABATIDA`, idempotente); `CF_CATS` do donut agora gerado do Python (a lista fixa de 4 escondia Aporte/Tributos/TOTVS/Software); mês corrente = realizado+aberto em todas as visões; `data_pagamento` capturado no fetch (regime ainda por vencimento); Geremias cat `Buy-out` (saiu de "Outros"); aliases Isabel ME/Luiz Aquino; matching de fornecedor sem `[:20]`; guarda de formato no parse_money; `today` do snapshot no build; 2 testes novos | build-html · dre_render · audit · template · fetch-bling |
 | 10/07 | **Grupo "Pessoal"**: 6 PJ (Alan, Isabel, Macedo, Efata, Milajanu, Eduardo) movidos p/ Despesas com pessoal em todo o BI. `FORNECEDOR_MAP` → `desp_pessoal`/subgrupo "Prestadores PJ"; DCTFWEB isolado via `_sum_subgroup("Encargos sobre pró-labore")` p/ não inflar auditoria INSS. `KNOWN_SUPPLIERS` cat=`Pessoal` + `STACK_GROUPS` grupo Pessoal + KPI no template. DRE pessoal R$1.8K→R$600K | `dre_render.py` + `build-html.py` + `template.html` |
 

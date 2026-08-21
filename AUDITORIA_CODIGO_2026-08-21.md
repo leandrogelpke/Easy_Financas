@@ -5,9 +5,13 @@
 > P1.2, P1.4, P1.6, P1.7, P1.9, P1.1 (captura do dado; regime segue por
 > vencimento), aliases do P1.3, parse_money/PAGES do P2, P0.6 (rotulado como
 > snapshot manual).
-> **Pende de VOCÊ:** P0.3 — atualizar `saldo_caixa` real no
-> `caixa_config.json` (hoje diz R$ 515,75) e conferir/inativar as provisões
-> Efata "XX/2026" no Bling.
+> **P0.3 resolvido (21/ago, tarde):** saldo de caixa agora vem do Bling a
+> cada fetch (`fetch_saldo_caixa`; `caixa_config.json` virou fallback) — o
+> endpoint de saldos é sonda não confirmada na doc pública: conferir o log
+> do 1º run do CI. Provisões Efata encerradas via
+> `provisoes_encerradas.json` (R$ 210K removidos; só gasto real fica).
+> Recomendo ainda inativar as provisões no próprio Bling quando conveniente
+> — o arquivo compensa, mas dado limpo na origem é melhor.
 > **Pende de refactor futuro (Lote C):** P0.7 (Projeção data-driven), P1.3
 > completo (JSON único de fornecedores), P1.5 (auto vs manual em clientes),
 > P1.8 (banner de horizonte), demais P2.

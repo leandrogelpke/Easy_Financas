@@ -183,7 +183,7 @@ def test_reconcile_provisao_coberta() -> None:
         {"contato_id": "9", "contato_nome": "EFATA", "vencimento": "2026-05-20",
          "valor": "35.000", "historico": "PRESTAÇÃO SERVIÇOS XX/2026"},
     ]
-    limpo, aj = audit.reconcile_em_aberto(pagas, em_aberto)
+    limpo, aj = audit.reconcile_em_aberto(pagas, em_aberto, encerradas=[])
     assert limpo == [], "provisão coberta deveria ter sido removida"
     assert len(aj) == 1 and aj[0]["tipo"] == "PROVISAO_COBERTA"
 
@@ -202,15 +202,53 @@ def test_reconcile_provisao_abatida_parcial() -> None:
         {"contato_id": "9", "contato_nome": "EFATA", "vencimento": "2026-07-20",
          "valor": "35.000,00", "historico": "PRESTAÇÃO SERVIÇOS XX/2026"},
     ]
-    limpo, aj = audit.reconcile_em_aberto(pagas, em_aberto)
+    limpo, aj = audit.reconcile_em_aberto(pagas, em_aberto, encerradas=[])
     assert len(aj) == 1 and aj[0]["tipo"] == "PROVISAO_ABATIDA", aj
     assert abs(aj[0]["restante"] - 12833.0) < 0.01, aj[0]
     assert len(limpo) == 1
     assert abs(audit._recon_money(limpo[0]["valor"]) - 12833.0) < 0.01, limpo[0]
     # idempotência: segunda passada sobre o resultado não abate de novo
-    limpo2, aj2 = audit.reconcile_em_aberto(pagas, limpo)
+    limpo2, aj2 = audit.reconcile_em_aberto(pagas, limpo, encerradas=[])
     assert aj2 == [] and len(limpo2) == 1, (aj2, limpo2)
     assert abs(audit._recon_money(limpo2[0]["valor"]) - 12833.0) < 0.01
+
+
+def test_reconcile_provisao_encerrada() -> None:
+    """Contrato encerrado (provisoes_encerradas.json): provisões genéricas do
+    contato somem por inteiro; NF real do mesmo contato fica intacta.
+
+    Caso real Efata ago/26: pagamentos todos concluídos, mas provisões
+    'PRESTAÇÃO SERVIÇOS XX/2026' de jul–out/26 seguiam vivas no Bling.
+    """
+    enc = [{"contato": "EFATA TREINAMENTO", "motivo": "contrato encerrado"}]
+    pagas = []
+    em_aberto = [
+        {"contato_id": "9", "contato_nome": "EFATA TREINAMENTO EM TECNOLOGIA LTDA",
+         "vencimento": "2026-09-21", "valor": "35.000,00",
+         "historico": "PRESTAÇÃO SERVIÇOS XX/2026"},
+        {"contato_id": "9", "contato_nome": "EFATA TREINAMENTO EM TECNOLOGIA LTDA",
+         "vencimento": "2026-10-20", "valor": "35.000,00",
+         "historico": "PRESTAÇÃO SERVIÇOS XX/2026"},
+        # NF real (não é provisão) → NÃO pode ser removida pelo encerramento
+        {"contato_id": "9", "contato_nome": "EFATA TREINAMENTO EM TECNOLOGIA LTDA",
+         "vencimento": "2026-09-10", "valor": "1.234,00",
+         "historico": "Ref. a NF nº 000099"},
+        # outro contato com provisão → intocado
+        {"contato_id": "7", "contato_nome": "M. DE Q. MACEDO - EPP",
+         "vencimento": "2026-09-21", "valor": "23.000,00", "historico": "PREVISÃO"},
+    ]
+    limpo, aj = audit.reconcile_em_aberto(pagas, em_aberto, encerradas=enc)
+    tipos = [a["tipo"] for a in aj]
+    assert tipos == ["PROVISAO_ENCERRADA", "PROVISAO_ENCERRADA"], aj
+    assert len(limpo) == 2, limpo
+    assert {r["historico"] for r in limpo} == {"Ref. a NF nº 000099", "PREVISÃO"}
+    # idempotente
+    limpo2, aj2 = audit.reconcile_em_aberto(pagas, limpo, encerradas=enc)
+    assert aj2 == [] and limpo2 == limpo
+    # arquivo real do repo contém a Efata
+    assert any("EFATA" in e["contato"].upper()
+               for e in audit._load_provisoes_encerradas()), \
+        "provisoes_encerradas.json deveria listar a Efata"
 
 
 def test_recon_money_formato_americano() -> None:
@@ -310,6 +348,7 @@ TESTS = [
     test_reconcile_duplicata_paga,
     test_reconcile_provisao_coberta,
     test_reconcile_provisao_abatida_parcial,
+    test_reconcile_provisao_encerrada,
     test_recon_money_formato_americano,
     test_reconcile_preserva_legitimo,
     test_reconcile_idempotente,
