@@ -3,13 +3,13 @@
     "workflow": "update",
     "agente": "principal",
     "trigger": "schedule",
-    "run_id": "32527854679",
-    "run_number": "293",
-    "run_url": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/32527854679",
-    "started_at_utc": "2026-08-21 21:18:17",
-    "ended_at_utc": "2026-08-21 21:18:31",
-    "ended_at_brt": "2026-08-21 18:18:31",
-    "duration_s": 14
+    "run_id": "32530945101",
+    "run_number": "294",
+    "run_url": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/32530945101",
+    "started_at_utc": "2026-08-21 21:58:33",
+    "ended_at_utc": "2026-08-21 21:58:46",
+    "ended_at_brt": "2026-08-21 18:58:46",
+    "duration_s": 13
   },
   "steps": {
     "fetch": "failure",
