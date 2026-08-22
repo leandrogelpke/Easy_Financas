@@ -1,0 +1,44 @@
+{
+  "run": {
+    "workflow": "update",
+    "agente": "principal",
+    "trigger": "schedule",
+    "run_id": "32581962234",
+    "run_number": "296",
+    "run_url": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/32581962234",
+    "started_at_utc": "2026-08-22 15:31:43",
+    "ended_at_utc": "2026-08-22 15:31:56",
+    "ended_at_brt": "2026-08-22 12:31:56",
+    "duration_s": 13
+  },
+  "steps": {
+    "fetch": "failure",
+    "merge_historico": "skipped",
+    "token_refresh": "unchanged",
+    "build": "success",
+    "gate_test_audit": "success",
+    "gate_test_build": "success",
+    "gate_test_merge": "success",
+    "precommit": "success",
+    "push": "skipped"
+  },
+  "records": {
+    "snapshot_file": "bling_data_2026-08-21.json",
+    "fetched_at": "2026-08-21 13:16:30",
+    "total": 310,
+    "contas_pagar_em_aberto": 84,
+    "contas_pagar_pagas": 132,
+    "contas_receber_em_aberto": 18,
+    "contas_receber_recebidas": 76,
+    "categorias": 219,
+    "contatos": 43
+  },
+  "commit_hash": null,
+  "warnings": [
+    "Publicação bloqueada pelo gate — última versão boa mantida no ar."
+  ],
+  "errors": [
+    "Fetch do Bling não concluiu com sucesso. Últimas linhas: File \"/home/runner/work/Easy_Financas/Easy_Financas/fetch-bling.py\", line 162, in list_all | data = self.get(path, params) | ^^^^^^^^^^^^^^^^^^^^^^ | File \"/home/runner/work/Easy_Financas/Easy_Financas/fetch-bling.py\", line 152, in get | raise RuntimeError(f\"HTTP {e.code} em GET {path}: {body}\") from e | RuntimeError: HTTP 400 em GET /contas/pagar: { | \"error\": { | \"type\": \"BAD_REQUEST\", | \"message\": \"Per\\u00edodo do filtro \\u00e9 maior que o permitido.\", | \"description\": \"O per\\u00edodo do filtro por 'dataEmissao' \\u00e9 maior que o per\\u00edodo permitido (366 dias).\" | } | }"
+  ],
+  "ok": false
+}
