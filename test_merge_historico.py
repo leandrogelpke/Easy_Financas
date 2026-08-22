@@ -136,6 +136,58 @@ def test_idempotente() -> None:
     check("merge é idempotente", json.dumps(l1, sort_keys=True) == json.dumps(l2, sort_keys=True))
 
 
+# ── 10. Fatiamento da janela de emissão (limite de 366 dias do Bling) ───────
+#     Bug de 21-22/ago/2026: o bootstrap de 24 meses mandava dataEmissaoInicial
+#     2 anos atrás numa chamada só → HTTP 400 "Período do filtro é maior que o
+#     permitido (366 dias)" → todos os runs do update.yml falhavam no fetch.
+def _load_fetch_bling():
+    import importlib.util
+    p = Path(__file__).resolve().parent / "fetch-bling.py"
+    spec = importlib.util.spec_from_file_location("fetch_bling", p)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_fatiar_janela_emissao() -> None:
+    from datetime import date as _d, timedelta as _td
+    fb = _load_fetch_bling()
+
+    # rodada normal (7 meses, com data_final): janela única, params intactos
+    j = fb._fatiar_janela_emissao("2026-02-01", "2026-08-22")
+    check("janela ≤360d não é fatiada", j == [("2026-02-01", "2026-08-22")])
+
+    # o caso do bug: bootstrap de 24 meses precisa virar várias janelas
+    j = fb._fatiar_janela_emissao("2024-08-01", "2026-08-22")
+    check("24 meses são fatiados em 3 janelas", len(j) == 3, f"(deu {len(j)})")
+    ok_cont = all(
+        _d.fromisoformat(j[i + 1][0]) == _d.fromisoformat(j[i][1]) + _td(days=1)
+        for i in range(len(j) - 1))
+    check("janelas contíguas (sem buraco nem sobreposição)", ok_cont, f"({j})")
+    ok_tam = all(
+        (_d.fromisoformat(f) - _d.fromisoformat(i0)).days < 366
+        for i0, f in j if f)
+    check("cada janela cabe no limite de 366 dias do Bling", ok_tam, f"({j})")
+    check("última janela termina no data_final pedido", j[-1][1] == "2026-08-22")
+
+    # sem data_final: a ÚLTIMA janela fica aberta (fim=None), preservando o
+    # comportamento "até hoje" da chamada original
+    ini_curta = (_d.today() - _td(days=30)).isoformat()
+    check("janela curta sem data_final fica aberta",
+          fb._fatiar_janela_emissao(ini_curta) == [(ini_curta, None)])
+    ini_longa = (_d.today() - _td(days=730)).isoformat()
+    j = fb._fatiar_janela_emissao(ini_longa)
+    check("janela longa sem data_final: última fatia aberta",
+          len(j) >= 2 and j[-1][1] is None, f"({j})")
+    check("fatia aberta começa a ≤360 dias de hoje",
+          (_d.today() - _d.fromisoformat(j[-1][0])).days < 366)
+
+    # degradação segura: entrada estranha devolve a janela original
+    check("data invertida não fatia (API decide, como antes)",
+          fb._fatiar_janela_emissao("2026-08-01", "2026-01-01")
+          == [("2026-08-01", "2026-01-01")])
+
+
 # ── 9. Registro sem id não pode virar duplicata infinita ────────────────────
 def test_sem_id_nao_acumula() -> None:
     sem_id = {"vencimento": "2026-04-01", "valor": "10,00", "contato_nome": "X"}
@@ -157,6 +209,7 @@ def main() -> int:
         test_semantica_da_janela,
         test_idempotente,
         test_sem_id_nao_acumula,
+        test_fatiar_janela_emissao,
     ):
         fn()
     print()

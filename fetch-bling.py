@@ -348,6 +348,46 @@ def fetch_contatos_idx(
     return out
 
 
+# O Bling limita o filtro por dataEmissao a 366 dias — acima disso a API
+# devolve HTTP 400 BAD_REQUEST ("O período do filtro por 'dataEmissao' é
+# maior que o período permitido (366 dias)."). Foi o que derrubou o
+# bootstrap de 24 meses do historico.json em 21-22/ago/2026: todos os runs
+# do update.yml morriam no fetch. 360 deixa margem de segurança.
+MAX_DIAS_JANELA_EMISSAO = 360
+
+
+def _fatiar_janela_emissao(
+    data_inicial: str,
+    data_final: Optional[str] = None,
+    max_dias: int = MAX_DIAS_JANELA_EMISSAO,
+) -> List[tuple]:
+    """Fatia [data_inicial, data_final] em janelas de até max_dias dias.
+
+    A última janela devolve fim=None quando data_final não foi pedido, pra
+    manter o comportamento aberto ("até hoje") da chamada original — cobre
+    inclusive lançamento com emissão futura, se o Bling gerar algum.
+    Entrada inválida ou data_inicial > data_final → devolve a janela
+    original intacta (a API decide, como antes).
+    """
+    try:
+        ini = date.fromisoformat(data_inicial)
+        fim = date.fromisoformat(data_final) if data_final else date.today()
+    except (TypeError, ValueError):
+        return [(data_inicial, data_final)]
+    if ini > fim:
+        return [(data_inicial, data_final)]
+    janelas: List[tuple] = []
+    atual = ini
+    while True:
+        prox = atual + timedelta(days=max_dias - 1)
+        if prox >= fim:
+            janelas.append((atual.isoformat(), data_final))
+            break
+        janelas.append((atual.isoformat(), prox.isoformat()))
+        atual = prox + timedelta(days=1)
+    return janelas
+
+
 def fetch_contas(
     client: BlingClient,
     kind: str,  # "pagar" ou "receber"
@@ -371,10 +411,27 @@ def fetch_contas(
     log(f"[fetch] contas/{kind} situacao={situacao}...", client.quiet)
     list_params: Dict[str, Any] = {"situacoes": [situacao]}
     if data_inicial:
-        list_params["dataEmissaoInicial"] = data_inicial
-    if data_final:
-        list_params["dataEmissaoFinal"] = data_final
-    listed = client.list_all(f"/contas/{kind}", list_params)
+        # Janelas >366 dias tomam HTTP 400 do Bling (ver MAX_DIAS_JANELA_EMISSAO).
+        # Fatiamos e deduplicamos por id — janela única (rodada normal de 7
+        # meses) manda exatamente os mesmos params de antes.
+        listed = []
+        vistos: set = set()
+        for j_ini, j_fim in _fatiar_janela_emissao(data_inicial, data_final):
+            p = dict(list_params)
+            p["dataEmissaoInicial"] = j_ini
+            if j_fim:
+                p["dataEmissaoFinal"] = j_fim
+            bloco = client.list_all(f"/contas/{kind}", p)
+            novos = [x for x in bloco if x.get("id") not in vistos]
+            vistos.update(x.get("id") for x in novos)
+            listed.extend(novos)
+            log(f"  [janela] {j_ini} → {j_fim or 'hoje'}: {len(bloco)} registros",
+                client.quiet)
+            time.sleep(SLEEP_BETWEEN)
+    else:
+        if data_final:
+            list_params["dataEmissaoFinal"] = data_final
+        listed = client.list_all(f"/contas/{kind}", list_params)
     log(f"  -> {len(listed)} registros listados", client.quiet)
     if max_items is not None and len(listed) > max_items:
         listed = listed[:max_items]
