@@ -77,6 +77,9 @@ jobs:
         continue-on-error: true
         env:
           JANELA_MESES: ${{ github.event.inputs.janela_meses || '' }}
+          # cron que disparou este run (vazio em workflow_dispatch) — usado
+          # pra ligar o deep-sync só na 1ª rodada de domingo
+          EVENT_SCHEDULE: ${{ github.event.schedule }}
         run: |
           # Janela deslizante por data de EMISSÃO. Cuidado: parcelamentos longos
           # são emitidos uma única vez, então uma janela curta faz TODAS as
@@ -90,6 +93,14 @@ jobs:
             N="$JANELA_MESES"; MOTIVO="pedido no workflow_dispatch"
           elif [ ! -f data/bling-api/historico.json ]; then
             N=24; MOTIVO="bootstrap — historico.json ainda não existe"
+          elif [ "$(date -u +%u)" = "7" ] && [ "$EVENT_SCHEDULE" = "11 10 * * *" ]; then
+            # Deep-sync semanal (pedido do Leandro, 23/08): a janela curta é
+            # rápida, mas dentro dela o snapshot é autoritativo e FORA dela o
+            # histórico preserva tudo — logo edição/exclusão de lançamento
+            # antigo no Bling não propagaria nunca. 1x/semana (domingo 07h11
+            # BRT) a janela abre pra 24 meses (fatiada em blocos ≤360d pelo
+            # fetch) e o merge poda o que foi apagado no Bling nesse alcance.
+            N=24; MOTIVO="deep-sync semanal (domingo) — propaga edições/exclusões antigas"
           else
             N=7;  MOTIVO="rodada normal"
           fi
