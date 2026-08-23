@@ -188,6 +188,39 @@ def test_fatiar_janela_emissao() -> None:
           == [("2026-08-01", "2026-01-01")])
 
 
+# ── 11. enrich_and_dump defensivo com dados antigos do Bling ────────────────
+#     Bug de 23/ago/2026 (bootstrap 24m, runs 07h e 12h): lançamentos antigos
+#     trazem `borderos` como lista de IDs (int), não de dicts → AttributeError
+#     em (borderos[0]).get("data") derrubava o fetch inteiro no enrich.
+def test_enrich_defensivo_dados_antigos() -> None:
+    fb = _load_fetch_bling()
+    base = {"id": 1, "situacao": 2, "valor": "10"}
+
+    r = fb.enrich_and_dump([dict(base, borderos=[12345])], "pagar", {}, {})
+    check("borderos como lista de ids não explode (data vazia)",
+          r[0]["data_pagamento"] == "", f"(deu {r[0]['data_pagamento']!r})")
+
+    r = fb.enrich_and_dump([dict(base, borderos=[{"data": "2026-01-05"}])],
+                           "pagar", {}, {})
+    check("bordero dict devolve a data", r[0]["data_pagamento"] == "2026-01-05")
+
+    r = fb.enrich_and_dump([dict(base, dataPagamento="2026-02-01",
+                                 borderos=[999])], "pagar", {}, {})
+    check("dataPagamento explícita vence o borderô",
+          r[0]["data_pagamento"] == "2026-02-01")
+
+    r = fb.enrich_and_dump([dict(base, borderos=[111, {"data": "2026-03-09"}])],
+                           "pagar", {}, {})
+    check("lista mista de borderôs acha o primeiro dict",
+          r[0]["data_pagamento"] == "2026-03-09")
+
+    r = fb.enrich_and_dump([dict(base, contato=7, categoria=None, portador=[])],
+                           "pagar", {}, {})
+    check("contato/categoria/portador não-dict não explodem",
+          r[0]["contato_id"] == "" and r[0]["categoria_id"] == ""
+          and r[0]["portador_id"] == "")
+
+
 # ── 9. Registro sem id não pode virar duplicata infinita ────────────────────
 def test_sem_id_nao_acumula() -> None:
     sem_id = {"vencimento": "2026-04-01", "valor": "10,00", "contato_nome": "X"}
@@ -210,6 +243,7 @@ def main() -> int:
         test_idempotente,
         test_sem_id_nao_acumula,
         test_fatiar_janela_emissao,
+        test_enrich_defensivo_dados_antigos,
     ):
         fn()
     print()

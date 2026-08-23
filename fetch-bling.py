@@ -477,6 +477,25 @@ def fetch_contas(
     return detailed
 
 
+def _as_dict(v: Any) -> Dict[str, Any]:
+    """Campos aninhados (contato, categoria, portador) podem vir como id
+    numérico ou null em lançamentos antigos — nunca assuma dict."""
+    return v if isinstance(v, dict) else {}
+
+
+def _data_primeiro_bordero(c: Dict[str, Any]) -> str:
+    """`borderos` vem como lista de dicts ({data, ...}) nos lançamentos
+    recentes, mas como lista de IDs (int) nos antigos — descoberto no
+    bootstrap de 24 meses (23/ago/2026, AttributeError que derrubava o
+    fetch). Sem dict não há data disponível sem outra chamada → ''."""
+    b = c.get("borderos")
+    if isinstance(b, list):
+        for item in b:
+            if isinstance(item, dict):
+                return item.get("data", "") or ""
+    return ""
+
+
 def enrich_and_dump(
     contas: List[Dict[str, Any]],
     kind: str,
@@ -485,11 +504,11 @@ def enrich_and_dump(
 ) -> List[Dict[str, Any]]:
     rows: List[Dict[str, Any]] = []
     for c in contas:
-        contato = c.get("contato") or {}
+        contato = _as_dict(c.get("contato"))
         cinfo = contatos_idx.get(int(contato.get("id") or 0), {}) if contato.get("id") else {}
-        cat = c.get("categoria") or {}
+        cat = _as_dict(c.get("categoria"))
         catinfo = cat_idx.get(int(cat.get("id") or 0), {}) if cat.get("id") else {}
-        portador = c.get("portador") or {}
+        portador = _as_dict(c.get("portador"))
         rows.append({
             "id": c.get("id"),
             "situacao_codigo": c.get("situacao"),
@@ -501,9 +520,7 @@ def enrich_and_dump(
             # alocam por vencimento; capturar isto permite migrar as visões de
             # caixa pro regime de pagamento real quando houver histórico
             # acumulado (auditoria 21/ago, P1.1). Vazio quando em aberto.
-            "data_pagamento": c.get("dataPagamento", "") or (
-                (c.get("borderos") or [{}])[0].get("data", "")
-                if isinstance(c.get("borderos"), list) else ""),
+            "data_pagamento": c.get("dataPagamento") or _data_primeiro_bordero(c),
             "competencia": c.get("competencia", ""),
             "valor": fmt_money(c.get("valor", "")),
             "saldo": fmt_money(c.get("saldo", "")),
