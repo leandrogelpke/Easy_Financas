@@ -1,0 +1,44 @@
+{
+  "run": {
+    "workflow": "update",
+    "agente": "principal",
+    "trigger": "schedule",
+    "run_id": "32634193614",
+    "run_number": "301",
+    "run_url": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/32634193614",
+    "started_at_utc": "2026-08-23 10:36:10",
+    "ended_at_utc": "2026-08-23 10:43:45",
+    "ended_at_brt": "2026-08-23 07:43:45",
+    "duration_s": 455
+  },
+  "steps": {
+    "fetch": "failure",
+    "merge_historico": "skipped",
+    "token_refresh": "rotated_saved",
+    "build": "success",
+    "gate_test_audit": "success",
+    "gate_test_build": "success",
+    "gate_test_merge": "success",
+    "precommit": "success",
+    "push": "skipped"
+  },
+  "records": {
+    "snapshot_file": "bling_data_2026-08-21.json",
+    "fetched_at": "2026-08-21 13:16:30",
+    "total": 310,
+    "contas_pagar_em_aberto": 84,
+    "contas_pagar_pagas": 132,
+    "contas_receber_em_aberto": 18,
+    "contas_receber_recebidas": 76,
+    "categorias": 219,
+    "contatos": 43
+  },
+  "commit_hash": null,
+  "warnings": [
+    "Publicação bloqueada pelo gate — última versão boa mantida no ar."
+  ],
+  "errors": [
+    "Fetch do Bling não concluiu com sucesso. Últimas linhas: [ok] contas_receber_em_aberto: 18 linhas -> contas_receber_em_aberto_2026-08-23.csv | Traceback (most recent call last): | File \"/home/runner/work/Easy_Financas/Easy_Financas/fetch-bling.py\", line 655, in <module> | sys.exit(main()) | ^^^^^^ | File \"/home/runner/work/Easy_Financas/Easy_Financas/fetch-bling.py\", line 642, in main | rows = enrich_and_dump(items, kind, contatos_idx, cat_idx) | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | File \"/home/runner/work/Easy_Financas/Easy_Financas/fetch-bling.py\", line 505, in enrich_and_dump | (c.get(\"borderos\") or [{}])[0].get(\"data\", \"\") | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | AttributeError: 'int' object has no attribute 'get'"
+  ],
+  "ok": false
+}
