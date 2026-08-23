@@ -12,13 +12,6 @@ on:
     - cron: '11 10 * * *'
     - cron: '11 15 * * *'
     - cron: '11 19 * * *'
-    # TEMPORÁRIO — teste de fumaça do agendador (remover após confirmar):
-    - cron: '50 15 * * *'
-    # TEMPORÁRIO (21/08) — reexecuta o bootstrap de 24m que falhou às 16h11
-    # e valida a captura de erro do fetch. REMOVER depois de 1-2 rodadas ok.
-    # Cron do GitHub é best-effort: pode atrasar 5-15 min.
-    - cron: '0 21 * * *'
-    - cron: '40 21 * * *'
   workflow_dispatch:
     inputs:
       janela_meses:
