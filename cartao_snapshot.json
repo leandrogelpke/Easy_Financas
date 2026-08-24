@@ -1,10 +1,10 @@
 {
   "_meta": {
-    "generated_at": "2026-06-12 16:03:28",
-    "input_dir": "/sessions/hopeful-sleepy-hopper/mnt/Easy_Financas/cartao/raw",
-    "n_pdfs": 24,
-    "n_faturas": 12,
-    "n_transacoes": 44,
+    "generated_at": "2026-08-24 06:13:06",
+    "input_dir": "/sessions/epic-jolly-davinci/mnt/Easy_Financas/cartao/raw",
+    "n_pdfs": 28,
+    "n_faturas": 16,
+    "n_transacoes": 60,
     "tool": "fetch-cartao.py"
   },
   "comps": [
@@ -13,7 +13,9 @@
     "2026-03",
     "2026-04",
     "2026-05",
-    "2026-06"
+    "2026-06",
+    "2026-07",
+    "2026-08"
   ],
   "cards": [
     "EASY ANALYTICS - VISA",
@@ -25,7 +27,8 @@
     "GitHub",
     "IOF / impostos",
     "Miro",
-    "OpenAI"
+    "OpenAI",
+    "Outros"
   ],
   "vendor_colors": {
     "AWS": "#e8821f",
@@ -33,17 +36,20 @@
     "GitHub": "#3d3d4e",
     "IOF / impostos": "#c0392b",
     "Miro": "#f2c037",
-    "OpenAI": "#1a7a80"
+    "OpenAI": "#1a7a80",
+    "Outros": "#3d5a80"
   },
-  "total_brl": 51424.19,
-  "total_usd": 8404.25,
+  "total_brl": 65814.94,
+  "total_usd": 10649.15,
   "by_month": {
     "2026-01": 5738.66,
     "2026-02": 6758.98,
     "2026-03": 5615.35,
     "2026-04": 10031.29,
     "2026-05": 10918.27,
-    "2026-06": 12361.64
+    "2026-06": 12361.64,
+    "2026-07": 13351.51,
+    "2026-08": 1039.24
   },
   "by_month_card": {
     "2026-01": {
@@ -69,15 +75,24 @@
     "2026-06": {
       "EASY ANALYTICS - VISA": 416.99,
       "PAULO V ANDRADE - VISA": 11944.65
+    },
+    "2026-07": {
+      "EASY ANALYTICS - VISA": 443.07,
+      "PAULO V ANDRADE - VISA": 12908.44
+    },
+    "2026-08": {
+      "EASY ANALYTICS - VISA": 22.95,
+      "PAULO V ANDRADE - VISA": 1016.29
     }
   },
   "by_vendor": {
-    "AWS": 45409.21,
-    "Anuidade": 91.5,
-    "GitHub": 657.0,
-    "IOF / impostos": 1716.88,
+    "AWS": 57688.18,
+    "Anuidade": 122.0,
+    "GitHub": 871.8,
+    "IOF / impostos": 2182.9,
     "Miro": 711.0,
-    "OpenAI": 2838.6
+    "OpenAI": 3878.6,
+    "Outros": 360.46
   },
   "by_vendor_month": {
     "AWS": {
@@ -86,7 +101,9 @@
       "2026-03": 4678.8,
       "2026-04": 8912.04,
       "2026-05": 9935.61,
-      "2026-06": 11290.75
+      "2026-06": 11290.75,
+      "2026-07": 12250.94,
+      "2026-08": 28.03
     },
     "Anuidade": {
       "2026-01": 0,
@@ -94,7 +111,9 @@
       "2026-03": 0,
       "2026-04": 30.5,
       "2026-05": 30.5,
-      "2026-06": 30.5
+      "2026-06": 30.5,
+      "2026-07": 30.5,
+      "2026-08": 0
     },
     "GitHub": {
       "2026-01": 113.8,
@@ -102,7 +121,9 @@
       "2026-03": 110.2,
       "2026-04": 110.6,
       "2026-05": 105.8,
-      "2026-06": 103.4
+      "2026-06": 103.4,
+      "2026-07": 107.0,
+      "2026-08": 107.8
     },
     "IOF / impostos": {
       "2026-01": 190.02,
@@ -110,7 +131,9 @@
       "2026-03": 186.39,
       "2026-04": 338.19,
       "2026-05": 360.68,
-      "2026-06": 416.99
+      "2026-06": 416.99,
+      "2026-07": 443.07,
+      "2026-08": 22.95
     },
     "Miro": {
       "2026-01": 0,
@@ -118,7 +141,9 @@
       "2026-03": 0,
       "2026-04": 0,
       "2026-05": 0,
-      "2026-06": 0
+      "2026-06": 0,
+      "2026-07": 0,
+      "2026-08": 0
     },
     "OpenAI": {
       "2026-01": 0,
@@ -126,7 +151,19 @@
       "2026-03": 639.96,
       "2026-04": 639.96,
       "2026-05": 485.68,
-      "2026-06": 520.0
+      "2026-06": 520.0,
+      "2026-07": 520.0,
+      "2026-08": 520.0
+    },
+    "Outros": {
+      "2026-01": 0,
+      "2026-02": 0,
+      "2026-03": 0,
+      "2026-04": 0,
+      "2026-05": 0,
+      "2026-06": 0,
+      "2026-07": 0,
+      "2026-08": 360.46
     }
   },
   "faturas": [
@@ -249,6 +286,46 @@
       "total_usd": 0.0,
       "n_itens": 2,
       "source": "Bradesco_09062026_104548.PDF"
+    },
+    {
+      "comp": "2026-07",
+      "card": "PAULO V ANDRADE - VISA",
+      "card_last": "5564",
+      "venc": "15/07/2026",
+      "total_brl": 12908.44,
+      "total_usd": 2219.66,
+      "n_itens": 7,
+      "source": "Cartão Banco Bradesco 07.2026.pdf"
+    },
+    {
+      "comp": "2026-07",
+      "card": "EASY ANALYTICS - VISA",
+      "card_last": "8691",
+      "venc": "15/07/2026",
+      "total_brl": 443.07,
+      "total_usd": 0.0,
+      "n_itens": 2,
+      "source": "Bradesco_IOF 07.2026.PDF"
+    },
+    {
+      "comp": "2026-08",
+      "card": "PAULO V ANDRADE - VISA",
+      "card_last": "5564",
+      "venc": "15/08/2026",
+      "total_brl": 1016.29,
+      "total_usd": 25.24,
+      "n_itens": 5,
+      "source": "FATURA CARTÃO DE CRÉDITO BRADESCO.PDF"
+    },
+    {
+      "comp": "2026-08",
+      "card": "EASY ANALYTICS - VISA",
+      "card_last": "8691",
+      "venc": "15/08/2026",
+      "total_brl": 22.95,
+      "total_usd": 0.0,
+      "n_itens": 2,
+      "source": "IOF CARTÃO BRADESCO.PDF"
     }
   ],
   "transacoes": [
@@ -690,6 +767,166 @@
       "historico": "CUSTO TRANS. EXTERIOR-IOF",
       "usd": 0.0,
       "brl": 398.79,
+      "vendor": "IOF / impostos"
+    },
+    {
+      "comp": "2026-07",
+      "card": "PAULO V ANDRADE - VISA",
+      "card_last": "5564",
+      "data": "11/06",
+      "historico": "OPENAI *CHATGPT SUBSCR",
+      "usd": 0.0,
+      "brl": 520.0,
+      "vendor": "OpenAI"
+    },
+    {
+      "comp": "2026-07",
+      "card": "PAULO V ANDRADE - VISA",
+      "card_last": "5564",
+      "data": "12/06",
+      "historico": "AWS Brazil",
+      "usd": 0.0,
+      "brl": 109.53,
+      "vendor": "AWS"
+    },
+    {
+      "comp": "2026-07",
+      "card": "PAULO V ANDRADE - VISA",
+      "card_last": "5564",
+      "data": "13/06",
+      "historico": "GITHUB, INC.",
+      "usd": 20.0,
+      "brl": 107.0,
+      "vendor": "GitHub"
+    },
+    {
+      "comp": "2026-07",
+      "card": "PAULO V ANDRADE - VISA",
+      "card_last": "5564",
+      "data": "01/07",
+      "historico": "AWS Brazil",
+      "usd": 0.0,
+      "brl": 109.27,
+      "vendor": "AWS"
+    },
+    {
+      "comp": "2026-07",
+      "card": "PAULO V ANDRADE - VISA",
+      "card_last": "5564",
+      "data": "01/07",
+      "historico": "Amazon web services",
+      "usd": 5.12,
+      "brl": 28.01,
+      "vendor": "AWS"
+    },
+    {
+      "comp": "2026-07",
+      "card": "PAULO V ANDRADE - VISA",
+      "card_last": "5564",
+      "data": "02/07",
+      "historico": "Amazon web services",
+      "usd": 2194.54,
+      "brl": 12004.13,
+      "vendor": "AWS"
+    },
+    {
+      "comp": "2026-07",
+      "card": "PAULO V ANDRADE - VISA",
+      "card_last": "5564",
+      "data": "02/07",
+      "historico": "ANUIDADE 04/04",
+      "usd": 0.0,
+      "brl": 30.5,
+      "vendor": "Anuidade"
+    },
+    {
+      "comp": "2026-07",
+      "card": "EASY ANALYTICS - VISA",
+      "card_last": "8691",
+      "data": "03/07",
+      "historico": "IOF S/ TRANS INTER REAIS",
+      "usd": 0.0,
+      "brl": 18.2,
+      "vendor": "IOF / impostos"
+    },
+    {
+      "comp": "2026-07",
+      "card": "EASY ANALYTICS - VISA",
+      "card_last": "8691",
+      "data": "03/07",
+      "historico": "CUSTO TRANS. EXTERIOR-IOF",
+      "usd": 0.0,
+      "brl": 424.87,
+      "vendor": "IOF / impostos"
+    },
+    {
+      "comp": "2026-08",
+      "card": "PAULO V ANDRADE - VISA",
+      "card_last": "5564",
+      "data": "06/07",
+      "historico": "HOSTGATOR 001/012",
+      "usd": 0.0,
+      "brl": 132.78,
+      "vendor": "Outros"
+    },
+    {
+      "comp": "2026-08",
+      "card": "PAULO V ANDRADE - VISA",
+      "card_last": "5564",
+      "data": "11/07",
+      "historico": "OPENAI *CHATGPT SUBSCR",
+      "usd": 0.0,
+      "brl": 520.0,
+      "vendor": "OpenAI"
+    },
+    {
+      "comp": "2026-08",
+      "card": "PAULO V ANDRADE - VISA",
+      "card_last": "5564",
+      "data": "13/07",
+      "historico": "GITHUB, INC.",
+      "usd": 20.0,
+      "brl": 107.8,
+      "vendor": "GitHub"
+    },
+    {
+      "comp": "2026-08",
+      "card": "PAULO V ANDRADE - VISA",
+      "card_last": "5564",
+      "data": "20/07",
+      "historico": "CLICKBUS",
+      "usd": 0.0,
+      "brl": 227.68,
+      "vendor": "Outros"
+    },
+    {
+      "comp": "2026-08",
+      "card": "PAULO V ANDRADE - VISA",
+      "card_last": "5564",
+      "data": "01/08",
+      "historico": "Amazon web services",
+      "usd": 5.24,
+      "brl": 28.03,
+      "vendor": "AWS"
+    },
+    {
+      "comp": "2026-08",
+      "card": "EASY ANALYTICS - VISA",
+      "card_last": "8691",
+      "data": "03/08",
+      "historico": "IOF S/ TRANS INTER REAIS",
+      "usd": 0.0,
+      "brl": 18.2,
+      "vendor": "IOF / impostos"
+    },
+    {
+      "comp": "2026-08",
+      "card": "EASY ANALYTICS - VISA",
+      "card_last": "8691",
+      "data": "03/08",
+      "historico": "CUSTO TRANS. EXTERIOR-IOF",
+      "usd": 0.0,
+      "brl": 4.75,
       "vendor": "IOF / impostos"
     }
   ]
