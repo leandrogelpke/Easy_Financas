@@ -2,13 +2,13 @@
 
 > Arquivo mantido **automaticamente** pelo agente auditor (`ci/ci_auditor.py`). Lista recomendações que apareceram em **2 ou mais** auditorias nos últimos **7 dias**, para realimentar o agente principal. Não editar à mão — será sobrescrito.
 
-_Última atualização: 2026-08-26 07:49 BRT · base: 26 relatório(s) de auditoria na janela._
+_Última atualização: 2026-08-26 13:53 BRT · base: 25 relatório(s) de auditoria na janela._
 
 ## Recomendações recorrentes
 
-- 🔴 **(15x)** Falha recorrente em 'fetch' — priorizar correção de causa-raiz.
+- 🔴 **(16x)** Falha recorrente em 'fetch' — priorizar correção de causa-raiz.
   - _checks:_ `falha_recorrente`
-- 🔴 **(15x)** Falha recorrente em 'push' — priorizar correção de causa-raiz.
+- 🔴 **(16x)** Falha recorrente em 'push' — priorizar correção de causa-raiz.
   - _checks:_ `falha_recorrente`
 - 🔴 **(8x)** Verificar validade do token Bling (refresh/rotação) e disponibilidade da API v3.
   - _checks:_ `fetch_bling`
