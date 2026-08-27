@@ -1,10 +1,10 @@
 {
  "_meta": {
-  "gerado_em": "2026-08-26 21:49:48",
-  "snapshot_origem": "bling_data_2026-08-26.json",
+  "gerado_em": "2026-08-27 20:22:27",
+  "snapshot_origem": "bling_data_2026-08-27.json",
   "window_start": "2026-01-01",
   "totais": {
-   "contas_pagar_pagas": 496,
+   "contas_pagar_pagas": 497,
    "contas_receber_recebidas": 80,
    "contas_pagar_em_aberto": 86,
    "contas_receber_em_aberto": 14
@@ -10424,6 +10424,27 @@
    "contato_documento": "",
    "categoria_id": 14665159843,
    "categoria_descricao": "Impostos sobre vendas",
+   "categoria_tipo": 1,
+   "portador_id": 14892107625
+  },
+  {
+   "id": 26701093933,
+   "situacao_codigo": 2,
+   "situacao": "Paga",
+   "vencimento": "2026-08-27",
+   "vencimento_original": "2026-08-27",
+   "data_emissao": "2026-08-26",
+   "data_pagamento": "",
+   "competencia": "2026-08-26",
+   "valor": "4872,77",
+   "saldo": "0,00",
+   "numero_documento": "",
+   "historico": "Ressarcimento Cliente - LORD",
+   "contato_id": 16605292185,
+   "contato_nome": "TOTVS S.A.",
+   "contato_documento": "53113791000122",
+   "categoria_id": 14665159846,
+   "categoria_descricao": "Custo dos serviços prestados",
    "categoria_tipo": 1,
    "portador_id": 14892107625
   }
