@@ -1,10 +1,10 @@
 {
  "_meta": {
-  "gerado_em": "2026-08-30 21:53:51",
-  "snapshot_origem": "bling_data_2026-08-30.json",
+  "gerado_em": "2026-08-31 17:35:55",
+  "snapshot_origem": "bling_data_2026-08-31.json",
   "window_start": "2026-01-01",
   "totais": {
-   "contas_pagar_pagas": 497,
+   "contas_pagar_pagas": 499,
    "contas_receber_recebidas": 80,
    "contas_pagar_em_aberto": 86,
    "contas_receber_em_aberto": 14
@@ -10445,6 +10445,48 @@
    "contato_documento": "53113791000122",
    "categoria_id": 14665159846,
    "categoria_descricao": "Custo dos serviços prestados",
+   "categoria_tipo": 1,
+   "portador_id": 14892107625
+  },
+  {
+   "id": 26647597842,
+   "situacao_codigo": 2,
+   "situacao": "Paga",
+   "vencimento": "2026-08-31",
+   "vencimento_original": "2026-08-31",
+   "data_emissao": "2026-08-19",
+   "data_pagamento": "",
+   "competencia": "2026-08-19",
+   "valor": "2021,32",
+   "saldo": "0,00",
+   "numero_documento": "",
+   "historico": "IRPJ - LUCRO PRESUMIDO - 2º TRIMETRE/2026 - 07/2026",
+   "contato_id": 16681427358,
+   "contato_nome": "IRPJ",
+   "contato_documento": "",
+   "categoria_id": 14738278779,
+   "categoria_descricao": "IRPJ",
+   "categoria_tipo": 1,
+   "portador_id": 14892107625
+  },
+  {
+   "id": 26647603687,
+   "situacao_codigo": 2,
+   "situacao": "Paga",
+   "vencimento": "2026-08-31",
+   "vencimento_original": "2026-08-31",
+   "data_emissao": "2026-08-19",
+   "data_pagamento": "",
+   "competencia": "2026-08-19",
+   "valor": "1151,53",
+   "saldo": "0,00",
+   "numero_documento": "",
+   "historico": "CSLL - DEMAIS - 2º TRIMETRE/2026 - 07/2026",
+   "contato_id": 16594684987,
+   "contato_nome": "CSLL",
+   "contato_documento": "",
+   "categoria_id": 14665159886,
+   "categoria_descricao": "Contribuição social sobre lucro líquido",
    "categoria_tipo": 1,
    "portador_id": 14892107625
   }
