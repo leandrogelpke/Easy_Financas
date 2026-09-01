@@ -1,0 +1,102 @@
+{
+  "generated_at_brt": "2026-09-01 17:35:26",
+  "auditor": "ci_auditor.py",
+  "target_update_log": "update_2026-09-01_17.json",
+  "upstream_conclusion": "success",
+  "summary": {
+    "error": 2,
+    "warn": 0,
+    "info": 0,
+    "ok": 11
+  },
+  "ok": false,
+  "findings": [
+    {
+      "check": "falha_recorrente",
+      "severity": "error",
+      "detail": "Etapa 'fetch' falhou 2x nos últimos 7 dias (21 execuções).",
+      "recommendation": "Falha recorrente em 'fetch' — priorizar correção de causa-raiz."
+    },
+    {
+      "check": "falha_recorrente",
+      "severity": "error",
+      "detail": "Etapa 'push' falhou 2x nos últimos 7 dias (21 execuções).",
+      "recommendation": "Falha recorrente em 'push' — priorizar correção de causa-raiz."
+    },
+    {
+      "check": "fetch_bling",
+      "severity": "ok",
+      "detail": "Fetch do Bling concluído com sucesso.",
+      "recommendation": ""
+    },
+    {
+      "check": "registros_completos",
+      "severity": "ok",
+      "detail": "682 registros em 4 datasets (contas_pagar_em_aberto=89, contas_pagar_pagas=499, contas_receber_em_aberto=13, contas_receber_recebidas=81).",
+      "recommendation": ""
+    },
+    {
+      "check": "build_html",
+      "severity": "ok",
+      "detail": "index.html gerado sem erros.",
+      "recommendation": ""
+    },
+    {
+      "check": "gate_test_audit",
+      "severity": "ok",
+      "detail": "Gate test_audit verde.",
+      "recommendation": ""
+    },
+    {
+      "check": "gate_test_build",
+      "severity": "ok",
+      "detail": "Gate test_build verde.",
+      "recommendation": ""
+    },
+    {
+      "check": "precommit_gate",
+      "severity": "ok",
+      "detail": "Auditor pré-commit liberou a publicação.",
+      "recommendation": ""
+    },
+    {
+      "check": "push_pages",
+      "severity": "ok",
+      "detail": "Publicado. Commit cabbd93ba1a2f5f2b2a5838a4d563006c8d6f9a3.",
+      "recommendation": ""
+    },
+    {
+      "check": "dados_nome_vazio",
+      "severity": "ok",
+      "detail": "Nomes de contato preenchidos (682/682).",
+      "recommendation": ""
+    },
+    {
+      "check": "dados_valor_vazio",
+      "severity": "ok",
+      "detail": "Todos os lançamentos têm valor.",
+      "recommendation": ""
+    },
+    {
+      "check": "dados_datas",
+      "severity": "ok",
+      "detail": "Datas de vencimento consistentes.",
+      "recommendation": ""
+    },
+    {
+      "check": "volume_anomalo",
+      "severity": "ok",
+      "detail": "Volume estável (682 vs 679 anterior).",
+      "recommendation": ""
+    }
+  ],
+  "recommendations": [
+    "Falha recorrente em 'fetch' — priorizar correção de causa-raiz.",
+    "Falha recorrente em 'push' — priorizar correção de causa-raiz."
+  ],
+  "links": {
+    "dashboard": "https://leandrogelpke.github.io/Easy_Financas/",
+    "audit_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/33556191249",
+    "update_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/33556130079"
+  }
+}
