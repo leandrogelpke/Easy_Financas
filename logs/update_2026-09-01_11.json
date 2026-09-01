@@ -1,0 +1,44 @@
+{
+  "run": {
+    "workflow": "update",
+    "agente": "principal",
+    "trigger": "schedule",
+    "run_id": "33521883165",
+    "run_number": "328",
+    "run_url": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/33521883165",
+    "started_at_utc": "2026-09-01 14:49:42",
+    "ended_at_utc": "2026-09-01 14:49:58",
+    "ended_at_brt": "2026-09-01 11:49:58",
+    "duration_s": 16
+  },
+  "steps": {
+    "fetch": "failure",
+    "merge_historico": "skipped",
+    "token_refresh": "rotated_saved",
+    "build": "success",
+    "gate_test_audit": "success",
+    "gate_test_build": "success",
+    "gate_test_merge": "success",
+    "precommit": "success",
+    "push": "skipped"
+  },
+  "records": {
+    "snapshot_file": "bling_data_2026-08-31.json",
+    "fetched_at": "2026-08-31 20:11:15",
+    "total": 679,
+    "contas_pagar_em_aberto": 86,
+    "contas_pagar_pagas": 499,
+    "contas_receber_em_aberto": 14,
+    "contas_receber_recebidas": 80,
+    "categorias": 219,
+    "contatos": 86
+  },
+  "commit_hash": null,
+  "warnings": [
+    "Publicação bloqueada pelo gate — última versão boa mantida no ar."
+  ],
+  "errors": [
+    "Fetch do Bling não concluiu com sucesso. Últimas linhas: File \"/home/runner/work/Easy_Financas/Easy_Financas/fetch-bling.py\", line 162, in list_all | data = self.get(path, params) | ^^^^^^^^^^^^^^^^^^^^^^ | File \"/home/runner/work/Easy_Financas/Easy_Financas/fetch-bling.py\", line 152, in get | raise RuntimeError(f\"HTTP {e.code} em GET {path}: {body}\") from e | RuntimeError: HTTP 403 em GET /categorias/receitas-despesas: { | \"error\": { | \"type\": \"FORBIDDEN\", | \"message\": \"Acesso não permitido\", | \"description\": \"A URL 'www.bling.com.br' está bloqueada para requisições de API. Por favor, utilize o endpoint oficial: 'api.bling.com.br'.\" | } | }"
+  ],
+  "ok": false
+}
