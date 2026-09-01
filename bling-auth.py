@@ -33,8 +33,8 @@ CONFIG_DIR = Path.home() / "Documents" / "Easy_Financas"
 OAUTH_FILE = CONFIG_DIR / ".bling-oauth.json"
 TOKENS_FILE = CONFIG_DIR / ".bling-tokens.json"
 
-AUTHORIZE_URL = "https://www.bling.com.br/Api/v3/oauth/authorize"
-TOKEN_URL = "https://www.bling.com.br/Api/v3/oauth/token"
+AUTHORIZE_URL = "https://www.bling.com.br/Api/v3/oauth/authorize"  # authorize é página web, segue no www
+TOKEN_URL = "https://api.bling.com.br/Api/v3/oauth/token"
 CALLBACK_PORT = 8080
 
 # globais para o handler comunicar com a thread principal

@@ -44,7 +44,7 @@ TOKENS_FILE = CONFIG_DIR / ".bling-tokens.json"
 DEFAULT_OUT = Path.home() / "Documents" / "GRAP" / "Negociação Easy" / "Controles Easy" / "relatorios atuais"
 FALLBACK_OUT = CONFIG_DIR / "relatorios"
 
-API_BASE = "https://www.bling.com.br/Api/v3"
+API_BASE = "https://api.bling.com.br/Api/v3"
 TOKEN_URL = f"{API_BASE}/oauth/token"
 
 # Bling API v3 limita a 3 req/s, 120 req/min. Dormimos 0.35s entre chamadas (~2.85 req/s).
