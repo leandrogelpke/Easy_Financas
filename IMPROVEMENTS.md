@@ -2,7 +2,7 @@
 
 > Arquivo mantido **automaticamente** pelo agente auditor (`ci/ci_auditor.py`). Lista recomendações que apareceram em **2 ou mais** auditorias nos últimos **7 dias**, para realimentar o agente principal. Não editar à mão — será sobrescrito.
 
-_Última atualização: 2026-09-01 18:44 BRT · base: 22 relatório(s) de auditoria na janela._
+_Última atualização: 2026-09-02 11:26 BRT · base: 22 relatório(s) de auditoria na janela._
 
 ## Recomendações recorrentes
 
