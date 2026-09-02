@@ -3,15 +3,12 @@
   "media_meses": 2,
   "pontual_valor_alvo": 12500.0,
   "pontual_tolerancia_pct": 15,
-  "recorrentes_sempre": ["TOTVS", "1000 MARCAS", "ATLANTIS"],
+  "recorrentes_sempre": [
+    "TOTVS",
+    "1000 MARCAS",
+    "ATLANTIS"
+  ],
   "pontuais_sempre": [],
-  "contratos_projetados": [
-    {
-      "contato": "TOTVS S.A.",
-      "valor": 50000.0,
-      "de": "2026-09",
-      "ate": "2026-12",
-      "obs": "Contrato R$ 50K/mês (recorrente, stream separado da média) — aprovado pelo Leandro em 02/09/2026. Lançamentos de out-dez/26 ainda não criados no Bling; set/26 e jan-ago/27 já lançados."
-    }
-  ]
+  "contratos_projetados": [],
+  "_nota_contrato_50k": "O contrato TOTVS de R$ 50K/mês NÃO é somado por projeção: Leandro confirmou em 02/09/2026 que os 50K JÁ estão contidos no faturamento recorrente de ~60-70K (substitui/formaliza comissões, não é receita adicional). Os lançamentos de 50K no Bling (set/26, jan-ago/27) contam normalmente nos meses em que existem, como recorrentes; a média rolante se ajusta sozinha quando forem recebidos."
 }
