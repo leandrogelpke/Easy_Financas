@@ -86,6 +86,7 @@ def main() -> int:
         "gate_test_audit": _norm(os.environ.get("OUT_GATE_A")),
         "gate_test_build": _norm(os.environ.get("OUT_GATE_B")),
         "gate_test_merge": _norm(os.environ.get("OUT_GATE_M")),
+        "gate_test_projecao": _norm(os.environ.get("OUT_GATE_P")),
         "precommit": _norm(os.environ.get("OUT_PRECOMMIT")),
         "push": (os.environ.get("OUT_PUSH") or _norm(os.environ.get("PUSH_OUTCOME"))).strip(),
     }

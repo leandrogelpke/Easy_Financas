@@ -261,6 +261,139 @@ def _next_month(ym: str) -> str:
     return f"{y:04d}-{m:02d}"
 
 
+# ============ PROJEÇÃO DE RECEITA (recorrente vs pontual) ============
+# Regras aprovadas pelo Leandro em 02/09/2026:
+#   - Meses futuros projetam receita = max(média recorrente dos últimos N
+#     meses reais, recorrente já faturado no mês) + pontuais faturados +
+#     contratos projetados (streams por fora da média, ex.: TOTVS 50K/mês).
+#   - "Pontual" = customização avulsa na ordem de R$ 12,5K (lançamento único
+#     ou soma de parcelas do mesmo cliente/valor). Fica FORA da média rolante.
+#   - Clientes em recorrentes_sempre nunca caem na regra de valor (comissões
+#     TOTVS oscilam em 11-14K e colidiriam com o alvo).
+# Config versionada em receitas_classificacao.json (nada hardcoded aqui).
+
+_RECEITAS_CFG_PATH = Path(__file__).resolve().parent / "receitas_classificacao.json"
+_RECEITAS_CFG_DEFAULT: dict[str, Any] = {
+    "media_meses": 2,
+    "pontual_valor_alvo": 12500.0,
+    "pontual_tolerancia_pct": 15,
+    "recorrentes_sempre": [],
+    "pontuais_sempre": [],
+    "contratos_projetados": [],
+}
+
+
+def _load_receitas_cfg() -> dict[str, Any]:
+    cfg = dict(_RECEITAS_CFG_DEFAULT)
+    try:
+        raw = json.loads(_RECEITAS_CFG_PATH.read_text(encoding="utf-8"))
+        for k in _RECEITAS_CFG_DEFAULT:
+            if k in raw:
+                cfg[k] = raw[k]
+    except Exception:
+        pass  # sem config → só média recorrente, sem pontuais/contratos
+    return cfg
+
+
+def _receita_classes(rows: list[dict], cfg: dict[str, Any]) -> list[str]:
+    """
+    Classifica cada lançamento de receita: "recorrente" | "pontual" | "contrato".
+    Paralela a rows (mesma ordem). Contrato = match de contratos_projetados
+    (padrão no contato + valor ±1%). Pontual = regra do valor alvo (single ou
+    soma de parcelas mesmo cliente/mesmo valor), exceto recorrentes_sempre.
+    """
+    alvo = float(cfg.get("pontual_valor_alvo") or 0)
+    tol = float(cfg.get("pontual_tolerancia_pct") or 0) / 100.0
+    rec_sempre = [_norm(p) for p in cfg.get("recorrentes_sempre", [])]
+    pont_sempre = [_norm(p) for p in cfg.get("pontuais_sempre", [])]
+    contratos = cfg.get("contratos_projetados", [])
+
+    def _near(v: float) -> bool:
+        return alvo > 0 and abs(v - alvo) <= alvo * tol
+
+    # Grupos de parcelas: (contato_norm, valor) → contagem
+    grp_count: dict[tuple[str, float], int] = defaultdict(int)
+    parsed = []
+    for r in rows:
+        n = _norm(r.get("contato_nome", ""))
+        v = round(_parse_money(r.get("valor", 0)), 2)
+        parsed.append((n, v))
+        grp_count[(n, v)] += 1
+
+    out = []
+    for (n, v) in parsed:
+        classe = "recorrente"
+        for c in contratos:
+            cv = float(c.get("valor") or 0)
+            if _norm(c.get("contato", "")) in n and cv > 0 and abs(v - cv) <= cv * 0.01:
+                classe = "contrato"
+                break
+        if classe == "recorrente":
+            if any(p in n for p in pont_sempre):
+                classe = "pontual"
+            elif not any(p in n for p in rec_sempre):
+                total_grp = v * grp_count[(n, v)]
+                if _near(v) or (grp_count[(n, v)] > 1 and _near(total_grp)):
+                    classe = "pontual"
+        out.append(classe)
+    return out
+
+
+def _media_recorrente(
+    recebidas: list[dict], cfg: dict[str, Any], cutoff: str
+) -> tuple[float, list[str]]:
+    """
+    Média rolante da receita RECORRENTE dos últimos N meses reais (< cutoff)
+    que tiveram receita recorrente > 0. Retorna (média, meses usados).
+    """
+    n_meses = int(cfg.get("media_meses") or 2)
+    classes = _receita_classes(recebidas, cfg)
+    por_mes: dict[str, float] = defaultdict(float)
+    for r, cl in zip(recebidas, classes):
+        ym = (r.get("vencimento") or "")[:7]
+        if cl == "recorrente" and ym and ym < cutoff:
+            por_mes[ym] += _parse_money(r.get("valor", 0))
+    meses = sorted([m for m, v in por_mes.items() if v > 0], reverse=True)[:n_meses]
+    if not meses:
+        return 0.0, []
+    media = sum(por_mes[m] for m in meses) / len(meses)
+    return round(media, 2), sorted(meses)
+
+
+def _projecao_receita_mes(
+    ym: str,
+    billed: list[tuple[dict, str]],  # (lançamento em aberto no mês, classe)
+    media: float,
+    meses_media: list[str],
+    cfg: dict[str, Any],
+) -> list[tuple[str, float]]:
+    """
+    Complementos de projeção para um mês futuro (rótulo, valor), a SOMAR ao
+    que já está faturado no mês. Fórmula: max(média recorrente, recorrente
+    faturado) + pontuais faturados + contratos (faturado se houver, senão o
+    valor do contrato). Como pontuais/contratos faturados já estão na matriz,
+    aqui saem só os deltas — sempre >= 0, nunca duplica.
+    """
+    rec_fat = sum(_parse_money(r.get("valor", 0)) for r, cl in billed if cl == "recorrente")
+    partes: list[tuple[str, float]] = []
+    delta_rec = max(media, rec_fat) - rec_fat
+    if delta_rec > 0.005:
+        ref = "+".join(_fmt_comp(m) for m in meses_media) or "sem base"
+        partes.append((f"Projeção recorrente (média {ref})", round(delta_rec, 2)))
+    for c in cfg.get("contratos_projetados", []):
+        de, ate = c.get("de", ""), c.get("ate", "")
+        cv = float(c.get("valor") or 0)
+        if not (de and ate and de <= ym <= ate and cv > 0):
+            continue
+        fat_contrato = sum(
+            _parse_money(r.get("valor", 0)) for r, cl in billed
+            if cl == "contrato" and _norm(c.get("contato", "")) in _norm(r.get("contato_nome", ""))
+        )
+        if fat_contrato <= 0.005:  # nada lançado no Bling neste mês → projeta
+            partes.append((f"Contrato {c.get('contato','')} (projetado)", round(cv, 2)))
+    return partes
+
+
 # ============ AGREGAÇÃO ============
 def _build_matriz(
     pagas: list[dict],
@@ -293,10 +426,11 @@ def _build_matriz(
         return list(reversed(out))
 
     months = month_range(cutoff, months_window)  # últimos N até mês atual (projetado)
-    # Adicionar 2 meses futuros pra projeção
-    for i in range(1, 3):
-        nx = _next_month(months[-1])
-        months.append(nx)
+    # Meses futuros: até dezembro do ano corrente (mín. 2) — pedido de
+    # 02/09/2026: o P&L precisa mostrar set–dez projetados, não só +2.
+    n_fut = max(2, 12 - int(cutoff[5:7]))
+    for i in range(n_fut):
+        months.append(_next_month(months[-1]))
     month_types = {m: ("real" if m < cutoff else "projetado") for m in months}
 
     grupos: dict[str, dict[str, float]] = defaultdict(lambda: defaultdict(float))
@@ -360,13 +494,32 @@ def _build_matriz(
             tipo = "em_aberto" if ym <= cutoff else "projetado"
             add_rec(r, ym, tipo)
 
+    # ─── PROJEÇÃO DE RECEITA (mês atual + futuros) ───
+    # max(média recorrente últimos N meses, recorrente faturado) + pontuais
+    # faturados + contratos projetados. Ver receitas_classificacao.json.
+    _cfg_rec = _load_receitas_cfg()
+    _media, _meses_media = _media_recorrente(recebidas, _cfg_rec, cutoff)
+    _classes_ab = _receita_classes(receber_em_aberto, _cfg_rec)
+    for ym in months:
+        if ym < cutoff:
+            continue
+        billed = [(r, cl) for r, cl in zip(receber_em_aberto, _classes_ab)
+                  if (r.get("vencimento") or "")[:7] == ym]
+        for label, v in _projecao_receita_mes(ym, billed, _media, _meses_media, _cfg_rec):
+            add_rec({"contato_nome": label, "historico": "Projeção automática",
+                     "vencimento": f"{ym}-28", "valor": v}, ym, "projetado")
+
     # Calcula PIS/COFINS esperado (alíquotas Lucro Presumido) — só quando NÃO
     # houve pagamento real do tributo no mês (evita duplicar). Alíquotas vêm
     # do CONFIG central (audit.py).
     pis_alq = _AUDIT_CFG["pis_aliq"]
     cofins_alq = _AUDIT_CFG["cofins_aliq"]
     for ym, rec in receita_por_mes.items():
-        if ym not in month_types or month_types[ym] != "real":
+        if ym not in month_types:
+            continue
+        # meses reais E meses projetados (>= cutoff) com receita: sem as
+        # deduções esperadas a projeção de resultado ficava otimista.
+        if month_types[ym] != "real" and ym < cutoff:
             continue
         pis_pago = grupos.get("deducoes_pis", {}).get(ym, 0)
         if not pis_pago:
@@ -570,6 +723,8 @@ def _build_matriz_2y(
             continue
         year = int(ym[:4])
         for gkey in all_grupo_keys:
+            if gkey == "receita_servicos" and ym >= cutoff:
+                continue  # receita futura tem projeção própria (média recorrente)
             current = grupos.get(gkey, {}).get(ym, 0)
             if current != 0:
                 continue  # já tem valor real ou em_aberto
@@ -584,14 +739,44 @@ def _build_matriz_2y(
                 grupos[gkey][ym] = round(media, 2)
                 cell_kinds[gkey][ym] = "projetado"
 
-    # 4. Receita por mês: extrapola se zero
+    # 4. Receita por mês
     receita_kinds: dict[str, str] = {}
     for m in months:
         if receita_por_mes.get(m, 0) > 0:
             receita_kinds[m] = month_types[m]
+
+    # 4a. Meses >= cutoff: projeção recorrente (regras de 02/09/2026) —
+    # max(média recorrente últimos N meses, recorrente faturado) + pontuais
+    # faturados + contratos projetados. Ver receitas_classificacao.json.
+    _cfg_rec = _load_receitas_cfg()
+    _media, _meses_media = _media_recorrente(recebidas, _cfg_rec, cutoff)
+    _classes_ab = _receita_classes(receber_em_aberto, _cfg_rec)
+    for ym in months:
+        if ym < cutoff or month_types[ym] == "real":
+            continue
+        billed = [(r, cl) for r, cl in zip(receber_em_aberto, _classes_ab)
+                  if (r.get("vencimento") or "")[:7] == ym]
+        partes = _projecao_receita_mes(ym, billed, _media, _meses_media, _cfg_rec)
+        if not partes:
+            continue
+        for label, v in partes:
+            grupos["receita_servicos"][ym] += v
+            subgrupos["receita_servicos"]["Serviços"][ym] += v
+            receita_por_mes[ym] += v
+            items["receita_servicos"]["Serviços"].append({
+                "ym": ym, "venc": f"{ym}-28", "contato": label,
+                "historico": "Projeção automática", "valor": round(v, 2),
+                "doc": "", "cat_bling": "", "kind": "projetado",
+            })
+        grupos["receita_servicos"][ym] = round(grupos["receita_servicos"][ym], 2)
+        receita_por_mes[ym] = round(receita_por_mes[ym], 2)
+        receita_kinds[ym] = "projetado"
+        cell_kinds["receita_servicos"][ym] = "projetado"
+
+    # 4b. Meses passados não-reais: extrapola se zero (comportamento antigo)
     for ym in months:
         mt = month_types[ym]
-        if mt in ("real", "sem_dado") or receita_por_mes.get(ym, 0) > 0:
+        if mt in ("real", "sem_dado") or receita_por_mes.get(ym, 0) > 0 or ym >= cutoff:
             continue
         year = int(ym[:4])
         ref = real_months_by_year.get(year, []) or all_real_months
@@ -1233,7 +1418,7 @@ def _render_matriz_2y(matriz: dict, struct_def_raw: list, mode: str, view_id: st
         '<div style="display:flex;flex-wrap:wrap;gap:10px;font-size:10px;color:var(--t3);align-items:center;margin-top:4px">'
         '<span><span style="display:inline-block;width:10px;height:10px;background:transparent;border:1px solid var(--bd);vertical-align:middle;margin-right:4px"></span>Real (pago/recebido)</span>'
         '<span><span style="display:inline-block;width:10px;height:10px;background:rgba(70,130,200,0.18);border:1px solid var(--bd);vertical-align:middle;margin-right:4px"></span>Em aberto (comprometido)</span>'
-        '<span><span style="display:inline-block;width:10px;height:10px;background:rgba(190,140,80,0.20);border:1px solid var(--bd);vertical-align:middle;margin-right:4px"></span><i>Projetado (média histórica, só meses futuros)</i></span>'
+        '<span><span style="display:inline-block;width:10px;height:10px;background:rgba(190,140,80,0.20);border:1px solid var(--bd);vertical-align:middle;margin-right:4px"></span><i>Projetado (média recorrente 2m + contratos, só meses futuros)</i></span>'
         '<span style="opacity:.6"><span style="display:inline-block;width:10px;height:10px;background:transparent;border:1px dashed var(--bd2);vertical-align:middle;margin-right:4px"></span>Sem dados no Bling — não estimado, não somado</span>'
         '</div>'
     )
@@ -1559,6 +1744,7 @@ def render_pl_and_dre(
     matriz_2y = _build_matriz_2y(pagas, recebidas, em_aberto, receber_em_aberto, today)
     totvs = _load_totvs_por_mes(Path(totvs_snap))
 
+    proj_ate = _fmt_comp(matriz["months"][-1])
     drill_script    = _render_drill_script(matriz)
     drill_script_2y = _render_drill_script(matriz_2y)
 
@@ -1567,7 +1753,7 @@ def render_pl_and_dre(
 <div class="pg" id="pg-pl">
 <div class="hero">
   <div>
-    <div class="htitle">P&L Executivo<br><span style="font-size:14px;color:var(--t2);font-weight:400">Visão gerencial · {months_window} meses + 2 projetados</span></div>
+    <div class="htitle">P&L Executivo<br><span style="font-size:14px;color:var(--t2);font-weight:400">Visão gerencial · {months_window} meses + projeção até {proj_ate}</span></div>
     <div class="hsub">Categorização gerencial por subgrupo · drill para lançamentos · alertas tributários</div>
   </div>
   <div class="pills">
@@ -1608,7 +1794,7 @@ def render_pl_and_dre(
 {_render_impostos_check(matriz, totvs)}
 
 <div class="card" style="margin-bottom:12px">
-  <div class="ct"><b>Receita vs Despesas — mês a mês</b><span>Real opaco · projetado translúcido (janela de 8 meses)</span></div>
+  <div class="ct"><b>Receita vs Despesas — mês a mês</b><span>Real opaco · projetado translúcido</span></div>
   <div class="cw" style="height:300px"><canvas id="dreBar"></canvas></div>
   <div id="dreLegend" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:12px;font-size:10.5px;color:var(--t2)"></div>
 </div>
@@ -1619,7 +1805,7 @@ def render_pl_and_dre(
 </div>
 
 <div class="card">
-  <div class="ct"><b>Detalhamento mensal (janela de 8 meses)</b></div>
+  <div class="ct"><b>Detalhamento mensal</b></div>
   <div class="tbl-wrap">
     <table class="dt">
       <thead><tr>

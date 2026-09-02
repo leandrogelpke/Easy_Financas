@@ -176,6 +176,17 @@ else
     echo "[warn] test_build.py não encontrado em $EF — pulando gate"
 fi
 
+echo ""
+echo "=== 2d. testes da projeção de receita (test_projecao_receita) ==="
+if [ -f "$EF/test_projecao_receita.py" ]; then
+    if ! python3 "$EF/test_projecao_receita.py"; then
+        echo "[ERRO] test_projecao_receita.py falhou — interrompendo rodada." >&2
+        exit 3
+    fi
+else
+    echo "[warn] test_projecao_receita.py não encontrado — pulando gate"
+fi
+
 # Resumo da auditoria pro log (audit_findings.json é gravado por build-html)
 if [ -f "$PROD/audit_findings.json" ]; then
     python3 -c "

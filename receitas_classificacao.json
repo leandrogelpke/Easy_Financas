@@ -1,0 +1,17 @@
+{
+  "_schema": "Classificação de receitas para PROJEÇÃO (P&L Executivo + DRE). Meses futuros: receita projetada = max(média recorrente dos últimos 'media_meses' meses reais, recorrente já faturado no mês) + pontuais faturados + contratos projetados. 'recorrentes_sempre': padrões (substring, upper, sem acento) de clientes cuja receita é SEMPRE recorrente — a regra de valor pontual não se aplica a eles (comissões TOTVS oscilam na faixa de 11-14K e colidiriam com o alvo de 12,5K). 'pontual_valor_alvo' + 'pontual_tolerancia_pct': lançamento avulso, ou soma de parcelas do mesmo cliente com mesmo valor, dentro da faixa = customização pontual (fora da média e da projeção recorrente; soma por fora apenas onde está faturada). 'pontuais_sempre': padrões sempre pontuais, independente de valor. 'contratos_projetados': receita contratada ainda sem lançamento no Bling — somada por fora nos meses de 'de' a 'ate'; se o mês já tiver lançamento do cliente com o valor do contrato (±1%), usa o lançado e NÃO duplica.",
+  "media_meses": 2,
+  "pontual_valor_alvo": 12500.0,
+  "pontual_tolerancia_pct": 15,
+  "recorrentes_sempre": ["TOTVS", "1000 MARCAS", "ATLANTIS"],
+  "pontuais_sempre": [],
+  "contratos_projetados": [
+    {
+      "contato": "TOTVS S.A.",
+      "valor": 50000.0,
+      "de": "2026-09",
+      "ate": "2026-12",
+      "obs": "Contrato R$ 50K/mês (recorrente, stream separado da média) — aprovado pelo Leandro em 02/09/2026. Lançamentos de out-dez/26 ainda não criados no Bling; set/26 e jan-ago/27 já lançados."
+    }
+  ]
+}
