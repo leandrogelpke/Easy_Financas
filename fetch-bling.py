@@ -51,6 +51,21 @@ TOKEN_URL = f"{API_BASE}/oauth/token"
 SLEEP_BETWEEN = 0.35
 
 
+def is_bloqueio_transitorio(code: int, body: str) -> bool:
+    """403 do edge do Bling reclamando "'www.bling.com.br' está bloqueada"
+    mesmo com a chamada feita pra api.bling.com.br.
+
+    Glitch intermitente observado em 01/09/2026: runs de 11h/15h BRT
+    falharam com esse 403 no meio do fetch (endpoints anteriores OK),
+    17h/18h passaram sem mudança nenhuma. Não é auth nem permissão do
+    app — merece retry com backoff, como 429/5xx.
+    """
+    if code != 403:
+        return False
+    b = body.lower()
+    return "bling.com.br" in b and ("bloqueada" in b or "endpoint oficial" in b)
+
+
 def log(msg: str, quiet: bool = False) -> None:
     if not quiet:
         print(msg, flush=True)
@@ -149,6 +164,14 @@ class BlingClient:
                     time.sleep(2 ** attempt)
                     continue
                 body = e.read().decode(errors="replace")
+                # 403 "www.bling.com.br bloqueada" = glitch intermitente do
+                # edge do Bling (falhas de 01/09/2026) → transitório.
+                if is_bloqueio_transitorio(e.code, body) and attempt < retries:
+                    wait = 15 * attempt
+                    log(f"[edge-bling] HTTP 403 intermitente (www bloqueado), "
+                        f"dormindo {wait}s e retry {attempt}/{retries}", self.quiet)
+                    time.sleep(wait)
+                    continue
                 raise RuntimeError(f"HTTP {e.code} em GET {path}: {body}") from e
         raise RuntimeError(f"GET {path} falhou apos {retries} tentativas")
 

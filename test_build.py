@@ -189,6 +189,29 @@ def test_js_sintaxe_valida() -> None:
     assert checked >= 1, "nenhum script inline encontrado pra checar"
 
 
+def test_fetch_bloqueio_transitorio() -> None:
+    """fetch-bling.py::is_bloqueio_transitorio classifica o 403 intermitente
+    do edge do Bling ("www.bling.com.br bloqueada") como transitório (retry),
+    sem engolir 403 legítimo de permissão. Bug de 01/09/2026 (runs 11h/15h)."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "fetch_bling", HERE / "fetch-bling.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    corpo_glitch = ('{"error":{"type":"FORBIDDEN","message":"Acesso não '
+                    'permitido","description":"A URL \'www.bling.com.br\' está '
+                    'bloqueada para requisições de API. Por favor, utilize o '
+                    'endpoint oficial: \'api.bling.com.br\'."}}')
+    assert mod.is_bloqueio_transitorio(403, corpo_glitch), \
+        "403 do edge (www bloqueado) deveria ser transitório"
+    assert not mod.is_bloqueio_transitorio(403, '{"error":{"type":"FORBIDDEN","message":"Sem permissão para o recurso"}}'), \
+        "403 de permissão real NÃO pode virar retry"
+    assert not mod.is_bloqueio_transitorio(500, corpo_glitch), \
+        "só 403 entra nessa classificação (5xx já tem retry próprio)"
+
+
 TESTS = [
     test_sem_marcadores_pendentes,
     test_pgs_balanceadas,
@@ -197,6 +220,7 @@ TESTS = [
     test_canvases_clientes_presentes,
     test_fstrings_compat_py311,
     test_js_sintaxe_valida,
+    test_fetch_bloqueio_transitorio,
 ]
 
 
