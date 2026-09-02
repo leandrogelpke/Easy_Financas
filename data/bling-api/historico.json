@@ -1,12 +1,12 @@
 {
  "_meta": {
-  "gerado_em": "2026-09-02 14:26:02",
+  "gerado_em": "2026-09-02 18:36:49",
   "snapshot_origem": "bling_data_2026-09-02.json",
   "window_start": "2026-02-01",
   "totais": {
    "contas_pagar_pagas": 499,
    "contas_receber_recebidas": 81,
-   "contas_pagar_em_aberto": 91,
+   "contas_pagar_em_aberto": 92,
    "contas_receber_em_aberto": 14
   }
  },
@@ -12340,6 +12340,27 @@
    "categoria_id": 14665159886,
    "categoria_descricao": "Contribuição social sobre lucro líquido",
    "categoria_tipo": 1,
+   "portador_id": 14892107625
+  },
+  {
+   "id": 26763706021,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-09-08",
+   "vencimento_original": "2026-09-05",
+   "data_emissao": "2026-09-02",
+   "data_pagamento": "",
+   "competencia": "2026-08-07",
+   "valor": "5000,00",
+   "saldo": "5000,00",
+   "numero_documento": "000570/01",
+   "historico": "Ref. a NF nº 000570",
+   "contato_id": 16801373441,
+   "contato_nome": "PLENTECH LTDA",
+   "contato_documento": "44702254000127",
+   "categoria_id": 0,
+   "categoria_descricao": "",
+   "categoria_tipo": "",
    "portador_id": 14892107625
   },
   {
