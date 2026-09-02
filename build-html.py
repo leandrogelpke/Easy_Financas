@@ -1615,10 +1615,15 @@ def compute_dre_data(
     em_aberto: list[dict],
     receber_em_aberto: list[dict],
     today: date,
+    receita_extra: dict | None = None,
 ) -> list[dict]:
     """
     Monta o DRE mês a mês misturando real (pagos/recebidos) com projetado (em aberto).
     Meses passados completos → tipo 'real'. Mês atual + futuros → tipo 'projetado'.
+    receita_extra (dre_render.receita_sintetica_por_mes): {ym: [(label, valor,
+    tipo)]} — comissões Totvs em meses sem lançamento no Bling (jan-ago/25) e
+    complementos da projeção recorrente nos meses futuros. Mesma série do
+    P&L/DRE, pra este gráfico contar a mesma história.
     Retorna lista de dicts ordenados por mês.
     """
     # ── Acumuladores por mês (chave: 'YYYY-MM') ──
@@ -1657,6 +1662,14 @@ def compute_dre_data(
         if m:
             v = parse_money(r.get("saldo") or r.get("valor", 0))
             rec_plan[m] += v
+
+    # Receita sintética: Totvs (passado sem Bling) e projeção (futuro)
+    for m, parts in (receita_extra or {}).items():
+        for _label, v, _tipo in parts:
+            if m < cutoff:
+                rec_real[m] += v
+            else:
+                rec_plan[m] += v
 
     # ── Conjunto de meses com algum dado ──
     all_months = sorted(
@@ -1723,11 +1736,14 @@ def compute_dre_detail(
     em_aberto: list[dict],
     receber_em_aberto: list[dict],
     today: date,
+    receita_extra: dict | None = None,
 ) -> dict[str, dict]:
     """
     Retorna {month: {"rec": [items], "desp": [items]}} com abertura completa
     por mês. Cada item tem: contato, historico, valor, doc, venc, categoria, tipo.
     Meses passados (< mês atual) = real; mês atual e futuros = projetado.
+    receita_extra: mesma série sintética passada ao compute_dre_data — a
+    abertura TEM que somar igual à barra (P1.2).
     """
     from collections import defaultdict
     result: dict[str, dict] = defaultdict(lambda: {"rec": [], "desp": []})
@@ -1773,6 +1789,17 @@ def compute_dre_detail(
         if not m:
             continue
         result[m]["rec"].append(to_item(r, "projetado"))
+
+    # Receita sintética (Totvs no passado sem Bling; projeção no futuro)
+    for m, parts in (receita_extra or {}).items():
+        for label, v, tipo in parts:
+            result[m]["rec"].append({
+                "contato": label,
+                "historico": ("Receita via relatório Totvs (sem lançamento no Bling)"
+                              if tipo == "totvs" else "Projeção automática"),
+                "valor": round(v, 2), "doc": "", "venc": f"{m}-28",
+                "categoria": "", "tipo": tipo,
+            })
 
     # Ordena por valor desc dentro de cada mês
     for m in result:
@@ -2451,8 +2478,31 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     cx_data     = compute_cx_data(receber, today)
     pagar_data  = compute_pagar_data(em_aberto, today)
     recebido    = compute_recebido_data(recebidas)
-    dre_data    = compute_dre_data(pagas, recebidas, em_aberto, receber, today)
-    dre_detail  = compute_dre_detail(pagas, recebidas, em_aberto, receber, today)
+    # ── Receita sintética (fonte única em dre_render): comissões Totvs nos
+    #    meses em que o Bling não tem receita (jan-ago/25) + complementos da
+    #    projeção recorrente nos meses futuros — o gráfico Receita vs
+    #    Despesas precisa contar a mesma história que o P&L/DRE. ──
+    receita_extra: dict = {}
+    try:
+        import os as _rx_os
+        from dre_render import (_load_totvs_por_mes as _rx_ltpm,  # type: ignore
+                                receita_sintetica_por_mes as _rx_sint)
+        _rx_snap = Path(_rx_os.environ.get("TOTVS_SNAP")
+                        or (snapshot.parent / "totvs_snapshot.json"))
+        _rx_totvs = _rx_ltpm(_rx_snap) if _rx_snap.exists() else None
+        receita_extra = _rx_sint(recebidas, receber, today, totvs_por_mes=_rx_totvs, pagas=pagas)
+        if receita_extra:
+            _rx_tot = sum(v for _p in receita_extra.values() for _l, v, _t in _p)
+            print(f"[receita-extra] {sum(len(p) for p in receita_extra.values())} "
+                  f"lançamento(s) sintético(s) em {len(receita_extra)} meses "
+                  f"(R$ {_rx_tot:,.0f})")
+    except Exception as _e:  # pragma: no cover
+        print(f"[receita-extra] ignorado: {_e}", file=sys.stderr)
+
+    dre_data    = compute_dre_data(pagas, recebidas, em_aberto, receber, today,
+                                   receita_extra=receita_extra)
+    dre_detail  = compute_dre_detail(pagas, recebidas, em_aberto, receber, today,
+                                     receita_extra=receita_extra)
 
     # ── Aba Clientes (Bling-driven, com classificação manual) ──
     cli_classif = _load_clientes_classificacao()

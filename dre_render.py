@@ -394,6 +394,87 @@ def _projecao_receita_mes(
     return partes
 
 
+def _totvs_valor(mdict: Any) -> float:
+    """Valor de comissão de um mês do totvs_por_mes: REAL > BASE > COMPLEMENTAR."""
+    if not isinstance(mdict, dict):
+        return _parse_money(mdict) if mdict else 0.0
+    for k in ("REAL", "BASE", "COMPLEMENTAR"):
+        if mdict.get(k):
+            return _parse_money(mdict[k])
+    return 0.0
+
+
+def receita_sintetica_por_mes(
+    recebidas: list[dict],
+    receber_em_aberto: list[dict],
+    today: date,
+    totvs_por_mes: dict | None = None,
+    ate: str | None = None,
+    pagas: list[dict] | None = None,
+) -> dict[str, list[tuple[str, float, str]]]:
+    """
+    Lançamentos SINTÉTICOS de receita, a somar aos dados Bling, por mês:
+      {ym: [(rótulo, valor, tipo), ...]}
+
+    - Meses PASSADOS sem nenhuma receita no Bling (nem recebida nem em
+      aberto) e com comissão no snapshot Totvs → comissão Totvs, tipo
+      "totvs". Caso real: receita jan-ago/2025 só existe no Totvs (Bling
+      começou a registrar contas a receber em set/2025) — o DRE mostrava
+      R$ 289K de receita 2025 contra despesas do ano inteiro (02/09/2026).
+      Quando `pagas` é fornecido, o fill Totvs se limita aos meses em que o
+      Bling tem alguma despesa paga: o snapshot Totvs volta até 2023, e
+      preencher receita em mês sem NENHUM dado de despesa criaria o erro
+      espelhado (meses só-receita parecendo lucro puro).
+    - Mês atual + futuros até `ate` (default: dez do ano corrente) →
+      complementos da projeção recorrente (_projecao_receita_mes), tipo
+      "projetado".
+
+    Fonte única para _build_matriz, _build_matriz_2y e para o gráfico
+    Receita vs Despesas do build-html — as abas têm que contar a mesma
+    história.
+    """
+    cutoff = today.strftime("%Y-%m")
+    cfg = _load_receitas_cfg()
+    media, meses_media = _media_recorrente(recebidas, cfg, cutoff)
+    classes_ab = _receita_classes(receber_em_aberto, cfg)
+
+    bling_por_mes: dict[str, float] = defaultdict(float)
+    for r in recebidas:
+        bling_por_mes[(r.get("vencimento") or "")[:7]] += _parse_money(r.get("valor", 0))
+    for r in receber_em_aberto:
+        bling_por_mes[(r.get("vencimento") or "")[:7]] += _parse_money(r.get("valor", 0))
+
+    out: dict[str, list[tuple[str, float, str]]] = defaultdict(list)
+
+    meses_com_despesa: set[str] | None = None
+    if pagas is not None:
+        meses_com_despesa = {(r.get("vencimento") or "")[:7] for r in pagas}
+
+    # Passado: fill Totvs onde o Bling está mudo
+    for ym, mdict in (totvs_por_mes or {}).items():
+        if not (len(ym) == 7 and ym < cutoff):
+            continue
+        if meses_com_despesa is not None and ym not in meses_com_despesa:
+            continue  # mês sem nenhum dado Bling → fica fora (não é só-receita)
+        if bling_por_mes.get(ym, 0) > 0:
+            continue  # Bling tem receita no mês (mais completa) → Bling vence
+        v = _totvs_valor(mdict)
+        if v > 0:
+            out[ym].append(("Comissões Totvs (relatório de comissões)", round(v, 2), "totvs"))
+
+    # Presente/futuro: projeção recorrente
+    ate = ate or f"{today.year}-12"
+    ym = cutoff
+    while ym <= ate:
+        billed = [(r, cl) for r, cl in zip(receber_em_aberto, classes_ab)
+                  if (r.get("vencimento") or "")[:7] == ym]
+        for label, v in _projecao_receita_mes(ym, billed, media, meses_media, cfg):
+            out[ym].append((label, v, "projetado"))
+        ym = _next_month(ym)
+
+    return dict(out)
+
+
 # ============ AGREGAÇÃO ============
 def _build_matriz(
     pagas: list[dict],
@@ -547,6 +628,7 @@ def _build_matriz_2y(
     today: date,
     start_year: int = 2025,
     end_year: int = 2026,
+    totvs_por_mes: dict | None = None,
 ) -> dict[str, Any]:
     """
     Retorna matriz cobrindo jan/start_year a dez/end_year (24 meses por padrão).
@@ -745,33 +827,49 @@ def _build_matriz_2y(
         if receita_por_mes.get(m, 0) > 0:
             receita_kinds[m] = month_types[m]
 
-    # 4a. Meses >= cutoff: projeção recorrente (regras de 02/09/2026) —
-    # max(média recorrente últimos N meses, recorrente faturado) + pontuais
-    # faturados + contratos projetados. Ver receitas_classificacao.json.
-    _cfg_rec = _load_receitas_cfg()
-    _media, _meses_media = _media_recorrente(recebidas, _cfg_rec, cutoff)
-    _classes_ab = _receita_classes(receber_em_aberto, _cfg_rec)
-    for ym in months:
-        if ym < cutoff or month_types[ym] == "real":
+    # 4a. Receita sintética (fonte única: receita_sintetica_por_mes):
+    #   - meses passados sem receita no Bling → comissões Totvs, kind "totvs"
+    #     (caso real: jan-ago/2025 — Bling só registra a receber desde set/25)
+    #   - meses >= cutoff → projeção recorrente (regras de 02/09/2026), kind
+    #     "projetado". Ver receitas_classificacao.json.
+    _sint = receita_sintetica_por_mes(recebidas, receber_em_aberto, today,
+                                      totvs_por_mes=totvs_por_mes,
+                                      ate=f"{end_year:04d}-12", pagas=pagas)
+    for ym, partes in sorted(_sint.items()):
+        if ym not in months_set:
             continue
-        billed = [(r, cl) for r, cl in zip(receber_em_aberto, _classes_ab)
-                  if (r.get("vencimento") or "")[:7] == ym]
-        partes = _projecao_receita_mes(ym, billed, _media, _meses_media, _cfg_rec)
-        if not partes:
-            continue
-        for label, v in partes:
+        if ym >= cutoff and month_types[ym] == "real":
+            continue  # mês corrente já com recebimento real: não complementa
+        aplicou = None
+        for label, v, tipo in partes:
             grupos["receita_servicos"][ym] += v
             subgrupos["receita_servicos"]["Serviços"][ym] += v
             receita_por_mes[ym] += v
             items["receita_servicos"]["Serviços"].append({
                 "ym": ym, "venc": f"{ym}-28", "contato": label,
-                "historico": "Projeção automática", "valor": round(v, 2),
-                "doc": "", "cat_bling": "", "kind": "projetado",
+                "historico": "Projeção automática" if tipo == "projetado"
+                             else "Receita via relatório Totvs (sem lançamento no Bling)",
+                "valor": round(v, 2),
+                "doc": "", "cat_bling": "", "kind": tipo,
             })
+            aplicou = tipo
+        if not aplicou:
+            continue
         grupos["receita_servicos"][ym] = round(grupos["receita_servicos"][ym], 2)
         receita_por_mes[ym] = round(receita_por_mes[ym], 2)
-        receita_kinds[ym] = "projetado"
-        cell_kinds["receita_servicos"][ym] = "projetado"
+        receita_kinds[ym] = aplicou
+        cell_kinds["receita_servicos"][ym] = aplicou
+        # Deduções esperadas sobre a receita sintética (mesma regra: só se o
+        # tributo não foi pago no mês) — sem isso o mês preenchido fica sem
+        # PIS/COFINS e o resultado sai otimista.
+        rec_m = receita_por_mes[ym]
+        if rec_m > 0:
+            if not grupos.get("deducoes_pis", {}).get(ym) and not grupos.get("deducoes_pis_esperado", {}).get(ym):
+                grupos["deducoes_pis_esperado"][ym] = round(rec_m * pis_alq, 2)
+                cell_kinds["deducoes_pis_esperado"][ym] = aplicou
+            if not grupos.get("deducoes_cofins", {}).get(ym) and not grupos.get("deducoes_cofins_esperado", {}).get(ym):
+                grupos["deducoes_cofins_esperado"][ym] = round(rec_m * cofins_alq, 2)
+                cell_kinds["deducoes_cofins_esperado"][ym] = aplicou
 
     # 4b. Meses passados não-reais: extrapola se zero (comportamento antigo)
     for ym in months:
@@ -1275,7 +1373,7 @@ def _fmt_brl_compact_signed(v: float) -> str:
 # uma estimativa ruim, é a ausência de informação — o subtotal que encosta
 # nele precisa herdar isso. "extrapolado" ficou no mapa só por compatibilidade
 # com matrizes serializadas antigas; o gap fill não gera mais esse kind.
-_KIND_ORDER = {"real": 0, "em_aberto": 1, "extrapolado": 2, "projetado": 3, "sem_dado": 4}
+_KIND_ORDER = {"real": 0, "totvs": 1, "em_aberto": 2, "extrapolado": 3, "projetado": 4, "sem_dado": 5}
 
 
 def _cell_kind_for_line(matriz: dict, key: str, month: str) -> str:
@@ -1316,6 +1414,9 @@ def _cell_style_for_kind(kind: str, base_color: str = "var(--t1)") -> tuple[str,
     """
     if kind == "real":
         return base_color, "", ""
+    if kind == "totvs":
+        # Receita real vinda do relatório Totvs (Bling sem lançamento no mês)
+        return base_color, "", "background:rgba(60,170,150,0.08);"
     if kind == "em_aberto":
         return base_color, "", "background:rgba(70,130,200,0.05);"
     if kind == "sem_dado":
@@ -1419,6 +1520,7 @@ def _render_matriz_2y(matriz: dict, struct_def_raw: list, mode: str, view_id: st
         '<span><span style="display:inline-block;width:10px;height:10px;background:transparent;border:1px solid var(--bd);vertical-align:middle;margin-right:4px"></span>Real (pago/recebido)</span>'
         '<span><span style="display:inline-block;width:10px;height:10px;background:rgba(70,130,200,0.18);border:1px solid var(--bd);vertical-align:middle;margin-right:4px"></span>Em aberto (comprometido)</span>'
         '<span><span style="display:inline-block;width:10px;height:10px;background:rgba(190,140,80,0.20);border:1px solid var(--bd);vertical-align:middle;margin-right:4px"></span><i>Projetado (média recorrente 2m + contratos, só meses futuros)</i></span>'
+        '<span><span style="display:inline-block;width:10px;height:10px;background:rgba(60,170,150,0.25);border:1px solid var(--bd);vertical-align:middle;margin-right:4px"></span>Receita via relatório Totvs (mês sem lançamento no Bling)</span>'
         '<span style="opacity:.6"><span style="display:inline-block;width:10px;height:10px;background:transparent;border:1px dashed var(--bd2);vertical-align:middle;margin-right:4px"></span>Sem dados no Bling — não estimado, não somado</span>'
         '</div>'
     )
@@ -1739,10 +1841,13 @@ def render_pl_and_dre(
     """
     today = today or date.today()
     pagas, em_aberto, recebidas, receber_em_aberto = _load_bling_csvs(bling_dir)
-    matriz = _build_matriz(pagas, recebidas, em_aberto, receber_em_aberto, today, months_window)
-    # Matriz estendida 2025-01 → 2026-12 com gap fill (usada na aba DRE v2)
-    matriz_2y = _build_matriz_2y(pagas, recebidas, em_aberto, receber_em_aberto, today)
     totvs = _load_totvs_por_mes(Path(totvs_snap))
+    matriz = _build_matriz(pagas, recebidas, em_aberto, receber_em_aberto, today, months_window)
+    # Matriz estendida 2025-01 → 2026-12 com gap fill (usada na aba DRE v2).
+    # totvs_por_mes preenche receita de meses em que o Bling está mudo
+    # (jan-ago/2025) — ver receita_sintetica_por_mes.
+    matriz_2y = _build_matriz_2y(pagas, recebidas, em_aberto, receber_em_aberto, today,
+                                 totvs_por_mes=totvs)
 
     proj_ate = _fmt_comp(matriz["months"][-1])
     drill_script    = _render_drill_script(matriz)

@@ -122,6 +122,40 @@ def test_matriz_2y_projeta_set_dez() -> None:
         assert abs(g - rec) < 0.02, (ym, g, rec)
 
 
+def test_receita_sintetica_totvs_passado() -> None:
+    # Mês passado SEM receita no Bling + comissão Totvs → fill "totvs".
+    # Mês passado COM receita no Bling → Totvs NÃO substitui.
+    today = date(2026, 9, 2)
+    recebidas = [_rec("2026-08-16", "CLIENTE A", "70.000,00")]
+    totvs = {"2025-03": {"REAL": 92667.96}, "2025-04": {"REAL": 90000.00},
+             "2026-08": {"REAL": 55000.00}}
+    pagas = [_rec("2025-03-10", "FORNECEDOR Z", "10.000,00"),
+             _rec("2026-08-05", "FORNECEDOR Z", "10.000,00")]
+    sint = dr.receita_sintetica_por_mes(recebidas, [], today, totvs_por_mes=totvs, pagas=pagas)
+    m25 = sint.get("2025-03", [])
+    assert len(m25) == 1 and m25[0][2] == "totvs" and abs(m25[0][1] - 92667.96) < 0.01, m25
+    assert "2026-08" not in sint  # Bling tem receita em ago/26 → Bling vence
+    assert "2025-04" not in sint  # mês sem NENHUMA despesa no Bling → fora
+
+
+def test_matriz_2y_backfill_totvs_2025() -> None:
+    # jan/25 só tem despesa paga; Totvs tem comissão → receita preenchida
+    # com kind "totvs" e deduções esperadas calculadas.
+    today = date(2026, 9, 2)
+    pagas = [_rec("2025-01-10", "FORNECEDOR Z", "10.000,00"),
+             _rec("2026-08-05", "FORNECEDOR Z", "10.000,00")]
+    recebidas = [_rec("2026-07-16", "CLIENTE A", "60.000,00"),
+                 _rec("2026-08-16", "CLIENTE A", "70.000,00")]
+    totvs = {"2025-01": {"REAL": 130023.09}}
+    m2 = dr._build_matriz_2y(pagas, recebidas, [], [], today, totvs_por_mes=totvs)
+    assert abs(m2["receita_por_mes"].get("2025-01", 0) - 130023.09) < 0.01
+    assert m2["receita_kinds"].get("2025-01") == "totvs"
+    assert m2["cell_kinds"]["receita_servicos"].get("2025-01") == "totvs"
+    assert m2["grupos"]["deducoes_pis_esperado"].get("2025-01", 0) > 0
+    # sem Totvs no mês e sem Bling → segue sem_dado/zero (não inventa)
+    assert m2["receita_por_mes"].get("2025-02", 0) == 0
+
+
 def test_matriz_pl_janela_ate_dezembro() -> None:
     today = date(2026, 9, 2)
     m1 = dr._build_matriz([], [_rec("2026-08-16", "CLIENTE A", "70.000,00")], [], [], today)
@@ -139,6 +173,8 @@ TESTS = [
     test_projecao_anti_dupla_contagem,
     test_projecao_recorrente_faturado_acima_da_media,
     test_matriz_2y_projeta_set_dez,
+    test_receita_sintetica_totvs_passado,
+    test_matriz_2y_backfill_totvs_2025,
     test_matriz_pl_janela_ate_dezembro,
 ]
 
