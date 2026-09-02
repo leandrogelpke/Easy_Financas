@@ -1,13 +1,13 @@
 {
  "_meta": {
-  "gerado_em": "2026-09-01 21:44:25",
-  "snapshot_origem": "bling_data_2026-09-01.json",
+  "gerado_em": "2026-09-02 14:26:02",
+  "snapshot_origem": "bling_data_2026-09-02.json",
   "window_start": "2026-02-01",
   "totais": {
    "contas_pagar_pagas": 499,
    "contas_receber_recebidas": 81,
-   "contas_pagar_em_aberto": 89,
-   "contas_receber_em_aberto": 13
+   "contas_pagar_em_aberto": 91,
+   "contas_receber_em_aberto": 14
   }
  },
  "contas_pagar_pagas": [
@@ -14044,6 +14044,27 @@
    "portador_id": 14892107625
   },
   {
+   "id": 26759294212,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2027-08-15",
+   "vencimento_original": "2027-08-15",
+   "data_emissao": "2026-09-01",
+   "data_pagamento": "",
+   "competencia": "2027-08-05",
+   "valor": "1016,29",
+   "saldo": "1016,29",
+   "numero_documento": "",
+   "historico": "CARTÃO DE CREDITO - DÉBITO AUTOMATICO",
+   "contato_id": 16596986114,
+   "contato_nome": "CARTAO DE CREDITO",
+   "contato_documento": "",
+   "categoria_id": 14737459393,
+   "categoria_descricao": "Hosting/Sistemas",
+   "categoria_tipo": 1,
+   "portador_id": 14890076957
+  },
+  {
    "id": 24868807520,
    "situacao_codigo": 1,
    "situacao": "Em aberto",
@@ -14062,6 +14083,27 @@
    "categoria_id": 14665159865,
    "categoria_descricao": "Serviços de terceiros",
    "categoria_tipo": 1,
+   "portador_id": 14892107625
+  },
+  {
+   "id": 26759294219,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2027-08-20",
+   "vencimento_original": "2027-08-20",
+   "data_emissao": "2026-09-01",
+   "data_pagamento": "",
+   "competencia": "2027-08-30",
+   "valor": "61,50",
+   "saldo": "61,50",
+   "numero_documento": "",
+   "historico": "DCTFWEB - ABRIL/2026",
+   "contato_id": 16925497223,
+   "contato_nome": "RECEITA FEDERAL",
+   "contato_documento": "",
+   "categoria_id": 0,
+   "categoria_descricao": "",
+   "categoria_tipo": "",
    "portador_id": 14892107625
   }
  ],
@@ -14325,6 +14367,27 @@
    "vencimento": "2027-07-15",
    "vencimento_original": "",
    "data_emissao": "2026-08-04",
+   "data_pagamento": "",
+   "competencia": "",
+   "valor": "50000,00",
+   "saldo": "",
+   "numero_documento": "",
+   "historico": "",
+   "contato_id": 16605292185,
+   "contato_nome": "TOTVS S.A.",
+   "contato_documento": "53113791000122",
+   "categoria_id": "",
+   "categoria_descricao": "",
+   "categoria_tipo": "",
+   "portador_id": ""
+  },
+  {
+   "id": 26759294227,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2027-08-15",
+   "vencimento_original": "",
+   "data_emissao": "2026-09-01",
    "data_pagamento": "",
    "competencia": "",
    "valor": "50000,00",
