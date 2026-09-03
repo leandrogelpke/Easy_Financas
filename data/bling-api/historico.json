@@ -1,12 +1,12 @@
 {
  "_meta": {
-  "gerado_em": "2026-09-02 21:47:00",
-  "snapshot_origem": "bling_data_2026-09-02.json",
+  "gerado_em": "2026-09-03 14:30:10",
+  "snapshot_origem": "bling_data_2026-09-03.json",
   "window_start": "2026-02-01",
   "totais": {
    "contas_pagar_pagas": 499,
    "contas_receber_recebidas": 81,
-   "contas_pagar_em_aberto": 92,
+   "contas_pagar_em_aberto": 93,
    "contas_receber_em_aberto": 14
   }
  },
@@ -12634,6 +12634,27 @@
    "categoria_id": 14737459171,
    "categoria_descricao": "Salários Comercial",
    "categoria_tipo": 1,
+   "portador_id": 14892107625
+  },
+  {
+   "id": 26771211456,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-09-25",
+   "vencimento_original": "2026-09-25",
+   "data_emissao": "2026-09-03",
+   "data_pagamento": "",
+   "competencia": "2026-09-01",
+   "valor": "22000,00",
+   "saldo": "22000,00",
+   "numero_documento": "000003/01",
+   "historico": "Ref. a NF nº 000003",
+   "contato_id": 18234904217,
+   "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
+   "contato_documento": "39741876000124",
+   "categoria_id": 0,
+   "categoria_descricao": "",
+   "categoria_tipo": "",
    "portador_id": 14892107625
   },
   {
