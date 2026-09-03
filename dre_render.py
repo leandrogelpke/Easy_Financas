@@ -1824,6 +1824,299 @@ function _dreApplyVisibility(){
     return kpi_html + toggles_html + "".join(matrices_html) + js_toggles
 
 
+# ═══════════ CASCATA (WATERFALL) DO RESULTADO ═══════════
+# Gráfico em cascata Receita bruta → Lucro líquido, 100% derivado da
+# matriz_2y (zero hardcode). Duas variantes: "ytd" (jan → mês corrente,
+# real + em aberto) e "full" (ano cheio incl. projetado). Clique na barra
+# abre duas tabelas: composição por fornecedor/cliente e mês a mês.
+
+_CASC_DED_KEYS = ["deducoes_iss", "deducoes_pis", "deducoes_cofins",
+                  "deducoes_pis_esperado", "deducoes_cofins_esperado"]
+_CASC_DED_LABELS = {
+    "deducoes_iss": "ISS", "deducoes_pis": "PIS (pago)",
+    "deducoes_cofins": "COFINS (pago)",
+    "deducoes_pis_esperado": "PIS (esperado – 0,65%)",
+    "deducoes_cofins_esperado": "COFINS (esperado – 3%)",
+}
+
+
+def _casc_forn_rows(matriz: dict, keys: list[str], mset: set,
+                    sign: float = 1.0, top: int = 14) -> list:
+    """Agrega items por contato dentro dos meses. [[nome, valor, n], ...]"""
+    agg: dict[str, list] = {}
+    for k in keys:
+        for sub, lst in matriz["items"].get(k, {}).items():
+            for it in lst:
+                if it.get("ym") in mset:
+                    nome = (it.get("contato") or sub or "—").strip() or "—"
+                    a = agg.setdefault(nome, [0.0, 0])
+                    a[0] += it.get("valor", 0.0) or 0.0
+                    a[1] += 1
+    rows = sorted(([n, round(sign * v, 2), c] for n, (v, c) in agg.items()),
+                  key=lambda r: -abs(r[1]))
+    if len(rows) > top:
+        resto = rows[top:]
+        rows = rows[:top] + [[f"Outros ({len(resto)})",
+                              round(sum(r[1] for r in resto), 2),
+                              sum(r[2] for r in resto)]]
+    return rows
+
+
+def _casc_mes_vals(matriz: dict, keys: list[str], months: list[str],
+                   sign: float = 1.0) -> dict[str, float]:
+    g = matriz["grupos"]
+    return {m: sign * sum(g.get(k, {}).get(m, 0.0) for k in keys)
+            for m in months}
+
+
+def _casc_mes_rows(matriz: dict, vals: dict[str, float],
+                   months: list[str]) -> list:
+    mt = matriz["month_types"]
+    return [[m, round(vals.get(m, 0.0), 2), mt.get(m, "")] for m in months]
+
+
+def _casc_variant(matriz: dict, months: list[str], include_fin: bool) -> dict:
+    mset = set(months)
+    g = matriz["grupos"]
+
+    def gsum(keys: list[str]) -> float:
+        return sum(g.get(k, {}).get(m, 0.0) for k in keys for m in months)
+
+    rec_keys = ["receita_servicos", "outras_receitas"]
+    rb = gsum(rec_keys)
+    ded = gsum(_CASC_DED_KEYS)
+    rl = rb - ded
+    pes = gsum(["desp_pessoal"])
+    adm = gsum(["desp_admin"])
+    ebitda = rl - pes - adm
+    fin = gsum(["financ_receita"]) - gsum(["financ_despesa"])
+    imp = gsum(["impostos_lucro"])
+    ll = ebitda + (fin if include_fin else 0.0) - imp
+
+    m_rb = _casc_mes_vals(matriz, rec_keys, months)
+    m_ded = _casc_mes_vals(matriz, _CASC_DED_KEYS, months, sign=-1.0)
+    m_pes = _casc_mes_vals(matriz, ["desp_pessoal"], months, sign=-1.0)
+    m_adm = _casc_mes_vals(matriz, ["desp_admin"], months, sign=-1.0)
+    m_imp = _casc_mes_vals(matriz, ["impostos_lucro"], months, sign=-1.0)
+    m_finr = _casc_mes_vals(matriz, ["financ_receita"], months)
+    m_find = _casc_mes_vals(matriz, ["financ_despesa"], months, sign=-1.0)
+    m_fin = {m: m_finr[m] + m_find[m] for m in months}
+    m_rl = {m: m_rb[m] + m_ded[m] for m in months}
+    m_ebt = {m: m_rl[m] + m_pes[m] + m_adm[m] for m in months}
+    m_ll = {m: m_ebt[m] + (m_fin[m] if include_fin else 0.0) + m_imp[m]
+            for m in months}
+
+    def mes(vals):
+        return _casc_mes_rows(matriz, vals, months)
+
+    # Deduções: composição por tributo (não por contato — o "quem" é o fisco)
+    ded_comp = [[_CASC_DED_LABELS[k], round(-sum(g.get(k, {}).get(m, 0.0)
+                for m in months), 2), None] for k in _CASC_DED_KEYS
+                if abs(sum(g.get(k, {}).get(m, 0.0) for m in months)) >= 0.005]
+
+    fin_comp = (_casc_forn_rows(matriz, ["financ_receita"], mset)
+                + _casc_forn_rows(matriz, ["financ_despesa"], mset, sign=-1.0))
+    fin_comp.sort(key=lambda r: -abs(r[1]))
+
+    steps = [
+        {"k": "rb", "label": "Receita bruta", "t": "pos", "v": round(rb, 2),
+         "comp": _casc_forn_rows(matriz, rec_keys, mset), "mes": mes(m_rb)},
+        {"k": "ded", "label": "Deduções", "t": "neg", "v": round(-ded, 2),
+         "comp": ded_comp, "mes": mes(m_ded)},
+        {"k": "rl", "label": "= Receita líquida", "t": "sub", "v": round(rl, 2),
+         "comp": [["Receita bruta", round(rb, 2), None],
+                  ["(−) Deduções", round(-ded, 2), None]], "mes": mes(m_rl)},
+        {"k": "pes", "label": "Pessoal", "t": "neg", "v": round(-pes, 2),
+         "comp": _casc_forn_rows(matriz, ["desp_pessoal"], mset, sign=-1.0),
+         "mes": mes(m_pes)},
+        {"k": "adm", "label": "Administrativas", "t": "neg", "v": round(-adm, 2),
+         "comp": _casc_forn_rows(matriz, ["desp_admin"], mset, sign=-1.0),
+         "mes": mes(m_adm)},
+        {"k": "ebt", "label": "= EBITDA", "t": "sub", "v": round(ebitda, 2),
+         "comp": [["Receita líquida", round(rl, 2), None],
+                  ["(−) Pessoal", round(-pes, 2), None],
+                  ["(−) Administrativas", round(-adm, 2), None]],
+         "mes": mes(m_ebt)},
+    ]
+    if include_fin:
+        steps.append({"k": "fin", "label": "Financeiro", "t": "delta",
+                      "v": round(fin, 2), "comp": fin_comp, "mes": mes(m_fin)})
+    steps.append({"k": "imp", "label": "IRPJ + CSLL", "t": "neg",
+                  "v": round(-imp, 2),
+                  "comp": _casc_forn_rows(matriz, ["impostos_lucro"], mset,
+                                          sign=-1.0),
+                  "mes": mes(m_imp)})
+    ll_comp = [["EBITDA", round(ebitda, 2), None]]
+    if include_fin:
+        ll_comp.append(["(±) Financeiro", round(fin, 2), None])
+    ll_comp.append(["(−) IRPJ + CSLL", round(-imp, 2), None])
+    steps.append({"k": "ll", "label": "= Lucro líquido", "t": "sub",
+                  "v": round(ll, 2), "comp": ll_comp, "mes": mes(m_ll)})
+    return {"steps": steps}
+
+
+def _render_cascata(matriz: dict, today: date) -> str:
+    """Card com o waterfall do ano corrente + drill de duas tabelas."""
+    year = today.year
+    cutoff = today.strftime("%Y-%m")
+    yprefix = f"{year:04d}-"
+    months_full = [m for m in matriz["months"] if m.startswith(yprefix)]
+    months_ytd = [m for m in months_full if m <= cutoff]
+    if not months_ytd:
+        months_ytd = months_full[:1]
+
+    g = matriz["grupos"]
+    fin_total = max(
+        abs(sum(g.get("financ_receita", {}).get(m, 0.0) for m in months_full)
+            - sum(g.get("financ_despesa", {}).get(m, 0.0) for m in months_full)),
+        abs(sum(g.get("financ_receita", {}).get(m, 0.0) for m in months_ytd)
+            - sum(g.get("financ_despesa", {}).get(m, 0.0) for m in months_ytd)))
+    include_fin = fin_total >= 1.0  # mesmo nº de barras nas 2 variantes
+
+    casc = {
+        "ytd": _casc_variant(matriz, months_ytd, include_fin),
+        "full": _casc_variant(matriz, months_full, include_fin),
+    }
+    casc_json = json.dumps(casc, ensure_ascii=False,
+                           separators=(",", ":")).replace("</", "<\\/")
+
+    # Nota de itens estruturais (fora da cascata, como no DRE operacional)
+    nr = sum(g.get("nao_recorrente", {}).get(m, 0.0) for m in months_full)
+    ap = sum(g.get("aporte_socio", {}).get(m, 0.0) for m in months_full)
+    partes = []
+    if nr >= 1:
+        partes.append(f"buy-out/acordo {_fmt_brl(nr, compact=True)}")
+    if ap >= 1:
+        partes.append(f"aportes {_fmt_brl(ap, compact=True)}")
+    nota_estrut = ("itens estruturais fora da cascata (" + " · ".join(partes)
+                   + " no ano) — ver matriz") if partes else ""
+
+    lbl_ytd = f"Realizado (jan–{_fmt_comp(months_ytd[-1])[:3]})"
+    lbl_full = "Ano cheio (c/ projetado)"
+
+    btn_on = ("padding:6px 16px;font-size:11.5px;font-weight:500;cursor:pointer;"
+              "border-radius:6px;border:0;background:var(--s1);color:var(--t1);"
+              "font-family:var(--sans);box-shadow:0 1px 2px rgba(60,90,130,0.08)")
+    btn_off = ("padding:6px 16px;font-size:11.5px;font-weight:500;cursor:pointer;"
+               "border-radius:6px;border:0;background:none;color:var(--t2);"
+               "font-family:var(--sans)")
+
+    html_part = f"""
+<div class="sl">Cascata do resultado — {year}</div>
+<div class="card" style="margin-bottom:12px">
+  <div class="ct"><b>DRE em cascata — {year}</b><span class="ct-tag">toque numa barra para abrir a composição</span></div>
+  <div style="display:flex;gap:14px;flex-wrap:wrap;margin:2px 0 10px;align-items:center">
+    <div style="display:inline-flex;background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:3px;gap:2px">
+      <button class="casc-per active" data-per="ytd" onclick="cascPer('ytd')" style="{btn_on}">{lbl_ytd}</button>
+      <button class="casc-per" data-per="full" onclick="cascPer('full')" style="{btn_off}">{lbl_full}</button>
+    </div>
+    <span style="font-size:10.5px;color:var(--t3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em">R$ mil · barras neutras = subtotais{(" · " + nota_estrut) if nota_estrut else ""}</span>
+  </div>
+  <div class="cw" style="height:320px"><canvas id="cascChart"></canvas></div>
+</div>
+<div id="cascDrill" style="display:none"></div>
+"""
+
+    js = """
+<script>
+var CASC=__CASC_JSON__;
+var cascVar='ytd',cascSel=-1,cascChartObj=null;
+function _cascCss(n,fb){try{if(typeof EA_VAR==='function')return EA_VAR(n,fb);var v=getComputedStyle(document.documentElement).getPropertyValue(n).trim();return v||fb;}catch(e){return fb;}}
+function cascFmtK(v){var k=v/1000,a=Math.abs(k);var s=a>=100?Math.round(a):Math.round(a*10)/10;return (v<0?'-':'')+s.toLocaleString('pt-BR');}
+function cascFmtR(v){return (v<0?'\\u2212':'')+'R$\\u00a0'+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function cascEsc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function cascMesLbl(ym){var M=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];return M[parseInt(ym.substring(5,7),10)-1]+'/'+ym.substring(2,4);}
+function cascBuild(){
+  if(typeof Chart==='undefined')return;
+  var el=document.getElementById('cascChart');if(!el)return;
+  var d=CASC[cascVar];if(!d)return;
+  var bars=[],cums=[],cum=0;
+  d.steps.forEach(function(s){
+    if(s.t==='sub'){bars.push([Math.min(0,s.v),Math.max(0,s.v)]);cum=s.v;}
+    else{var a=cum,b=cum+s.v;bars.push([Math.min(a,b),Math.max(a,b)]);cum=b;}
+    cums.push(cum);
+  });
+  var neu=_cascCss('--t3','#8a97a8'),red=_cascCss('--red','#c0392b'),grn=_cascCss('--green','#1e7e4f'),t1=_cascCss('--t1','#16202c'),bd=_cascCss('--bd','rgba(60,90,130,0.12)'),t2=_cascCss('--t2','#4a5f7a');
+  var cols=d.steps.map(function(s){return s.t==='sub'?neu:(s.v<0?red:grn);});
+  if(cascChartObj){cascChartObj.destroy();cascChartObj=null;}
+  cascChartObj=new Chart(el,{type:'bar',
+    data:{labels:d.steps.map(function(s){return s.label;}),
+      datasets:[{data:bars,backgroundColor:cols,borderRadius:5,borderSkipped:false,barPercentage:0.72,categoryPercentage:0.92}]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:22,bottom:4}},
+      onClick:function(ev,els){if(els&&els.length)cascDrill(els[0].index);},
+      onHover:function(ev,els){if(ev.native&&ev.native.target)ev.native.target.style.cursor=els.length?'pointer':'default';},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){var s=d.steps[c.dataIndex];return cascFmtR(s.v);}}}},
+      scales:{x:{grid:{display:false},ticks:{color:t2,font:{size:10},maxRotation:0,autoSkip:false}},
+              y:{grid:{color:bd},ticks:{color:t2,callback:function(v){return cascFmtK(v);}}}}},
+    plugins:[{id:'cascLbl',afterDatasetsDraw:function(ch){
+      var c=ch.ctx,meta=ch.getDatasetMeta(0),ys=ch.scales.y;
+      c.save();
+      c.strokeStyle=t2;c.setLineDash([3,3]);c.lineWidth=1;c.globalAlpha=0.45;
+      for(var i=0;i+1<meta.data.length;i++){
+        var yPx=ys.getPixelForValue(cums[i]);
+        var a=meta.data[i],b=meta.data[i+1];
+        c.beginPath();c.moveTo(a.x+a.width/2,yPx);c.lineTo(b.x-b.width/2,yPx);c.stroke();
+      }
+      c.setLineDash([]);c.globalAlpha=1;
+      c.font='600 11px '+_cascCss('--mono','monospace');c.fillStyle=t1;c.textAlign='center';
+      meta.data.forEach(function(elb,i){
+        var s=d.steps[i],lo=bars[i][0],hi=bars[i][1];
+        var up=(s.t==='sub'?s.v>=0:s.v>=0);
+        var y=up?ys.getPixelForValue(hi)-7:ys.getPixelForValue(lo)+15;
+        c.fillText(cascFmtK(s.v),elb.x,y);
+      });
+      c.restore();
+    }}]});
+}
+function cascPer(p){
+  cascVar=p;
+  document.querySelectorAll('.casc-per').forEach(function(b){
+    var on=b.dataset.per===p;
+    b.style.background=on?'var(--s1)':'none';
+    b.style.color=on?'var(--t1)':'var(--t2)';
+    b.style.boxShadow=on?'0 1px 2px rgba(60,90,130,0.08)':'none';
+    b.classList.toggle('active',on);
+  });
+  cascBuild();
+  if(cascSel>=0)cascDrill(cascSel);
+}
+function cascDrill(i){
+  var d=CASC[cascVar];if(!d||!d.steps[i])return;
+  cascSel=i;
+  var s=d.steps[i],box=document.getElementById('cascDrill');
+  var compHdr=(s.k==='ded')?'Tributo':(s.t==='sub'?'Componente':'Fornecedor / cliente');
+  var comp='';
+  (s.comp||[]).forEach(function(r){
+    var n=(r[2]!=null)?' <span style="color:var(--t3);font-size:10px">\\u00b7 '+r[2]+' lan\\u00e7.</span>':'';
+    comp+='<tr><td style="padding:5px 10px;font-size:11.5px">'+cascEsc(r[0])+n+'</td><td class="r" style="padding:5px 10px;font-family:var(--mono);font-size:11px;white-space:nowrap;color:'+(r[1]<0?'var(--red)':'var(--t1)')+'">'+cascFmtR(r[1])+'</td></tr>';
+  });
+  if(!comp)comp='<tr><td colspan="2" style="padding:8px 10px;color:var(--t3);font-size:11px">Sem lan\\u00e7amentos no per\\u00edodo.</td></tr>';
+  var mes='';
+  (s.mes||[]).forEach(function(r){
+    var tag='';
+    if(r[2]==='em_aberto')tag=' <span class="pill pa" style="font-size:9px;padding:0 5px">aberto</span>';
+    else if(r[2]==='projetado')tag=' <span class="pill pa" style="font-size:9px;padding:0 5px">prev</span>';
+    else if(r[2]==='sem_dado')tag=' <span style="color:var(--t3);font-size:9px">s/ dado</span>';
+    var val=(r[2]==='sem_dado'&&Math.abs(r[1])<0.005)?'\\u2014':cascFmtR(r[1]);
+    mes+='<tr><td style="padding:5px 10px;font-family:var(--mono);font-size:11px;white-space:nowrap">'+cascMesLbl(r[0])+tag+'</td><td class="r" style="padding:5px 10px;font-family:var(--mono);font-size:11px;white-space:nowrap;color:'+(r[1]<0?'var(--red)':'var(--t1)')+'">'+val+'</td></tr>';
+  });
+  box.innerHTML='<div class="g2" style="margin-bottom:12px">'
+    +'<div class="card"><div class="ct"><b>Composi\\u00e7\\u00e3o \\u2014 '+cascEsc(s.label)+'</b><span class="ct-tag">'+cascFmtR(s.v)+'</span></div>'
+    +'<div class="tbl-wrap" style="max-height:340px;overflow:auto"><table class="dt"><thead><tr><th>'+compHdr+'</th><th class="r">Valor</th></tr></thead><tbody>'+comp+'</tbody></table></div></div>'
+    +'<div class="card"><div class="ct"><b>M\\u00eas a m\\u00eas \\u2014 '+cascEsc(s.label)+'</b><span class="ct-tag">sazonalidade</span></div>'
+    +'<div class="tbl-wrap" style="max-height:340px;overflow:auto"><table class="dt"><thead><tr><th>M\\u00eas</th><th class="r">Valor</th></tr></thead><tbody>'+mes+'</tbody></table></div></div>'
+    +'</div>';
+  box.style.display='block';
+}
+(function(){
+  function init(){cascBuild();}
+  if(document.readyState==='complete')init();
+  else window.addEventListener('load',init);
+  try{new MutationObserver(function(){if(cascChartObj)cascBuild();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});}catch(e){}
+})();
+</script>
+"""
+    return html_part + js.replace("__CASC_JSON__", casc_json)
 
 
 
@@ -1892,6 +2185,8 @@ def render_pl_and_dre(
     <span class="pill pb2"><span class="pdot"></span>Lucro Presumido</span>
   </div>
 </div>
+
+{_render_cascata(matriz_2y, today)}
 
 {_render_dre_full(matriz_2y, totvs)}
 

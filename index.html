@@ -302,7 +302,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 <div class="g2">
   <div class="card">
     <div class="ct">Riscos e desvios</div>
-    <div class="alt alr"><div class="ats">R$ 12.874 vencidos a receber (3 lançamentos)</div><div class="asd">MIR IMPORTACAO E EXPORTACAO LTDA, Usina São Francisco S/A, ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA — acionar cobrança.</div></div>
+    <div class="alt alr"><div class="ats">R$ 12.874 vencidos a receber (3 lançamentos)</div><div class="asd">Usina São Francisco S/A, ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA, MIR IMPORTACAO E EXPORTACAO LTDA — acionar cobrança.</div></div>
     <div class="alt ala"><div class="ats">R$ 36 K sem categoria (6 lançamentos)</div><div class="asd">Classifique no Bling — impacta DRE.</div></div>
     <div class="alt ala"><div class="ats">R$ 112 K vencem em até 30 dias (15 lançamentos)</div><div class="asd">Planejar disponibilidade de caixa.</div></div>
   </div>
@@ -687,6 +687,120 @@ function dreToggleRow(k){
     <span class="pill pb2"><span class="pdot"></span>Lucro Presumido</span>
   </div>
 </div>
+
+
+<div class="sl">Cascata do resultado — 2026</div>
+<div class="card" style="margin-bottom:12px">
+  <div class="ct"><b>DRE em cascata — 2026</b><span class="ct-tag">toque numa barra para abrir a composição</span></div>
+  <div style="display:flex;gap:14px;flex-wrap:wrap;margin:2px 0 10px;align-items:center">
+    <div style="display:inline-flex;background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:3px;gap:2px">
+      <button class="casc-per active" data-per="ytd" onclick="cascPer('ytd')" style="padding:6px 16px;font-size:11.5px;font-weight:500;cursor:pointer;border-radius:6px;border:0;background:var(--s1);color:var(--t1);font-family:var(--sans);box-shadow:0 1px 2px rgba(60,90,130,0.08)">Realizado (jan–set)</button>
+      <button class="casc-per" data-per="full" onclick="cascPer('full')" style="padding:6px 16px;font-size:11.5px;font-weight:500;cursor:pointer;border-radius:6px;border:0;background:none;color:var(--t2);font-family:var(--sans)">Ano cheio (c/ projetado)</button>
+    </div>
+    <span style="font-size:10.5px;color:var(--t3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em">R$ mil · barras neutras = subtotais · itens estruturais fora da cascata (buy-out/acordo R$ 479K · aportes R$ 311K no ano) — ver matriz</span>
+  </div>
+  <div class="cw" style="height:320px"><canvas id="cascChart"></canvas></div>
+</div>
+<div id="cascDrill" style="display:none"></div>
+
+<script>
+var CASC={"ytd":{"steps":[{"k":"rb","label":"Receita bruta","t":"pos","v":623897.38,"comp":[["TOTVS S.A.",321718.3,9],["TOTVS SA",110199.88,8],["TOTVS S.A. SANTA CATARINA",71496.06,8],["SERGIO C WEISER DECORACAO LTDA",26278.0,5],["1000 MARCAS SAFETY BRASIL EIRELI",22516.48,8],["ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA",21116.25,3],["Projeção recorrente (média jul/26+ago/26)",13386.18,1],["Atlantis Distribuidora de Produtos de Higiene Ltda",12248.84,3],["TOTVS LARGE ENTERPRISE TECNOLOGIA S.A.",9921.39,8],["TELE RIO ELETRO DOMESTICOS LTDA",9385.0,2],["Usina São Francisco S/A",5631.0,1]],"mes":[["2026-01",64788.15,"real"],["2026-02",62828.48,"real"],["2026-03",82963.03,"real"],["2026-04",65080.01,"real"],["2026-05",80336.09,"real"],["2026-06",59869.56,"real"],["2026-07",74619.97,"real"],["2026-08",65945.07,"real"],["2026-09",67467.02,"em_aberto"]]},{"k":"ded","label":"Deduções","t":"neg","v":-36451.63,"comp":[["ISS",-13679.39,null],["PIS (esperado – 0,65%)",-4055.33,null],["COFINS (esperado – 3%)",-18716.91,null]],"mes":[["2026-01",-3476.2,"real"],["2026-02",-5087.12,"real"],["2026-03",-4670.26,"real"],["2026-04",-3914.21,"real"],["2026-05",-4297.76,"real"],["2026-06",-3511.5,"real"],["2026-07",-3670.62,"real"],["2026-08",-4035.15,"real"],["2026-09",-3788.81,"em_aberto"]]},{"k":"rl","label":"= Receita líquida","t":"sub","v":587445.75,"comp":[["Receita bruta",623897.38,null],["(−) Deduções",-36451.63,null]],"mes":[["2026-01",61311.95,"real"],["2026-02",57741.36,"real"],["2026-03",78292.77,"real"],["2026-04",61165.8,"real"],["2026-05",76038.33,"real"],["2026-06",56358.06,"real"],["2026-07",70949.35,"real"],["2026-08",61909.92,"real"],["2026-09",63678.21,"em_aberto"]]},{"k":"pes","label":"Pessoal","t":"neg","v":-696247.28,"comp":[["EFATA TREINAMENTO EM TECNOLOGIA LTDA",-233592.21,14],["M. DE Q. MACEDO - EPP",-207000.0,9],["MILAJANU CONSULTORIA EM TECNOLOGIA DE COMPUTAÇÃO LTDA",-98466.9,6],["ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",-88620.92,5],["Eduardo Faria de Godoy 29853590824",-58433.97,9],["ISABEL FELIX",-5192.05,6],["RECEITA FEDERAL",-2661.93,12],["ISABEL CRISTINA FELIX DA SILVA ME",-2279.3,1]],"mes":[["2026-01",-93329.65,"real"],["2026-02",-88222.78,"real"],["2026-03",-89007.08,"real"],["2026-04",-89389.55,"real"],["2026-05",-65864.54,"real"],["2026-06",-65431.33,"real"],["2026-07",-74836.66,"real"],["2026-08",-55680.71,"real"],["2026-09",-74484.98,"em_aberto"]]},{"k":"adm","label":"Administrativas","t":"neg","v":-233470.58,"comp":[["CARTAO DE CREDITO",-76733.21,10],["EP SERVIÇOS DE TECNOLOGIA LTDA",-73197.5,10],["TOTVS S.A.",-16743.99,2],["VTCONN CONSULTORIA E SISTEMAS LTDA",-16228.8,3],["PLENTECH LTDA",-15000.0,3],["Victor Hugo de Oliveira",-9999.99,3],["CRALUS INFORMATICA LTDA",-8446.5,9],["SERRANO CONTABILIDADE LIMITADA",-8102.0,11],["CBYK CONSULTORIA EM GESTAO EMPRESARIAL LTDA",-5523.07,1],["SAO PAULO MARCAS E PATENTES LTDA",-2005.0,3],["LWSA S/A",-1050.0,9],["MUNICIPIO DE SAO BERNARDO DO CAMPO",-278.94,1],["LUIZ HENRIQUE AQUINO",-161.58,1]],"mes":[["2026-01",-28837.29,"real"],["2026-02",-28592.11,"real"],["2026-03",-32570.45,"real"],["2026-04",-27340.23,"real"],["2026-05",-33921.49,"real"],["2026-06",-23730.14,"real"],["2026-07",-17357.59,"real"],["2026-08",-14959.51,"real"],["2026-09",-26161.77,"em_aberto"]]},{"k":"ebt","label":"= EBITDA","t":"sub","v":-342272.11,"comp":[["Receita líquida",587445.75,null],["(−) Pessoal",-696247.28,null],["(−) Administrativas",-233470.58,null]],"mes":[["2026-01",-60854.99,"real"],["2026-02",-59073.53,"real"],["2026-03",-43284.76,"real"],["2026-04",-55563.98,"real"],["2026-05",-23747.7,"real"],["2026-06",-32803.41,"real"],["2026-07",-21244.9,"real"],["2026-08",-8730.3,"real"],["2026-09",-36968.54,"em_aberto"]]},{"k":"imp","label":"IRPJ + CSLL","t":"neg","v":-48753.98,"comp":[["IRPJ",-29579.56,9],["CSLL",-13757.31,9]],"mes":[["2026-01",-4919.29,"real"],["2026-02",-9356.85,"real"],["2026-03",-4919.27,"real"],["2026-04",-5882.2,"real"],["2026-05",-5941.0,"real"],["2026-06",-6003.94,"real"],["2026-07",-3141.47,"real"],["2026-08",-3172.85,"real"],["2026-09",-5417.11,"em_aberto"]]},{"k":"ll","label":"= Lucro líquido","t":"sub","v":-391026.09,"comp":[["EBITDA",-342272.11,null],["(−) IRPJ + CSLL",-48753.98,null]],"mes":[["2026-01",-65774.28,"real"],["2026-02",-68430.38,"real"],["2026-03",-48204.03,"real"],["2026-04",-61446.18,"real"],["2026-05",-29688.7,"real"],["2026-06",-38807.35,"real"],["2026-07",-24386.37,"real"],["2026-08",-11903.15,"real"],["2026-09",-42385.65,"em_aberto"]]}]},"full":{"steps":[{"k":"rb","label":"Receita bruta","t":"pos","v":826298.44,"comp":[["TOTVS S.A.",321718.3,9],["Projeção recorrente (média jul/26+ago/26)",215787.24,4],["TOTVS SA",110199.88,8],["TOTVS S.A. SANTA CATARINA",71496.06,8],["SERGIO C WEISER DECORACAO LTDA",26278.0,5],["1000 MARCAS SAFETY BRASIL EIRELI",22516.48,8],["ATACADAO DISTRIBUIDORA DE AUTOPECAS LTDA",21116.25,3],["Atlantis Distribuidora de Produtos de Higiene Ltda",12248.84,3],["TOTVS LARGE ENTERPRISE TECNOLOGIA S.A.",9921.39,8],["TELE RIO ELETRO DOMESTICOS LTDA",9385.0,2],["Usina São Francisco S/A",5631.0,1]],"mes":[["2026-01",64788.15,"real"],["2026-02",62828.48,"real"],["2026-03",82963.03,"real"],["2026-04",65080.01,"real"],["2026-05",80336.09,"real"],["2026-06",59869.56,"real"],["2026-07",74619.97,"real"],["2026-08",65945.07,"real"],["2026-09",67467.02,"em_aberto"],["2026-10",67467.02,"em_aberto"],["2026-11",67467.02,"em_aberto"],["2026-12",67467.02,"em_aberto"]]},{"k":"ded","label":"Deduções","t":"neg","v":-48253.82,"comp":[["ISS",-18093.93,null],["PIS (esperado – 0,65%)",-5370.95,null],["COFINS (esperado – 3%)",-24788.94,null]],"mes":[["2026-01",-3476.2,"real"],["2026-02",-5087.12,"real"],["2026-03",-4670.26,"real"],["2026-04",-3914.21,"real"],["2026-05",-4297.76,"real"],["2026-06",-3511.5,"real"],["2026-07",-3670.62,"real"],["2026-08",-4035.15,"real"],["2026-09",-3788.81,"em_aberto"],["2026-10",-3788.81,"em_aberto"],["2026-11",-4006.69,"em_aberto"],["2026-12",-4006.69,"em_aberto"]]},{"k":"rl","label":"= Receita líquida","t":"sub","v":778044.62,"comp":[["Receita bruta",826298.44,null],["(−) Deduções",-48253.82,null]],"mes":[["2026-01",61311.95,"real"],["2026-02",57741.36,"real"],["2026-03",78292.77,"real"],["2026-04",61165.8,"real"],["2026-05",76038.33,"real"],["2026-06",56358.06,"real"],["2026-07",70949.35,"real"],["2026-08",61909.92,"real"],["2026-09",63678.21,"em_aberto"],["2026-10",63678.21,"em_aberto"],["2026-11",63460.33,"em_aberto"],["2026-12",63460.33,"em_aberto"]]},{"k":"pes","label":"Pessoal","t":"neg","v":-850931.78,"comp":[["M. DE Q. MACEDO - EPP",-276000.0,12],["EFATA TREINAMENTO EM TECNOLOGIA LTDA",-233592.21,14],["ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",-154620.92,8],["MILAJANU CONSULTORIA EM TECNOLOGIA DE COMPUTAÇÃO LTDA",-98466.9,6],["Eduardo Faria de Godoy 29853590824",-77933.97,12],["ISABEL FELIX",-5192.05,6],["RECEITA FEDERAL",-2846.43,15],["ISABEL CRISTINA FELIX DA SILVA ME",-2279.3,1]],"mes":[["2026-01",-93329.65,"real"],["2026-02",-88222.78,"real"],["2026-03",-89007.08,"real"],["2026-04",-89389.55,"real"],["2026-05",-65864.54,"real"],["2026-06",-65431.33,"real"],["2026-07",-74836.66,"real"],["2026-08",-55680.71,"real"],["2026-09",-74484.98,"em_aberto"],["2026-10",-51561.5,"em_aberto"],["2026-11",-51561.5,"em_aberto"],["2026-12",-51561.5,"em_aberto"]]},{"k":"adm","label":"Administrativas","t":"neg","v":-272540.89,"comp":[["CARTAO DE CREDITO",-109488.02,13],["EP SERVIÇOS DE TECNOLOGIA LTDA",-73197.5,10],["TOTVS S.A.",-16743.99,2],["VTCONN CONSULTORIA E SISTEMAS LTDA",-16228.8,3],["PLENTECH LTDA",-15000.0,3],["CRALUS INFORMATICA LTDA",-11262.0,12],["SERRANO CONTABILIDADE LIMITADA",-11242.0,14],["Victor Hugo de Oliveira",-9999.99,3],["CBYK CONSULTORIA EM GESTAO EMPRESARIAL LTDA",-5523.07,1],["SAO PAULO MARCAS E PATENTES LTDA",-2005.0,3],["LWSA S/A",-1410.0,12],["MUNICIPIO DE SAO BERNARDO DO CAMPO",-278.94,1],["LUIZ HENRIQUE AQUINO",-161.58,1]],"mes":[["2026-01",-28837.29,"real"],["2026-02",-28592.11,"real"],["2026-03",-32570.45,"real"],["2026-04",-27340.23,"real"],["2026-05",-33921.49,"real"],["2026-06",-23730.14,"real"],["2026-07",-17357.59,"real"],["2026-08",-14959.51,"real"],["2026-09",-26161.77,"em_aberto"],["2026-10",-12761.77,"em_aberto"],["2026-11",-13154.27,"em_aberto"],["2026-12",-13154.27,"em_aberto"]]},{"k":"ebt","label":"= EBITDA","t":"sub","v":-345428.05,"comp":[["Receita líquida",778044.62,null],["(−) Pessoal",-850931.78,null],["(−) Administrativas",-272540.89,null]],"mes":[["2026-01",-60854.99,"real"],["2026-02",-59073.53,"real"],["2026-03",-43284.76,"real"],["2026-04",-55563.98,"real"],["2026-05",-23747.7,"real"],["2026-06",-32803.41,"real"],["2026-07",-21244.9,"real"],["2026-08",-8730.3,"real"],["2026-09",-36968.54,"em_aberto"],["2026-10",-645.06,"em_aberto"],["2026-11",-1255.44,"em_aberto"],["2026-12",-1255.44,"em_aberto"]]},{"k":"imp","label":"IRPJ + CSLL","t":"neg","v":-65005.31,"comp":[["IRPJ",-29579.56,9],["CSLL",-13757.31,9]],"mes":[["2026-01",-4919.29,"real"],["2026-02",-9356.85,"real"],["2026-03",-4919.27,"real"],["2026-04",-5882.2,"real"],["2026-05",-5941.0,"real"],["2026-06",-6003.94,"real"],["2026-07",-3141.47,"real"],["2026-08",-3172.85,"real"],["2026-09",-5417.11,"em_aberto"],["2026-10",-5417.11,"em_aberto"],["2026-11",-5417.11,"em_aberto"],["2026-12",-5417.11,"em_aberto"]]},{"k":"ll","label":"= Lucro líquido","t":"sub","v":-410433.36,"comp":[["EBITDA",-345428.05,null],["(−) IRPJ + CSLL",-65005.31,null]],"mes":[["2026-01",-65774.28,"real"],["2026-02",-68430.38,"real"],["2026-03",-48204.03,"real"],["2026-04",-61446.18,"real"],["2026-05",-29688.7,"real"],["2026-06",-38807.35,"real"],["2026-07",-24386.37,"real"],["2026-08",-11903.15,"real"],["2026-09",-42385.65,"em_aberto"],["2026-10",-6062.17,"em_aberto"],["2026-11",-6672.55,"em_aberto"],["2026-12",-6672.55,"em_aberto"]]}]}};
+var cascVar='ytd',cascSel=-1,cascChartObj=null;
+function _cascCss(n,fb){try{if(typeof EA_VAR==='function')return EA_VAR(n,fb);var v=getComputedStyle(document.documentElement).getPropertyValue(n).trim();return v||fb;}catch(e){return fb;}}
+function cascFmtK(v){var k=v/1000,a=Math.abs(k);var s=a>=100?Math.round(a):Math.round(a*10)/10;return (v<0?'-':'')+s.toLocaleString('pt-BR');}
+function cascFmtR(v){return (v<0?'\u2212':'')+'R$\u00a0'+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function cascEsc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function cascMesLbl(ym){var M=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];return M[parseInt(ym.substring(5,7),10)-1]+'/'+ym.substring(2,4);}
+function cascBuild(){
+  if(typeof Chart==='undefined')return;
+  var el=document.getElementById('cascChart');if(!el)return;
+  var d=CASC[cascVar];if(!d)return;
+  var bars=[],cums=[],cum=0;
+  d.steps.forEach(function(s){
+    if(s.t==='sub'){bars.push([Math.min(0,s.v),Math.max(0,s.v)]);cum=s.v;}
+    else{var a=cum,b=cum+s.v;bars.push([Math.min(a,b),Math.max(a,b)]);cum=b;}
+    cums.push(cum);
+  });
+  var neu=_cascCss('--t3','#8a97a8'),red=_cascCss('--red','#c0392b'),grn=_cascCss('--green','#1e7e4f'),t1=_cascCss('--t1','#16202c'),bd=_cascCss('--bd','rgba(60,90,130,0.12)'),t2=_cascCss('--t2','#4a5f7a');
+  var cols=d.steps.map(function(s){return s.t==='sub'?neu:(s.v<0?red:grn);});
+  if(cascChartObj){cascChartObj.destroy();cascChartObj=null;}
+  cascChartObj=new Chart(el,{type:'bar',
+    data:{labels:d.steps.map(function(s){return s.label;}),
+      datasets:[{data:bars,backgroundColor:cols,borderRadius:5,borderSkipped:false,barPercentage:0.72,categoryPercentage:0.92}]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:22,bottom:4}},
+      onClick:function(ev,els){if(els&&els.length)cascDrill(els[0].index);},
+      onHover:function(ev,els){if(ev.native&&ev.native.target)ev.native.target.style.cursor=els.length?'pointer':'default';},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){var s=d.steps[c.dataIndex];return cascFmtR(s.v);}}}},
+      scales:{x:{grid:{display:false},ticks:{color:t2,font:{size:10},maxRotation:0,autoSkip:false}},
+              y:{grid:{color:bd},ticks:{color:t2,callback:function(v){return cascFmtK(v);}}}}},
+    plugins:[{id:'cascLbl',afterDatasetsDraw:function(ch){
+      var c=ch.ctx,meta=ch.getDatasetMeta(0),ys=ch.scales.y;
+      c.save();
+      c.strokeStyle=t2;c.setLineDash([3,3]);c.lineWidth=1;c.globalAlpha=0.45;
+      for(var i=0;i+1<meta.data.length;i++){
+        var yPx=ys.getPixelForValue(cums[i]);
+        var a=meta.data[i],b=meta.data[i+1];
+        c.beginPath();c.moveTo(a.x+a.width/2,yPx);c.lineTo(b.x-b.width/2,yPx);c.stroke();
+      }
+      c.setLineDash([]);c.globalAlpha=1;
+      c.font='600 11px '+_cascCss('--mono','monospace');c.fillStyle=t1;c.textAlign='center';
+      meta.data.forEach(function(elb,i){
+        var s=d.steps[i],lo=bars[i][0],hi=bars[i][1];
+        var up=(s.t==='sub'?s.v>=0:s.v>=0);
+        var y=up?ys.getPixelForValue(hi)-7:ys.getPixelForValue(lo)+15;
+        c.fillText(cascFmtK(s.v),elb.x,y);
+      });
+      c.restore();
+    }}]});
+}
+function cascPer(p){
+  cascVar=p;
+  document.querySelectorAll('.casc-per').forEach(function(b){
+    var on=b.dataset.per===p;
+    b.style.background=on?'var(--s1)':'none';
+    b.style.color=on?'var(--t1)':'var(--t2)';
+    b.style.boxShadow=on?'0 1px 2px rgba(60,90,130,0.08)':'none';
+    b.classList.toggle('active',on);
+  });
+  cascBuild();
+  if(cascSel>=0)cascDrill(cascSel);
+}
+function cascDrill(i){
+  var d=CASC[cascVar];if(!d||!d.steps[i])return;
+  cascSel=i;
+  var s=d.steps[i],box=document.getElementById('cascDrill');
+  var compHdr=(s.k==='ded')?'Tributo':(s.t==='sub'?'Componente':'Fornecedor / cliente');
+  var comp='';
+  (s.comp||[]).forEach(function(r){
+    var n=(r[2]!=null)?' <span style="color:var(--t3);font-size:10px">\u00b7 '+r[2]+' lan\u00e7.</span>':'';
+    comp+='<tr><td style="padding:5px 10px;font-size:11.5px">'+cascEsc(r[0])+n+'</td><td class="r" style="padding:5px 10px;font-family:var(--mono);font-size:11px;white-space:nowrap;color:'+(r[1]<0?'var(--red)':'var(--t1)')+'">'+cascFmtR(r[1])+'</td></tr>';
+  });
+  if(!comp)comp='<tr><td colspan="2" style="padding:8px 10px;color:var(--t3);font-size:11px">Sem lan\u00e7amentos no per\u00edodo.</td></tr>';
+  var mes='';
+  (s.mes||[]).forEach(function(r){
+    var tag='';
+    if(r[2]==='em_aberto')tag=' <span class="pill pa" style="font-size:9px;padding:0 5px">aberto</span>';
+    else if(r[2]==='projetado')tag=' <span class="pill pa" style="font-size:9px;padding:0 5px">prev</span>';
+    else if(r[2]==='sem_dado')tag=' <span style="color:var(--t3);font-size:9px">s/ dado</span>';
+    var val=(r[2]==='sem_dado'&&Math.abs(r[1])<0.005)?'\u2014':cascFmtR(r[1]);
+    mes+='<tr><td style="padding:5px 10px;font-family:var(--mono);font-size:11px;white-space:nowrap">'+cascMesLbl(r[0])+tag+'</td><td class="r" style="padding:5px 10px;font-family:var(--mono);font-size:11px;white-space:nowrap;color:'+(r[1]<0?'var(--red)':'var(--t1)')+'">'+val+'</td></tr>';
+  });
+  box.innerHTML='<div class="g2" style="margin-bottom:12px">'
+    +'<div class="card"><div class="ct"><b>Composi\u00e7\u00e3o \u2014 '+cascEsc(s.label)+'</b><span class="ct-tag">'+cascFmtR(s.v)+'</span></div>'
+    +'<div class="tbl-wrap" style="max-height:340px;overflow:auto"><table class="dt"><thead><tr><th>'+compHdr+'</th><th class="r">Valor</th></tr></thead><tbody>'+comp+'</tbody></table></div></div>'
+    +'<div class="card"><div class="ct"><b>M\u00eas a m\u00eas \u2014 '+cascEsc(s.label)+'</b><span class="ct-tag">sazonalidade</span></div>'
+    +'<div class="tbl-wrap" style="max-height:340px;overflow:auto"><table class="dt"><thead><tr><th>M\u00eas</th><th class="r">Valor</th></tr></thead><tbody>'+mes+'</tbody></table></div></div>'
+    +'</div>';
+  box.style.display='block';
+}
+(function(){
+  function init(){cascBuild();}
+  if(document.readyState==='complete')init();
+  else window.addEventListener('load',init);
+  try{new MutationObserver(function(){if(cascChartObj)cascBuild();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});}catch(e){}
+})();
+</script>
+
 
 <div class="g4" style="margin-bottom:14px"><div class="met amber"><div class="ml">Receita bruta</div><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px"><div class="mv amber">R$ 826K</div><div style="font-size:11px;color:var(--t3);font-family:var(--mono)">2025: R$ 976K</div></div><div class="ms">▼ -15.3% · margem 94.2% (vs 94.0%)</div></div><div class="met amber"><div class="ml">EBITDA</div><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px"><div class="mv amber">R$ -345K</div><div style="font-size:11px;color:var(--t3);font-family:var(--mono)">2025: R$ 79K</div></div><div class="ms">▼ -535.5% · margem -41.8% (vs 8.1%)</div></div><div class="met amber"><div class="ml">Lucro líquido</div><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px"><div class="mv amber">R$ -410K</div><div style="font-size:11px;color:var(--t3);font-family:var(--mono)">2025: R$ -1K</div></div><div class="ms">▲ +33498.3% · margem -49.7% (vs -0.1%)</div></div><div class="met green"><div class="ml">Margem bruta</div><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px"><div class="mv green">94.2%</div><div style="font-size:11px;color:var(--t3);font-family:var(--mono)">2025: 94.0%</div></div><div class="ms">▲ +0.1 pp vs 2025</div></div></div>
 <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;align-items:center">
