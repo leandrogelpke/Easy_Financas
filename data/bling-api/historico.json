@@ -1,12 +1,12 @@
 {
  "_meta": {
-  "gerado_em": "2026-09-04 14:18:43",
+  "gerado_em": "2026-09-04 18:19:54",
   "snapshot_origem": "bling_data_2026-09-04.json",
   "window_start": "2026-02-01",
   "totais": {
    "contas_pagar_pagas": 499,
    "contas_receber_recebidas": 81,
-   "contas_pagar_em_aberto": 93,
+   "contas_pagar_em_aberto": 94,
    "contas_receber_em_aberto": 14
   }
  },
@@ -12383,6 +12383,27 @@
    "categoria_descricao": "2010000008 - REEMBOLSOS KM",
    "categoria_tipo": 1,
    "portador_id": 14892107625
+  },
+  {
+   "id": 26785369816,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-09-14",
+   "vencimento_original": "2026-09-14",
+   "data_emissao": "2026-09-04",
+   "data_pagamento": "",
+   "competencia": "2026-09-04",
+   "valor": "1497,64",
+   "saldo": "1497,64",
+   "numero_documento": "",
+   "historico": "REEMBOLSO",
+   "contato_id": 18123364743,
+   "contato_nome": "Marcus Vinicius",
+   "contato_documento": "",
+   "categoria_id": 0,
+   "categoria_descricao": "",
+   "categoria_tipo": "",
+   "portador_id": 0
   },
   {
    "id": 24019952811,
