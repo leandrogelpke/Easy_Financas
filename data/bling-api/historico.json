@@ -1,12 +1,12 @@
 {
  "_meta": {
-  "gerado_em": "2026-09-07 21:59:10",
-  "snapshot_origem": "bling_data_2026-09-07.json",
+  "gerado_em": "2026-09-08 14:30:04",
+  "snapshot_origem": "bling_data_2026-09-08.json",
   "window_start": "2026-02-01",
   "totais": {
    "contas_pagar_pagas": 499,
    "contas_receber_recebidas": 76,
-   "contas_pagar_em_aberto": 94,
+   "contas_pagar_em_aberto": 95,
    "contas_receber_em_aberto": 14
   }
  },
@@ -12444,6 +12444,27 @@
    "contato_documento": "38625826000119",
    "categoria_id": 14665159865,
    "categoria_descricao": "Serviços de terceiros",
+   "categoria_tipo": 1,
+   "portador_id": 14892107625
+  },
+  {
+   "id": 26810125919,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-09-20",
+   "vencimento_original": "2026-09-20",
+   "data_emissao": "2026-09-08",
+   "data_pagamento": "",
+   "competencia": "2026-09-01",
+   "valor": "785,00",
+   "saldo": "785,00",
+   "numero_documento": "011522/01",
+   "historico": "Ref. a NF nº 011522",
+   "contato_id": 16547098383,
+   "contato_nome": "SERRANO CONTABILIDADE LIMITADA",
+   "contato_documento": "11048310000100",
+   "categoria_id": 14734483903,
+   "categoria_descricao": "2010000023 - HONORARIOS CONTABEIS",
    "categoria_tipo": 1,
    "portador_id": 14892107625
   },
