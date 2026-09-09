@@ -1,12 +1,12 @@
 {
  "_meta": {
-  "gerado_em": "2026-09-09 14:31:29",
+  "gerado_em": "2026-09-09 18:30:53",
   "snapshot_origem": "bling_data_2026-09-09.json",
   "window_start": "2026-02-01",
   "totais": {
    "contas_pagar_pagas": 500,
    "contas_receber_recebidas": 76,
-   "contas_pagar_em_aberto": 106,
+   "contas_pagar_em_aberto": 107,
    "contas_receber_em_aberto": 14
   }
  },
@@ -12484,6 +12484,27 @@
    "contato_id": 17883209125,
    "contato_nome": "EP SERVIÇOS DE TECNOLOGIA LTDA",
    "contato_documento": "07635863000184",
+   "categoria_id": 0,
+   "categoria_descricao": "",
+   "categoria_tipo": "",
+   "portador_id": 14892107625
+  },
+  {
+   "id": 26823871193,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-09-15",
+   "vencimento_original": "2026-09-15",
+   "data_emissao": "2026-09-09",
+   "data_pagamento": "",
+   "competencia": "2026-09-06",
+   "valor": "938,50",
+   "saldo": "938,50",
+   "numero_documento": "000728/01",
+   "historico": "Ref. a NF nº 000728",
+   "contato_id": 17144642941,
+   "contato_nome": "CRALUS INFORMATICA LTDA",
+   "contato_documento": "13211001000127",
    "categoria_id": 0,
    "categoria_descricao": "",
    "categoria_tipo": "",
