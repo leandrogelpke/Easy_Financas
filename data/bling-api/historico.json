@@ -1,13 +1,13 @@
 {
  "_meta": {
-  "gerado_em": "2026-09-11 18:24:58",
+  "gerado_em": "2026-09-11 21:41:43",
   "snapshot_origem": "bling_data_2026-09-11.json",
   "window_start": "2026-02-01",
   "totais": {
    "contas_pagar_pagas": 500,
    "contas_receber_recebidas": 76,
    "contas_pagar_em_aberto": 112,
-   "contas_receber_em_aberto": 19
+   "contas_receber_em_aberto": 18
   }
  },
  "contas_pagar_pagas": [
@@ -14544,27 +14544,6 @@
    "contato_id": 18005142574,
    "contato_nome": "Usina São Francisco S/A",
    "contato_documento": "71324792000106",
-   "categoria_id": "",
-   "categoria_descricao": "",
-   "categoria_tipo": "",
-   "portador_id": ""
-  },
-  {
-   "id": 24980245454,
-   "situacao_codigo": 1,
-   "situacao": "Em aberto",
-   "vencimento": "2026-09-15",
-   "vencimento_original": "",
-   "data_emissao": "2026-02-02",
-   "data_pagamento": "",
-   "competencia": "",
-   "valor": "50000,00",
-   "saldo": "",
-   "numero_documento": "",
-   "historico": "",
-   "contato_id": 16605292185,
-   "contato_nome": "TOTVS S.A.",
-   "contato_documento": "53113791000122",
    "categoria_id": "",
    "categoria_descricao": "",
    "categoria_tipo": "",
