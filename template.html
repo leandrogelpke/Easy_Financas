@@ -1633,13 +1633,18 @@ var PROJ=@@PROJ_CFG@@;
 var pBar=null,pLine=null;
 
 function updProj(){
-  var rev=+document.getElementById('rSel').value;
+  // Fonte única (11/09/2026): receita_proj/desp_proj vêm do build via
+  // dre_render (mesma série do DRE/P&L/Caixa). O select de receita é um
+  // MULTIPLICADOR (0.8/1.0/1.2) sobre a projeção canônica de cada mês.
+  var pct=+document.getElementById('rSel').value;
   var extra=+document.getElementById('aSel').value;
   var res=[],acums=[],resBO=[],labels=[];
   var ac=PROJ.caixa_inicial||0;
   PROJ.months.forEach(function(mo){
     var est=PROJ.estrutural[mo.ym]||0;
-    var r=rev+extra-PROJ.desp_op-est;
+    var rev=((PROJ.receita_proj&&PROJ.receita_proj[mo.ym]!=null)?PROJ.receita_proj[mo.ym]:0)*pct+extra;
+    var dop=(PROJ.desp_proj&&PROJ.desp_proj[mo.ym]!=null)?PROJ.desp_proj[mo.ym]:PROJ.desp_op;
+    var r=rev-dop-est;
     res.push(r);resBO.push(r-(PROJ.estrutural_medio_1s||0));
     ac+=r;acums.push(ac);labels.push(mo.label);
   });

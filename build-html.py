@@ -815,7 +815,8 @@ def render_vencidos_html(em_aberto: list[dict], receber: list[dict],
 def render_cashflow_html(pagas: list[dict], recebidas: list[dict],
                           em_aberto: list[dict], receber: list[dict],
                           today: date,
-                          receita_extra: dict | None = None) -> str:
+                          receita_extra: dict | None = None,
+                          despesa_extra: dict | None = None) -> str:
     """Gráfico de barras (CSS) entradas x saídas mês a mês — regime de caixa.
 
     Meses anteriores ao atual: REALIZADO (recebidas/pagas). Mês atual e
@@ -867,6 +868,12 @@ def render_cashflow_html(pagas: list[dict], recebidas: list[dict],
     for _ym, _partes in (receita_extra or {}).items():
         re_sint[_ym] += sum(_v for _l, _v, _t in _partes)
 
+    # Despesa sintética (fonte única dre_render.despesa_projetada_por_mes):
+    # complemento recorrente da média 3m op nos meses >= corrente. Sem ele as
+    # SAÍDAS projetadas mostravam só parcelas agendadas — com a entrada já
+    # projetando a média recorrente, o líquido do mês saía otimista.
+    sa_sint: dict[str, float] = dict(despesa_extra or {})
+
     # Janela: jan/ano-atual → atual + 2 meses
     meses: list[tuple[int, int]] = []
     y0 = today.year
@@ -899,10 +906,10 @@ def render_cashflow_html(pagas: list[dict], recebidas: list[dict],
             # Antes usava SÓ o em aberto e a barra do mês encolhia conforme as
             # contas iam sendo pagas — o realizado sumia do gráfico.
             ent = re_real.get(key, 0) + re_open.get(key, 0) + re_sint.get(key, 0)
-            sai = pa_real.get(key, 0) + pa_open.get(key, 0)
+            sai = pa_real.get(key, 0) + pa_open.get(key, 0) + sa_sint.get(key, 0)
         elif is_proj:
             ent = re_open.get(key, 0) + re_sint.get(key, 0)
-            sai = pa_open.get(key, 0)
+            sai = pa_open.get(key, 0) + sa_sint.get(key, 0)
         else:
             # Passado: realizado + fill sintético (Totvs) nos meses em que o
             # Bling não tem receita — igual ao DRE/P&L.
@@ -938,7 +945,7 @@ def render_cashflow_html(pagas: list[dict], recebidas: list[dict],
         '<div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:10.5px;color:var(--t2)">'
         '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--green)"></span>Entradas</span>'
         '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--red)"></span>Saídas</span>'
-        '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--t3);opacity:0.5;border:1px dashed var(--bd)"></span>Projetado (em aberto + projeção recorrente, igual ao DRE)</span>'
+        '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--t3);opacity:0.5;border:1px dashed var(--bd)"></span>Projetado (em aberto + projeção recorrente de entrada E saída, igual ao DRE)</span>'
         '<span style="color:var(--t3)">· abaixo de cada mês: resultado líquido (entrada − saída)</span>'
         '</div>'
     )
@@ -1493,98 +1500,48 @@ def recebido_to_js(items: list[dict]) -> str:
 # ──────────────────────────────────────────────
 
 def compute_proj_cfg(pagas: list[dict], recebidas: list[dict],
-                     em_aberto: list[dict], today: date,
+                     em_aberto: list[dict], receber: list[dict], today: date,
                      saldo_caixa: float | None, saldo_fonte: str) -> dict:
-    """Premissas da aba Projeção — TODAS derivadas dos dados (auditoria P0.7).
+    """Premissas da aba Projeção — FONTE ÚNICA com DRE/P&L/Caixa (11/09/2026).
 
-    A versão anterior era um modelo de constantes JS (`OP=31244, EF=35000,
-    S0=48000...`) escrito em mai/26 e nunca mais atualizado: assumia despesa
-    operacional de R$ 66K/mês quando a real rodava R$ 75–90K, um caixa
-    inicial de R$ 48K de origem desconhecida e cenários de Efata que o
-    encerramento do contrato (ago/26) tornou fictícios.
+    Até 11/09 a aba tinha fórmulas próprias (receita = média 6m bruta ×
+    80/100/120%, despesa = média 3m classificada por KNOWN_SUPPLIERS) que
+    divergiam do DRE (projeção recorrente + contratos) e da Caixa — quebrava
+    a regra de sincronia entre abas. Agora tudo deriva de dre_render:
 
-    Regras (nenhum número literal):
-      - receita_base   = média das recebidas dos últimos 6 meses FECHADOS;
-        cenários do select = 80% / 100% / 120% da base (arredondados a R$ 1K).
-      - extra (ex-"Atacadão") = média mensal histórica do próprio cliente nos
-        últimos 12 meses fechados (meses com receita > 0); opções 0/50%/100%.
-        Sem histórico → só a opção 0.
-      - desp_op        = média dos últimos 3 meses FECHADOS de pagas,
-        excluindo Aporte/Sócios e Buy-out/Acordo (que entram à parte).
-        3 meses e não 6: reage mais rápido a cortes reais (ex.: fim da Efata).
-      - estrutural[m]  = parcelas REAIS em aberto (pós-reconcile) de cat
-        Buy-out (Rômulo remanescente + acordo Geremias), mês a mês.
-      - caixa_inicial  = saldo do Bling (fallback manual); ausente → 0 com
+      - receita_proj[ym] = a receber em aberto do mês + complementos de
+        receita_sintetica_por_mes → IDÊNTICO ao receita_por_mes projetado do
+        DRE. Cenários do select viram MULTIPLICADORES (0.8/1.0/1.2).
+      - desp_proj[ym]    = total_op de despesa_projetada_por_mes (pago +
+        agendado + complemento média 3m) — varia por mês, não é constante.
+      - estrutural[ym]   = parcelas reais grupo nao_recorrente (classificação
+        _classify do DRE; KNOWN_SUPPLIERS não participa mais).
+      - caixa_inicial    = saldo Bling (fallback manual); ausente → 0 com
         aviso explícito no card.
-      - horizonte      = do mês seguinte ao atual até o último estrutural
-        agendado + 2 meses (mínimo 12).
-      - estrutural_medio_1s = média mensal do realizado não-recorrente no
-        1º semestre do ano corrente (linha "se a estrutura continuasse").
+      - horizonte        = mês seguinte → último estrutural + 2 (mín. 12).
+      - estrutural_medio_1s = média mensal do estrutural realizado no 1º
+        semestre (linha "se a estrutura continuasse").
+
+    Auditado por audit.check_sincronia_projecoes.
     """
+    from dre_render import (_classify as _dre_classify,  # type: ignore
+                            receita_sintetica_por_mes as _rs_fn,
+                            despesa_projetada_por_mes as _dp_fn)
+
     cutoff = today.strftime("%Y-%m")
 
-    def _fechado(ym: str) -> bool:
-        return bool(ym) and ym < cutoff
+    def _grupo(r: dict) -> str:
+        return _dre_classify(r.get("contato_nome", "") or "",
+                             r.get("historico", "") or "")[0]
 
-    def _ym_list(n_back: int) -> list[str]:
-        out, y, m = [], today.year, today.month
-        for _ in range(n_back):
-            m -= 1
-            if m == 0:
-                y, m = y - 1, 12
-            out.append(f"{y:04d}-{m:02d}")
-        return list(reversed(out))
-
-    def _eh_cat(r: dict, *cats: str) -> bool:
-        info = find_supplier((r.get("contato_nome") or "").upper())
-        return bool(info) and info.get("cat") in cats
-
-    # receita base — média 6m fechados
-    rec_pm: dict[str, float] = defaultdict(float)
-    for r in recebidas:
-        ym = (r.get("vencimento") or "")[:7]
-        if _fechado(ym):
-            rec_pm[ym] += parse_money(r.get("valor"))
-    ult6 = _ym_list(6)
-    receita_base = sum(rec_pm.get(m, 0) for m in ult6) / (len(ult6) or 1)
-    receita_base = round(receita_base / 1000) * 1000
-
-    # extra — média mensal do Atacadão (meses com receita) nos últimos 12m
-    atac_vals = [v for ym, v in (
-        (ym, sum(parse_money(r.get("valor")) for r in recebidas
-                 if "ATACADA" in (r.get("contato_nome") or "").upper()
-                 and (r.get("vencimento") or "")[:7] == ym))
-        for ym in _ym_list(12)) if v > 0]
-    extra_base = round(sum(atac_vals) / len(atac_vals)) if atac_vals else 0
-
-    # despesa operacional — média 3m fechados sem aporte/estrutural
-    desp_pm: dict[str, float] = defaultdict(float)
-    for r in pagas:
-        ym = (r.get("vencimento") or "")[:7]
-        if _fechado(ym) and not _eh_cat(r, "Aporte/Sócios", "Buy-out"):
-            desp_pm[ym] += parse_money(r.get("valor"))
-    ult3 = _ym_list(3)
-    desp_op = round(sum(desp_pm.get(m, 0) for m in ult3) / (len(ult3) or 1))
-
-    # estruturais agendados (em aberto reconciliado, cat Buy-out)
-    estrutural: dict[str, float] = defaultdict(float)
+    # horizonte: mês seguinte → último estrutural agendado + 2 (mín. 12)
+    last_est = ""
     for r in em_aberto:
         ym = (r.get("vencimento") or "")[:7]
-        if ym > cutoff and _eh_cat(r, "Buy-out"):
-            estrutural[ym] += parse_money(r.get("saldo") or r.get("valor"))
-
-    # média do não-recorrente realizado no 1º semestre do ano corrente
-    s1 = [f"{today.year:04d}-{m:02d}" for m in range(1, 7)]
-    bo_vals = [sum(parse_money(r.get("valor")) for r in pagas
-                   if (r.get("vencimento") or "")[:7] == ym and _eh_cat(r, "Buy-out"))
-               for ym in s1]
-    bo_meses = [v for v in bo_vals if v > 0]
-    estrutural_medio = round(sum(bo_meses) / len(bo_meses)) if bo_meses else 0
-
-    # horizonte: mês seguinte → último estrutural + 2 (mín. 12)
+        if ym > cutoff and _grupo(r) == "nao_recorrente" and ym > last_est:
+            last_est = ym
     MN = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
           "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
-    last_est = max(estrutural.keys(), default="")
     y, m = today.year, today.month
     months: list[dict] = []
     while len(months) < 30:  # trava de sanidade
@@ -1601,34 +1558,89 @@ def compute_proj_cfg(pagas: list[dict], recebidas: list[dict],
         if m > 12:
             y, m = y + 1, 1
         months.append({"ym": f"{y:04d}-{m:02d}", "label": f"{MN[m-1]}/{str(y)[-2:]}"})
+    ate = months[-1]["ym"]
 
-    def _opt(v: float, label: str, sel: bool = False) -> dict:
-        return {"v": round(v), "label": label, "sel": sel}
+    # ── séries canônicas (mesmas funções que abastecem DRE/P&L/Caixa) ──
+    dp = _dp_fn(pagas, em_aberto, today, ate)
+    sint = _rs_fn(recebidas, receber, today, pagas=pagas, ate=ate)
+
+    aberto_pm: dict[str, float] = defaultdict(float)
+    for r in receber:
+        ym = (r.get("vencimento") or "")[:7]
+        if cutoff < ym <= ate:
+            aberto_pm[ym] += parse_money(r.get("valor"))
+
+    receita_proj: dict[str, float] = {}
+    desp_proj: dict[str, float] = {}
+    estrutural: dict[str, float] = {}
+    for mo in months:
+        ym = mo["ym"]
+        receita_proj[ym] = round(
+            aberto_pm.get(ym, 0)
+            + sum(v for _l, v, _t in sint.get(ym, [])), 2)
+        d = dp.get(ym, {})
+        desp_proj[ym] = round(d.get("total_op", 0), 2)
+        if d.get("estrutural", 0) > 0:
+            estrutural[ym] = round(d["estrutural"], 2)
+    media_op = round(next(iter(dp.values()))["media_op"], 2) if dp else 0.0
+
+    # base p/ rótulos dos cenários = média da receita canônica no horizonte
+    receita_base = round((sum(receita_proj.values())
+                          / (len(receita_proj) or 1)) / 1000) * 1000
+
+    # extra (ex-"Atacadão") — cenário aditivo de recuperação de cliente:
+    # média mensal histórica do próprio cliente nos últimos 12m fechados
+    def _ym_list(n_back: int) -> list[str]:
+        out, yy, mm = [], today.year, today.month
+        for _ in range(n_back):
+            mm -= 1
+            if mm == 0:
+                yy, mm = yy - 1, 12
+            out.append(f"{yy:04d}-{mm:02d}")
+        return list(reversed(out))
+
+    atac_vals = [v for ym, v in (
+        (ym, sum(parse_money(r.get("valor")) for r in recebidas
+                 if "ATACADA" in (r.get("contato_nome") or "").upper()
+                 and (r.get("vencimento") or "")[:7] == ym))
+        for ym in _ym_list(12)) if v > 0]
+    extra_base = round(sum(atac_vals) / len(atac_vals)) if atac_vals else 0
+
+    # média do estrutural realizado no 1º semestre do ano corrente
+    s1 = [f"{today.year:04d}-{mm:02d}" for mm in range(1, 7)]
+    bo_vals = [sum(parse_money(r.get("valor")) for r in pagas
+                   if (r.get("vencimento") or "")[:7] == ym
+                   and _grupo(r) == "nao_recorrente")
+               for ym in s1]
+    bo_meses = [v for v in bo_vals if v > 0]
+    estrutural_medio = round(sum(bo_meses) / len(bo_meses)) if bo_meses else 0
 
     receita_opts = [
-        _opt(receita_base * 0.8, f"{_kbrl(receita_base*0.8)} — conservador (80% da média 6m)"),
-        _opt(receita_base, f"{_kbrl(receita_base)} — base (média 6m fechados)", True),
-        _opt(receita_base * 1.2, f"{_kbrl(receita_base*1.2)} — otimista (120% da média 6m)"),
+        {"v": 0.8, "label": f"{_kbrl(receita_base*0.8)} — conservador (80% da projeção)", "sel": False},
+        {"v": 1.0, "label": f"{_kbrl(receita_base)} — base (projeção DRE: recorrente + contratos)", "sel": True},
+        {"v": 1.2, "label": f"{_kbrl(receita_base*1.2)} — otimista (120% da projeção)", "sel": False},
     ]
-    extra_opts = [_opt(0, "Não recupera", extra_base == 0)]
+    extra_opts = [{"v": 0, "label": "Não recupera", "sel": extra_base == 0}]
     if extra_base > 0:
-        extra_opts.append(_opt(extra_base * 0.5, f"50% — {_kbrl(extra_base*0.5)}/mês", True))
-        extra_opts.append(_opt(extra_base, f"100% — {_kbrl(extra_base)}/mês"))
+        extra_opts.append({"v": round(extra_base * 0.5), "label": f"50% — {_kbrl(extra_base*0.5)}/mês", "sel": True})
+        extra_opts.append({"v": extra_base, "label": f"100% — {_kbrl(extra_base)}/mês", "sel": False})
 
     return {
         "months": months,
         "ano_corrente": today.year,
         "receita_opts": receita_opts,
         "extra_opts": extra_opts,
-        "desp_op": desp_op,
-        "desp_op_nota": f"média {'–'.join(ult3[i][5:7] for i in (0, -1))} "
-                        f"({len(ult3)}m fechados, sem aportes/estruturais)",
-        "estrutural": dict(estrutural),
+        "receita_proj": receita_proj,
+        "desp_proj": desp_proj,
+        "desp_op": media_op,
+        "desp_op_nota": "média 3m fechados operacionais (fonte única "
+                        "dre_render.despesa_projetada_por_mes) — meses com "
+                        "agendado acima da média usam o agendado",
+        "estrutural": estrutural,
         "estrutural_medio_1s": estrutural_medio,
         "caixa_inicial": round(saldo_caixa, 2) if saldo_caixa else 0,
         "caixa_fonte": saldo_fonte or "",
     }
-
 
 def compute_dre_data(
     pagas: list[dict],
@@ -1637,6 +1649,7 @@ def compute_dre_data(
     receber_em_aberto: list[dict],
     today: date,
     receita_extra: dict | None = None,
+    despesa_extra: dict | None = None,
 ) -> list[dict]:
     """
     Monta o DRE mês a mês misturando real (pagos/recebidos) com projetado (em aberto).
@@ -1691,6 +1704,13 @@ def compute_dre_data(
                 rec_real[m] += v
             else:
                 rec_plan[m] += v
+
+    # Despesa sintética (fonte única dre_render.despesa_projetada_por_mes):
+    # complemento recorrente nos meses >= corrente — mesma série do DRE/P&L/
+    # Caixa/Projeção, pra este gráfico contar a mesma história (11/09/2026).
+    for m, v in (despesa_extra or {}).items():
+        if m >= cutoff:
+            desp_plan[m] += v
 
     # ── Conjunto de meses com algum dado ──
     all_months = sorted(
@@ -1927,7 +1947,8 @@ def compute_overview_pills(pagar_data: list, cx_data: list) -> str:
 
 def compute_overview_kpis_html(rows: list, pagar_data: list, cx_data: list, months: list[date],
                                saldo_caixa: float | None = None,
-                               saldo_fonte: str = "manual") -> str:
+                               saldo_fonte: str = "manual",
+                               despesa_proj: dict | None = None) -> str:
     n = len(months) or 1
     total_pago   = sum(r["total"] for r in rows)
     # Burn OPERACIONAL: aporte/distribuição de sócio é movimentação
@@ -1970,11 +1991,38 @@ def compute_overview_kpis_html(rows: list, pagar_data: list, cx_data: list, mont
 
     ]
 
-    # Runway = quanto o caixa atual dura se a receita parar (caixa ÷ burn
-    # operacional mensal). saldo vem do Bling a cada fetch (contas contábeis);
-    # caixa_config.json é só fallback manual — e o card diz qual fonte usou,
-    # porque o manual vivia desatualizado (pedido do Leandro, 21/ago).
-    if saldo_caixa and media > 0:
+    # Runway = quanto o caixa atual dura se a receita parar. Desde 11/09/2026
+    # usa a MESMA projeção de despesa das abas DRE/Caixa/Projeção (fonte
+    # única dre_render.despesa_projetada_por_mes): marcha o caixa mês a mês
+    # pelo total_op restante + parcelas estruturais reais; além do horizonte
+    # projetado, extrapola pela média 3m op. Antes o burn era a média YTD —
+    # terceira fórmula divergente das outras abas. saldo vem do Bling a cada
+    # fetch; caixa_config.json é só fallback manual (o card diz a fonte).
+    if saldo_caixa and despesa_proj:
+        _media_op = next(iter(despesa_proj.values())).get("media_op", 0) or media
+        cx, runway, esgotou = saldo_caixa, 0.0, False
+        for _ym in sorted(despesa_proj):
+            d = despesa_proj[_ym]
+            gasto = max(0.0, d.get("total_op", 0) - d.get("realizado_op", 0)) \
+                + d.get("estrutural", 0)
+            if gasto <= 0:
+                runway += 1
+                continue
+            if cx < gasto:
+                runway += cx / gasto
+                esgotou = True
+                break
+            cx -= gasto
+            runway += 1
+        if not esgotou and _media_op > 0:
+            runway += cx / _media_op  # além do horizonte: média 3m op
+        rw_cor = ("red" if runway < LIMIARES["runway_critico_m"]
+                  else ("amber" if runway < LIMIARES["runway_atencao_m"] else "green"))
+        rw_val = (f"{runway:.1f}".replace(".", ",") + " meses") if runway < 100 else "99+ meses"
+        _fonte = "Bling" if saldo_fonte == "bling" else "manual — desatualizado?"
+        rw_sub = (f"caixa {_kbrl(saldo_caixa)} ({_fonte}) ÷ projeção de despesa "
+                  f"(média 3m op {_kbrl(_media_op)} + parcelas reais — fonte única)")
+    elif saldo_caixa and media > 0:
         runway = saldo_caixa / media
         rw_cor = ("red" if runway < LIMIARES["runway_critico_m"]
                   else ("amber" if runway < LIMIARES["runway_atencao_m"] else "green"))
@@ -2527,8 +2575,27 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     except Exception as _e:  # pragma: no cover
         print(f"[receita-extra] ignorado: {_e}", file=sys.stderr)
 
+    # ── Despesa projetada (fonte única em dre_render, espelho da receita):
+    #    complemento recorrente (média 3m op) por mês >= corrente. Alimenta
+    #    DRE_DATA, fluxo da Caixa, aba Projeção e Runway — sincronia entre
+    #    TODAS as abas com projeção (11/09/2026). ──
+    despesa_proj: dict = {}
+    despesa_extra: dict = {}
+    try:
+        from dre_render import despesa_projetada_por_mes as _dpp  # type: ignore
+        despesa_proj = _dpp(pagas, em_aberto, today, _rx_ate)
+        despesa_extra = {ym: d["complemento"] for ym, d in despesa_proj.items()}
+        _dx_tot = sum(despesa_extra.values())
+        print(f"[despesa-proj] complemento recorrente em "
+              f"{sum(1 for v in despesa_extra.values() if v > 0)} meses "
+              f"(média 3m op R$ {next(iter(despesa_proj.values()))['media_op']:,.0f} · "
+              f"total R$ {_dx_tot:,.0f})")
+    except Exception as _e:  # pragma: no cover
+        print(f"[despesa-proj] ignorado: {_e}", file=sys.stderr)
+
     dre_data    = compute_dre_data(pagas, recebidas, em_aberto, receber, today,
-                                   receita_extra=receita_extra)
+                                   receita_extra=receita_extra,
+                                   despesa_extra=despesa_extra)
     dre_detail  = compute_dre_detail(pagas, recebidas, em_aberto, receber, today,
                                      receita_extra=receita_extra)
 
@@ -2603,10 +2670,11 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     overview_hero_sub   = compute_overview_hero_sub(months, total_pago)
     overview_pills      = compute_overview_pills(pagar_data, cx_data)
     saldo_caixa, saldo_fonte = resolve_saldo_caixa(data)
-    proj_cfg = compute_proj_cfg(pagas, recebidas, em_aberto, today,
+    proj_cfg = compute_proj_cfg(pagas, recebidas, em_aberto, receber, today,
                                 saldo_caixa, saldo_fonte)
     overview_kpis       = compute_overview_kpis_html(rows, pagar_data, cx_data, months,
-                                                     saldo_caixa, saldo_fonte)
+                                                     saldo_caixa, saldo_fonte,
+                                                     despesa_proj=despesa_proj)
     overview_riscos     = compute_overview_riscos_html(cx_data, pagar_data, cli_data)
     overview_positivos  = compute_overview_positivos_html(cx_data, pagar_data, rows, cli_data)
     caixa_kpis          = compute_caixa_kpis_html(pagar_data, cx_data)
@@ -2697,7 +2765,8 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     html = html.replace(
         "@@CAIXA_FLUXO_HTML@@",
         render_cashflow_html(pagas, recebidas, em_aberto, receber, today,
-                             receita_extra=receita_extra))
+                             receita_extra=receita_extra,
+                             despesa_extra=despesa_extra))
 
     # ── Aba Clientes ────────────────────────────────────────────────
     html = html.replace("@@CLI_DATA@@",        js_cli)

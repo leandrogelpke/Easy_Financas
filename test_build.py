@@ -247,6 +247,48 @@ def test_cashflow_projeta_receita_igual_dre() -> None:
     # a assinatura tem que continuar aceitando o parâmetro por keyword — é
     # assim que o render() principal passa
     assert "receita_extra" in mod.render_cashflow_html.__code__.co_varnames
+    # despesa: complemento canônico (média 3m op) tem que entrar nas SAÍDAS
+    html_d = mod.render_cashflow_html([], [], [], receber, today,
+                                      receita_extra=extra,
+                                      despesa_extra={"2026-10": 55_000.0})
+    assert f'Saídas {mod._brl(55_000.0)}' in html_d, (
+        "mês projetado devia mostrar o complemento de despesa recorrente "
+        "nas saídas — sem ele o líquido do mês sai otimista")
+    assert "despesa_extra" in mod.render_cashflow_html.__code__.co_varnames
+
+
+def test_proj_cfg_fonte_unica_despesa() -> None:
+    """A aba Projeção tem que derivar despesa da fonte única
+    (dre_render.despesa_projetada_por_mes) e cenários de receita têm que ser
+    multiplicadores sobre a projeção canônica — não médias próprias
+    (sincronia de 11/09/2026)."""
+    import importlib.util
+    import sys
+    from datetime import date
+
+    spec = importlib.util.spec_from_file_location(
+        "build_html_proj", HERE / "build-html.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    sys.path.insert(0, str(HERE))
+    from dre_render import despesa_projetada_por_mes  # type: ignore
+
+    today = date(2026, 9, 15)
+    pagas = [{"contato_nome": "FORNECEDOR GENERICO LTDA",
+              "vencimento": f"2026-{mm:02d}-10", "valor": "30.000,00",
+              "historico": "serviços"} for mm in (6, 7, 8)]
+    cfg = mod.compute_proj_cfg(pagas, [], [], [], today, 100_000.0, "bling")
+
+    dp = despesa_projetada_por_mes(pagas, [], today, cfg["months"][-1]["ym"])
+    for mo in cfg["months"]:
+        esperado = dp.get(mo["ym"], {}).get("total_op", 0)
+        assert abs(cfg["desp_proj"][mo["ym"]] - esperado) < 0.01, (
+            f"desp_proj[{mo['ym']}]={cfg['desp_proj'][mo['ym']]} != "
+            f"canônico {esperado} — Projeção divergiu da fonte única")
+    assert abs(cfg["desp_op"] - 30_000.0) < 0.01, \
+        f"média 3m op devia ser 30K, veio {cfg['desp_op']}"
+    assert [o["v"] for o in cfg["receita_opts"]] == [0.8, 1.0, 1.2], \
+        "cenários de receita têm que ser multiplicadores (0.8/1.0/1.2)"
 
 
 TESTS = [
@@ -259,6 +301,7 @@ TESTS = [
     test_js_sintaxe_valida,
     test_fetch_bloqueio_transitorio,
     test_cashflow_projeta_receita_igual_dre,
+    test_proj_cfg_fonte_unica_despesa,
 ]
 
 

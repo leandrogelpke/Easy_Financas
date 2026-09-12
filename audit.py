@@ -1277,73 +1277,92 @@ def check_reconc_bling_totvs(matriz: dict, totvs_por_mes: dict,
     return findings
 
 
-def _comparar_projecao_caixa_dre(receita_dre: dict, ent_caixa: dict,
-                                 months: list[str]) -> list[AuditFinding]:
-    """Núcleo puro do check de consistência Caixa × DRE (testável isolado).
+def _comparar_projecoes(series: dict[str, dict[str, float]],
+                        months: list[str], metrica: str) -> list[AuditFinding]:
+    """Núcleo puro do check de sincronia de projeções (testável isolado).
 
-    Compara, mês a mês (meses estritamente FUTUROS, onde as duas abas usam a
-    mesma fórmula: em aberto + complemento da projeção recorrente), a receita
-    projetada do DRE (matriz.receita_por_mes) com as entradas projetadas do
-    fluxo de caixa. Mês corrente fica fora: no Caixa o realizado agrupa por
-    data de pagamento (regime de caixa) e no DRE por vencimento (competência)
-    — divergência ali é semântica legítima, não bug.
+    `series` = {nome_da_superficie: {ym: valor}}. A PRIMEIRA entrada é a
+    fonte única (canônica); todas as outras são comparadas contra ela, mês a
+    mês, nos meses estritamente FUTUROS (onde toda aba usa a mesma fórmula).
+    Mês corrente fica fora: realizado por data de pagamento (caixa) vs
+    vencimento (competência) diverge por semântica legítima.
 
     Limiares (padrão da casa): ≤5% ok · 5–30% warn · >30% error.
     """
     findings: list[AuditFinding] = []
+    nomes = list(series.keys())
+    if len(nomes) < 2:
+        return findings
+    ref_nome, ref = nomes[0], series[nomes[0]]
     divergentes = 0
-    for ym in months:
-        dre = round(float(receita_dre.get(ym, 0) or 0), 2)
-        cx = round(float(ent_caixa.get(ym, 0) or 0), 2)
-        base = max(abs(dre), 1.0)
-        pct = abs(cx - dre) / base
-        if pct <= 0.05:
-            continue
-        divergentes += 1
-        status = "warn" if pct <= 0.30 else "error"
-        findings.append(AuditFinding(
-            check_id=f"projecao_caixa_dre_{ym}", status=status,
-            title=f"Caixa × DRE — projeção de receita divergente em {_fmt_comp(ym)}",
-            detail=(f"A aba Caixa projeta entradas de {_fmt_brl(cx)} em "
-                    f"{_fmt_comp(ym)}, mas o DRE projeta receita de "
-                    f"{_fmt_brl(dre)} ({pct:.0%} de divergência). As duas abas "
-                    f"devem usar a mesma fonte: contas a receber em aberto + "
-                    f"complemento da projeção recorrente "
-                    f"(dre_render.receita_sintetica_por_mes)."),
-            competencia=ym, value=cx, expected=dre, diff=cx - dre,
-            action=("Verificar se render_cashflow_html (build-html.py) está "
-                    "recebendo receita_extra e se _build_matriz (dre_render) "
-                    "não mudou a fórmula de projeção sem atualizar o Caixa."),
-            category="reconciliacao",
-        ))
+    for nome in nomes[1:]:
+        for ym in months:
+            base_v = round(float(ref.get(ym, 0) or 0), 2)
+            v = round(float(series[nome].get(ym, 0) or 0), 2)
+            pct = abs(v - base_v) / max(abs(base_v), 1.0)
+            if pct <= 0.05:
+                continue
+            divergentes += 1
+            status = "warn" if pct <= 0.30 else "error"
+            findings.append(AuditFinding(
+                check_id=f"sincronia_proj_{metrica}_{nome}_{ym}".replace(" ", "_"),
+                status=status,
+                title=(f"Projeção de {metrica} fora de sincronia — "
+                       f"{nome} × {ref_nome} em {_fmt_comp(ym)}"),
+                detail=(f"{nome} projeta {_fmt_brl(v)} de {metrica} em "
+                        f"{_fmt_comp(ym)}, mas a fonte única ({ref_nome}) "
+                        f"projeta {_fmt_brl(base_v)} ({pct:.0%} de divergência). "
+                        f"Regra do projeto: TODAS as abas com projeção derivam "
+                        f"de dre_render (receita_sintetica_por_mes / "
+                        f"despesa_projetada_por_mes)."),
+                competencia=ym, value=v, expected=base_v, diff=v - base_v,
+                action=("Alguma superfície mudou de fórmula sem as outras. "
+                        "Conferir render_cashflow_html/compute_dre_data/"
+                        "compute_proj_cfg (build-html.py) e _build_matriz/"
+                        "_build_matriz_2y (dre_render.py)."),
+                category="reconciliacao",
+            ))
     if divergentes == 0 and months:
         findings.append(AuditFinding(
-            check_id="projecao_caixa_dre", status="ok",
-            title="Caixa × DRE — projeção de receita consistente",
-            detail=(f"Entradas projetadas do fluxo de caixa batem com a "
-                    f"receita projetada do DRE em "
-                    f"{', '.join(_fmt_comp(m) for m in months)} "
-                    f"(tolerância 5%). Fonte única: em aberto + projeção "
-                    f"recorrente (receita_sintetica_por_mes)."),
+            check_id=f"sincronia_proj_{metrica}", status="ok",
+            title=f"Projeções de {metrica} em sincronia entre as abas",
+            detail=(f"{', '.join(nomes[1:])} batem com a fonte única "
+                    f"({ref_nome}) em {', '.join(_fmt_comp(m) for m in months)} "
+                    f"(tolerância 5%)."),
             category="reconciliacao",
         ))
     return findings
 
 
-def check_projecao_caixa_dre(matriz: dict, totvs_por_mes: dict,
-                             bling_dir: Path, today: date) -> list[AuditFinding]:
-    """Consistência entre abas: projeção de faturamento Caixa × DRE.
+# retrocompatibilidade com a primeira versão do check (11/09, só Caixa×DRE)
+def _comparar_projecao_caixa_dre(receita_dre: dict, ent_caixa: dict,
+                                 months: list[str]) -> list[AuditFinding]:
+    return _comparar_projecoes(
+        {"DRE": receita_dre, "Caixa": ent_caixa}, months, "receita")
 
-    Motivação (11/09/2026): a aba Caixa projetava entradas futuras só com as
-    NFs já emitidas (contas_receber_em_aberto) enquanto o DRE somava a
-    projeção recorrente — meses futuros quase zerados numa aba e ~média
-    recorrente na outra. Regra do projeto: TODAS as abas contam a mesma
-    história. Este check recomputa os dois lados a partir dos mesmos CSVs e
-    trava regressão se alguém mexer numa fórmula sem a outra.
+
+def check_sincronia_projecoes(matriz: dict, totvs_por_mes: dict,
+                              bling_dir: Path, today: date) -> list[AuditFinding]:
+    """Sincronia entre TODAS as abas com projeção (regra de 11/09/2026).
+
+    Recomputa, a partir dos mesmos CSVs, a projeção de RECEITA e de DESPESA
+    de cada superfície do dashboard nos 2 meses futuros compartilhados e
+    compara contra a fonte única (dre_render):
+
+      receita → fonte única = a receber em aberto + receita_sintetica_por_mes
+                superfícies: DRE/P&L (matriz.receita_por_mes), fluxo da Caixa,
+                aba Projeção (receita_proj ×100%)
+      despesa → fonte única = despesa_projetada_por_mes (total_op+estrutural)
+                superfícies: DRE (soma dos grupos de despesa da matriz),
+                fluxo da Caixa (saídas op projetadas), aba Projeção
+                (desp_proj + estrutural)
+
+    Se alguém mexer numa fórmula sem as outras, o card acusa aqui.
     """
     try:
-        from dre_render import (_load_bling_csvs,  # type: ignore
-                                receita_sintetica_por_mes)
+        from dre_render import (_load_bling_csvs, _classify,  # type: ignore
+                                receita_sintetica_por_mes,
+                                despesa_projetada_por_mes)
     except Exception:
         return []
     try:
@@ -1354,36 +1373,79 @@ def check_projecao_caixa_dre(matriz: dict, totvs_por_mes: dict,
         return []
 
     def _next_ym(ym: str) -> str:
-        y, m = int(ym[:4]), int(ym[5:7])
-        m += 1
-        if m > 12:
-            y, m = y + 1, 1
-        return f"{y:04d}-{m:02d}"
+        y, m = int(ym[:4]), int(ym[5:7]) + 1
+        return f"{y+1:04d}-01" if m > 12 else f"{y:04d}-{m:02d}"
 
     cutoff = today.strftime("%Y-%m")
     m1 = _next_ym(cutoff)
     m2 = _next_ym(m1)
-    months = [m1, m2]  # janela projetada compartilhada (Caixa vai até atual+2)
+    months = [m1, m2]  # janela projetada compartilhada por todas as abas
+
+    def _grupo(r: dict) -> str:
+        return _classify(r.get("contato_nome", "") or "",
+                         r.get("historico", "") or "")[0]
+
+    def _val_aberto(r: dict) -> float:
+        v = _recon_money(r.get("saldo"))
+        return v if v != 0 else _recon_money(r.get("valor"))
 
     sintetica = receita_sintetica_por_mes(
         recebidas, receber, today, totvs_por_mes=totvs_por_mes,
         pagas=pagas, ate=m2)
+    dp = despesa_projetada_por_mes(pagas, em_aberto, today, m2)
 
-    # Lado Caixa: mesma fórmula do render_cashflow_html pra meses futuros —
-    # em aberto por vencimento (saldo, fallback valor) + complementos.
-    ent_caixa: dict[str, float] = {ym: 0.0 for ym in months}
+    # ── RECEITA ──
+    fonte_receita: dict[str, float] = {ym: 0.0 for ym in months}
+    caixa_receita: dict[str, float] = {ym: 0.0 for ym in months}
     for r in receber:
         ym = (r.get("vencimento") or "")[:7]
-        if ym in ent_caixa:
-            v = _recon_money(r.get("saldo"))
-            if v == 0:
-                v = _recon_money(r.get("valor"))
-            ent_caixa[ym] += v
+        if ym in fonte_receita:
+            fonte_receita[ym] += _recon_money(r.get("valor"))
+            caixa_receita[ym] += _val_aberto(r)
     for ym in months:
-        ent_caixa[ym] += sum(v for _l, v, _t in sintetica.get(ym, []))
+        comp = sum(v for _l, v, _t in sintetica.get(ym, []))
+        fonte_receita[ym] += comp
+        caixa_receita[ym] += comp
 
-    return _comparar_projecao_caixa_dre(
-        matriz.get("receita_por_mes", {}), ent_caixa, months)
+    series_receita = {
+        "fonte única (dre_render)": fonte_receita,
+        "DRE/P&L (matriz)": matriz.get("receita_por_mes", {}),
+        "Caixa (fluxo mensal)": caixa_receita,
+    }
+
+    # ── DESPESA (operacional + estrutural; aporte fora em todas) ──
+    fonte_desp = {ym: round(dp.get(ym, {}).get("total_op", 0)
+                            + dp.get(ym, {}).get("estrutural", 0), 2)
+                  for ym in months}
+
+    # DRE: soma dos grupos de despesa da matriz (inclui o complemento
+    # "Projeção despesa recorrente" e as parcelas nao_recorrente)
+    dre_desp: dict[str, float] = {ym: 0.0 for ym in months}
+    for gkey, mvals in (matriz.get("grupos") or {}).items():
+        if gkey == "aporte_socio" or not (
+                gkey.startswith(("desp_", "deducoes_", "impostos_", "financ_desp"))
+                or gkey == "nao_recorrente"):
+            continue
+        for ym in months:
+            dre_desp[ym] += float(mvals.get(ym, 0) or 0)
+
+    # Caixa: saídas projetadas = em aberto (sem aporte) + complemento
+    caixa_desp: dict[str, float] = {ym: 0.0 for ym in months}
+    for r in em_aberto:
+        ym = (r.get("vencimento") or "")[:7]
+        if ym in caixa_desp and _grupo(r) != "aporte_socio":
+            caixa_desp[ym] += _val_aberto(r)
+    for ym in months:
+        caixa_desp[ym] += dp.get(ym, {}).get("complemento", 0)
+
+    series_desp = {
+        "fonte única (dre_render)": fonte_desp,
+        "DRE/P&L (matriz)": dre_desp,
+        "Caixa (fluxo mensal)": caixa_desp,
+    }
+
+    return (_comparar_projecoes(series_receita, months, "receita")
+            + _comparar_projecoes(series_desp, months, "despesa"))
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -1407,7 +1469,7 @@ def run_audit(matriz: dict, totvs_por_mes: dict, bling_dir: Path,
     all_findings += check_vencidos(bling_dir, today)
     all_findings += check_sem_categoria(bling_dir)
     all_findings += check_reconc_bling_totvs(matriz, totvs_por_mes, cfg)
-    all_findings += check_projecao_caixa_dre(matriz, totvs_por_mes, bling_dir, today)
+    all_findings += check_sincronia_projecoes(matriz, totvs_por_mes, bling_dir, today)
     return all_findings
 
 

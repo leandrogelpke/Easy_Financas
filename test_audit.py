@@ -369,6 +369,28 @@ def test_projecao_caixa_dre_mes_zerado_dos_dois_lados() -> None:
         f"0×0 devia ser ok: {[(f.check_id, f.status) for f in fs]}"
 
 
+def test_sincronia_projecoes_multi_superficie() -> None:
+    """Comparador generalizado: N superfícies vs fonte única, receita E
+    despesa. 1% → nada · 12% → warn · 40% → error; com divergência não pode
+    sair o finding 'ok' agregado."""
+    months = ["2026-10"]
+    series = {
+        "fonte única": {"2026-10": 100_000.0},
+        "DRE":         {"2026-10": 101_000.0},   # 1% → dentro da tolerância
+        "Caixa":       {"2026-10": 60_000.0},    # -40% → error
+        "Projeção":    {"2026-10": 88_000.0},    # -12% → warn
+    }
+    fs = audit._comparar_projecoes(series, months, "despesa")
+    st = [f.status for f in fs]
+    assert "error" in st and "warn" in st, f"esperava warn+error: {st}"
+    assert not any(f.check_id == "sincronia_proj_despesa" for f in fs), \
+        "finding 'ok' agregado não pode sair junto com divergência"
+    fs_ok = audit._comparar_projecoes(
+        {"fonte única": {"2026-10": 100.0}, "DRE": {"2026-10": 100.0}},
+        months, "receita")
+    assert len(fs_ok) == 1 and fs_ok[0].status == "ok"
+
+
 TESTS = [
     test_competencia_do_historico,
     test_trimestre_do_historico,
@@ -389,6 +411,7 @@ TESTS = [
     test_projecao_caixa_dre_consistente,
     test_projecao_caixa_dre_divergencia_warn_error,
     test_projecao_caixa_dre_mes_zerado_dos_dois_lados,
+    test_sincronia_projecoes_multi_superficie,
 ]
 
 
