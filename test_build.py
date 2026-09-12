@@ -212,6 +212,43 @@ def test_fetch_bloqueio_transitorio() -> None:
         "só 403 entra nessa classificação (5xx já tem retry próprio)"
 
 
+def test_cashflow_projeta_receita_igual_dre() -> None:
+    """A aba Caixa tem que projetar faturamento com a MESMA fonte do DRE:
+    em aberto + complemento sintético (receita_sintetica_por_mes).
+
+    Histórico (11/09/2026): render_cashflow_html projetava entradas futuras
+    só com contas_receber_em_aberto — meses sem NF emitida apareciam ~zerados
+    na Caixa enquanto o DRE projetava a média recorrente. Consistência entre
+    abas é regra do projeto (§11.1). O check vivo correspondente é
+    audit.check_projecao_caixa_dre; este teste trava a regressão no render.
+    """
+    import importlib.util
+    from datetime import date
+
+    spec = importlib.util.spec_from_file_location(
+        "build_html", HERE / "build-html.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    today = date(2026, 9, 15)
+    receber = [{"contato_nome": "CLIENTE A", "vencimento": "2026-10-10",
+                "valor": "10.000,00", "saldo": "10.000,00"}]
+    extra = {"2026-10": [("Projeção recorrente (média)", 90_000.0, "projetado")]}
+
+    html_sem = mod.render_cashflow_html([], [], [], receber, today)
+    html_com = mod.render_cashflow_html([], [], [], receber, today,
+                                        receita_extra=extra)
+    assert html_sem != html_com, \
+        "receita_extra não teve efeito nenhum no gráfico do fluxo de caixa"
+    esperado = f'Entradas {mod._brl(100_000.0)}'
+    assert esperado in html_com, (
+        f"mês projetado devia somar em aberto (10K) + sintético (90K) = "
+        f"{esperado!r} — a Caixa não está usando a mesma projeção do DRE")
+    # a assinatura tem que continuar aceitando o parâmetro por keyword — é
+    # assim que o render() principal passa
+    assert "receita_extra" in mod.render_cashflow_html.__code__.co_varnames
+
+
 TESTS = [
     test_sem_marcadores_pendentes,
     test_pgs_balanceadas,
@@ -221,6 +258,7 @@ TESTS = [
     test_fstrings_compat_py311,
     test_js_sintaxe_valida,
     test_fetch_bloqueio_transitorio,
+    test_cashflow_projeta_receita_igual_dre,
 ]
 
 

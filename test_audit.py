@@ -338,6 +338,37 @@ def test_dedupe_receber_idempotente() -> None:
     assert len(aj1) == 1 and aj2 == [] and limpo1 == limpo2
 
 
+def test_projecao_caixa_dre_consistente() -> None:
+    """Caixa × DRE iguais (dentro de 5%) → um único finding ok."""
+    months = ["2026-10", "2026-11"]
+    dre = {"2026-10": 100_000.0, "2026-11": 98_000.0}
+    cx = {"2026-10": 100_000.0, "2026-11": 95_000.0}  # -3% → dentro da tolerância
+    fs = audit._comparar_projecao_caixa_dre(dre, cx, months)
+    assert len(fs) == 1 and fs[0].status == "ok", \
+        f"esperava 1 ok, veio {[(f.check_id, f.status) for f in fs]}"
+
+
+def test_projecao_caixa_dre_divergencia_warn_error() -> None:
+    """5–30% → warn · >30% → error (padrão da casa)."""
+    months = ["2026-10", "2026-11"]
+    dre = {"2026-10": 100_000.0, "2026-11": 100_000.0}
+    cx = {"2026-10": 85_000.0,   "2026-11": 40_000.0}  # -15% / -60%
+    fs = audit._comparar_projecao_caixa_dre(dre, cx, months)
+    st = {f.competencia: f.status for f in fs}
+    assert st.get("2026-10") == "warn", f"15% devia ser warn: {st}"
+    assert st.get("2026-11") == "error", f"60% devia ser error: {st}"
+    f_nov = [f for f in fs if f.competencia == "2026-11"][0]
+    assert f_nov.diff is not None and abs(f_nov.diff + 60_000) < 0.01
+
+
+def test_projecao_caixa_dre_mes_zerado_dos_dois_lados() -> None:
+    """Mês sem projeção nas duas abas (0 × 0) não pode gerar falso positivo."""
+    months = ["2027-01"]
+    fs = audit._comparar_projecao_caixa_dre({}, {}, months)
+    assert len(fs) == 1 and fs[0].status == "ok", \
+        f"0×0 devia ser ok: {[(f.check_id, f.status) for f in fs]}"
+
+
 TESTS = [
     test_competencia_do_historico,
     test_trimestre_do_historico,
@@ -355,6 +386,9 @@ TESTS = [
     test_dedupe_receber_remove_identicas,
     test_dedupe_receber_preserva_com_documento,
     test_dedupe_receber_idempotente,
+    test_projecao_caixa_dre_consistente,
+    test_projecao_caixa_dre_divergencia_warn_error,
+    test_projecao_caixa_dre_mes_zerado_dos_dois_lados,
 ]
 
 

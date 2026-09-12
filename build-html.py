@@ -814,12 +814,22 @@ def render_vencidos_html(em_aberto: list[dict], receber: list[dict],
 
 def render_cashflow_html(pagas: list[dict], recebidas: list[dict],
                           em_aberto: list[dict], receber: list[dict],
-                          today: date) -> str:
+                          today: date,
+                          receita_extra: dict | None = None) -> str:
     """Gráfico de barras (CSS) entradas x saídas mês a mês — regime de caixa.
 
     Meses anteriores ao atual: REALIZADO (recebidas/pagas). Mês atual e
-    futuros: PROJETADO (em aberto). Janela: jan do ano corrente → atual+2.
-    Tudo Bling-driven; barras em CSS (resiliente, sem dependência de JS).
+    futuros: PROJETADO (em aberto + projeção recorrente). Janela: jan do ano
+    corrente → atual+2. Tudo Bling-driven; barras em CSS (resiliente, sem
+    dependência de JS).
+
+    receita_extra (dre_render.receita_sintetica_por_mes): {ym: [(label, valor,
+    tipo)]} — a MESMA série sintética que abastece DRE/P&L e o gráfico
+    Receita vs Despesas. Sem ela a aba Caixa projetava entradas só com o que
+    já tinha NF emitida (contas_receber_em_aberto) e mostrava meses futuros
+    quase zerados enquanto o DRE projetava a média recorrente — inconsistência
+    apontada em 11/09/2026. Consistência auditada por
+    audit.check_projecao_caixa_dre.
     """
     from collections import defaultdict
 
@@ -849,6 +859,14 @@ def render_cashflow_html(pagas: list[dict], recebidas: list[dict],
     re_open = _bucket(receber, True)
     pa_open = _bucket(em_aberto, True)
 
+    # Receita sintética por mês (fonte única — dre_render): complementos da
+    # projeção recorrente/contratos em meses >= atual e fill Totvs em meses
+    # passados sem receita no Bling. Soma às entradas do mês correspondente
+    # pra contar a MESMA história que o DRE.
+    re_sint: dict[str, float] = defaultdict(float)
+    for _ym, _partes in (receita_extra or {}).items():
+        re_sint[_ym] += sum(_v for _l, _v, _t in _partes)
+
     # Janela: jan/ano-atual → atual + 2 meses
     meses: list[tuple[int, int]] = []
     y0 = today.year
@@ -876,16 +894,19 @@ def render_cashflow_html(pagas: list[dict], recebidas: list[dict],
         is_cur = k_num == cur_key
         is_proj = k_num >= cur_key
         if is_cur:
-            # Mês corrente = realizado até agora + em aberto restante (P1.2).
+            # Mês corrente = realizado até agora + em aberto restante (P1.2)
+            # + complemento da projeção recorrente (mesma regra do DRE).
             # Antes usava SÓ o em aberto e a barra do mês encolhia conforme as
             # contas iam sendo pagas — o realizado sumia do gráfico.
-            ent = re_real.get(key, 0) + re_open.get(key, 0)
+            ent = re_real.get(key, 0) + re_open.get(key, 0) + re_sint.get(key, 0)
             sai = pa_real.get(key, 0) + pa_open.get(key, 0)
         elif is_proj:
-            ent = re_open.get(key, 0)
+            ent = re_open.get(key, 0) + re_sint.get(key, 0)
             sai = pa_open.get(key, 0)
         else:
-            ent = re_real.get(key, 0)
+            # Passado: realizado + fill sintético (Totvs) nos meses em que o
+            # Bling não tem receita — igual ao DRE/P&L.
+            ent = re_real.get(key, 0) + re_sint.get(key, 0)
             sai = pa_real.get(key, 0)
         rows.append({"ano": yy_, "mes": mm_, "ent": ent, "sai": sai,
                      "proj": is_proj})
@@ -917,7 +938,7 @@ def render_cashflow_html(pagas: list[dict], recebidas: list[dict],
         '<div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:10.5px;color:var(--t2)">'
         '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--green)"></span>Entradas</span>'
         '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--red)"></span>Saídas</span>'
-        '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--t3);opacity:0.5;border:1px dashed var(--bd)"></span>Projetado (em aberto)</span>'
+        '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--t3);opacity:0.5;border:1px dashed var(--bd)"></span>Projetado (em aberto + projeção recorrente, igual ao DRE)</span>'
         '<span style="color:var(--t3)">· abaixo de cada mês: resultado líquido (entrada − saída)</span>'
         '</div>'
     )
@@ -2490,7 +2511,14 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
         _rx_snap = Path(_rx_os.environ.get("TOTVS_SNAP")
                         or (snapshot.parent / "totvs_snapshot.json"))
         _rx_totvs = _rx_ltpm(_rx_snap) if _rx_snap.exists() else None
-        receita_extra = _rx_sint(recebidas, receber, today, totvs_por_mes=_rx_totvs, pagas=pagas)
+        # ate: cobre também a janela do fluxo de caixa (atual+2), que em
+        # nov/dez ultrapassa dezembro do ano corrente.
+        _rx_y, _rx_m = today.year, today.month + 2
+        if _rx_m > 12:
+            _rx_y, _rx_m = _rx_y + 1, _rx_m - 12
+        _rx_ate = max(f"{today.year}-12", f"{_rx_y:04d}-{_rx_m:02d}")
+        receita_extra = _rx_sint(recebidas, receber, today, totvs_por_mes=_rx_totvs,
+                                 pagas=pagas, ate=_rx_ate)
         if receita_extra:
             _rx_tot = sum(v for _p in receita_extra.values() for _l, v, _t in _p)
             print(f"[receita-extra] {sum(len(p) for p in receita_extra.values())} "
@@ -2668,7 +2696,8 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
         render_vencidos_html(em_aberto, receber, today))
     html = html.replace(
         "@@CAIXA_FLUXO_HTML@@",
-        render_cashflow_html(pagas, recebidas, em_aberto, receber, today))
+        render_cashflow_html(pagas, recebidas, em_aberto, receber, today,
+                             receita_extra=receita_extra))
 
     # ── Aba Clientes ────────────────────────────────────────────────
     html = html.replace("@@CLI_DATA@@",        js_cli)
