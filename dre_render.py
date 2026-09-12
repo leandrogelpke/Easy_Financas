@@ -2256,18 +2256,34 @@ function cascDrill(i){
 
 
 # ============ API PÚBLICA ============
+def pl_window_meses(today: date) -> int:
+    """Janela da aba P&L = ANO COMPLETO: jan do ano corrente → mês atual.
+
+    Pedido do Leandro (12/09/2026): a janela fixa de 6 meses fazia o P&L
+    começar em abr/26 — sem visão do resultado anual. Com a janela em
+    `today.month`, months = jan..mês atual e o n_fut do _build_matriz
+    projeta até dezembro → a coluna Total da matriz vira o resultado do
+    ano inteiro (realizado + projetado).
+    """
+    return today.month
+
+
 def render_pl_and_dre(
     bling_dir: Path,
     totvs_snap: Path,
     today: date | None = None,
-    months_window: int = 6,
+    months_window: int | None = None,
 ) -> dict[str, Any]:
     """
     Gera fragments HTML para as abas P&L Executivo e DRE Contábil.
     Retorna dict com chaves:
       pl_ntab, pl_mobtab, pl_pg, dre_pg_replacement (substitui pg-dre existente)
+
+    months_window=None (default) → ano completo via pl_window_meses().
     """
     today = today or date.today()
+    if months_window is None:
+        months_window = pl_window_meses(today)
     pagas, em_aberto, recebidas, receber_em_aberto = _load_bling_csvs(bling_dir)
     totvs = _load_totvs_por_mes(Path(totvs_snap))
     matriz = _build_matriz(pagas, recebidas, em_aberto, receber_em_aberto, today, months_window)
@@ -2286,7 +2302,7 @@ def render_pl_and_dre(
 <div class="pg" id="pg-pl">
 <div class="hero">
   <div>
-    <div class="htitle">P&L Executivo<br><span style="font-size:14px;color:var(--t2);font-weight:400">Visão gerencial · {months_window} meses + projeção até {proj_ate}</span></div>
+    <div class="htitle">P&L Executivo<br><span style="font-size:14px;color:var(--t2);font-weight:400">Ano completo · {_fmt_comp(matriz["months"][0])} → {proj_ate} (realizado + projeção) · Total = resultado anual</span></div>
     <div class="hsub">Categorização gerencial por subgrupo · drill para lançamentos · alertas tributários</div>
   </div>
   <div class="pills">

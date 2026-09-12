@@ -222,6 +222,9 @@ CIENCIA, TE"`. Sempre inclua **ambas** as variantes no array `aliases`.
 - Aba Clientes usa **rolling 12 meses fechados** (não mês corrente).
   Captura clientes intermitentes tipo Tele Rio (~5×/ano).
 - DRE mostra **toda a série** disponível, não filtra janela.
+- Aba P&L Executivo usa **ano completo** (jan do ano corrente →
+  dez, realizado + projeção; `pl_window_meses()`). A coluna Total é o
+  resultado anual. Era janela fixa de 6m até 12/09/2026.
 
 ### 5.4 Padrão dos `compute_*_html()`
 
@@ -541,6 +544,7 @@ for r in d['contas_receber_recebidas']:
 | 10/07 | **Grupo "Pessoal"**: 6 PJ (Alan, Isabel, Macedo, Efata, Milajanu, Eduardo) movidos p/ Despesas com pessoal em todo o BI. `FORNECEDOR_MAP` → `desp_pessoal`/subgrupo "Prestadores PJ"; DCTFWEB isolado via `_sum_subgroup("Encargos sobre pró-labore")` p/ não inflar auditoria INSS. `KNOWN_SUPPLIERS` cat=`Pessoal` + `STACK_GROUPS` grupo Pessoal + KPI no template. DRE pessoal R$1.8K→R$600K | `dre_render.py` + `build-html.py` + `template.html` |
 | 11/09 | **Consistência Caixa × DRE na projeção de receita**: `render_cashflow_html` agora recebe `receita_extra` (`receita_sintetica_por_mes`, a mesma série do DRE/P&L) — antes a aba Caixa projetava entradas futuras só com NFs emitidas (out–nov/26 apareciam R$ 0 contra R$ 67K/mês no DRE). Check novo `audit.py::check_projecao_caixa_dre` (card na aba Auditoria) trava regressão: compara receita projetada DRE vs entradas projetadas Caixa nos 2 meses futuros compartilhados (≤5% ok · 5–30% warn · >30% error). Testes: 3 em test_audit + `test_cashflow_projeta_receita_igual_dre` no test_build | build-html · audit · test_audit · test_build |
 | 11/09 | **Sincronia TOTAL das projeções (receita E despesa, todas as abas)**: fonte única em `dre_render` — `receita_sintetica_por_mes` + novo `despesa_projetada_por_mes` (média 3m fechados op, sem aporte/estrutural; complemento = média − pago − agendado). Consumidores: DRE `_build_matriz` (item 'Projeção despesa recorrente'), P&L 2y (fill por grupo normalizado ao complemento canônico; aporte/nao_recorrente nunca mais viram média), gráfico Receita×Despesas, fluxo da Caixa (saídas), aba Projeção (`compute_proj_cfg` reescrito: receita_proj/desp_proj por mês, cenários = multiplicadores 0.8/1.0/1.2, classificação via `_classify` — KNOWN_SUPPLIERS fora) e Runway (marcha o caixa pela projeção canônica em vez de média YTD). Auditor: `check_sincronia_projecoes` substitui o check Caixa×DRE — compara receita e despesa de cada superfície contra a fonte única nos 2 meses futuros. Regra: NENHUM módulo recalcula projeção própria | dre_render · build-html · template · audit · test_audit · test_build |
+| 12/09 | **P&L ano completo**: janela da aba P&L Executivo deixou de ser 6m fixos (começava em abr/26) e virou jan do ano corrente → dez (`pl_window_meses()` em dre_render; `render_pl_and_dre` com months_window=None resolve sozinho). Coluna Total da matriz = resultado anual. Teste `test_pl_janela_ano_completo` no gate | dre_render · test_build |
 
 ---
 

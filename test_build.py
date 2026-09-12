@@ -291,6 +291,30 @@ def test_proj_cfg_fonte_unica_despesa() -> None:
         "cenários de receita têm que ser multiplicadores (0.8/1.0/1.2)"
 
 
+def test_pl_janela_ano_completo() -> None:
+    """A aba P&L cobre o ANO COMPLETO: jan do ano corrente → pelo menos dez.
+
+    Histórico (12/09/2026): janela fixa de 6 meses fazia o P&L começar em
+    abril — a coluna Total não era o resultado anual. pl_window_meses()
+    trava jan..atual; o n_fut do _build_matriz completa até dezembro.
+    """
+    import sys
+    from datetime import date
+
+    sys.path.insert(0, str(HERE))
+    from dre_render import _build_matriz, pl_window_meses  # type: ignore
+
+    for today in (date(2026, 9, 15), date(2026, 1, 10), date(2026, 12, 5)):
+        n = pl_window_meses(today)
+        assert n == today.month, f"janela devia ser {today.month}, veio {n}"
+        matriz = _build_matriz([], [], [], [], today, months_window=n)
+        ms = matriz["months"]
+        assert ms[0] == f"{today.year}-01", \
+            f"P&L devia começar em jan/{today.year}, começou em {ms[0]}"
+        assert ms[-1] >= f"{today.year}-12", \
+            f"P&L devia projetar até dez/{today.year}, parou em {ms[-1]}"
+
+
 TESTS = [
     test_sem_marcadores_pendentes,
     test_pgs_balanceadas,
@@ -302,6 +326,7 @@ TESTS = [
     test_fetch_bloqueio_transitorio,
     test_cashflow_projeta_receita_igual_dre,
     test_proj_cfg_fonte_unica_despesa,
+    test_pl_janela_ano_completo,
 ]
 
 
