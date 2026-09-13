@@ -1,13 +1,13 @@
 {
  "_meta": {
-  "gerado_em": "2026-09-12 21:25:17",
-  "snapshot_origem": "bling_data_2026-09-12.json",
-  "window_start": "2026-02-01",
+  "gerado_em": "2026-09-13 14:19:23",
+  "snapshot_origem": "bling_data_2026-09-13.json",
+  "window_start": "2024-09-01",
   "totais": {
    "contas_pagar_pagas": 500,
    "contas_receber_recebidas": 76,
    "contas_pagar_em_aberto": 112,
-   "contas_receber_em_aberto": 18
+   "contas_receber_em_aberto": 17
   }
  },
  "contas_pagar_pagas": [
@@ -14465,27 +14465,6 @@
   }
  ],
  "contas_receber_em_aberto": [
-  {
-   "id": 23824475269,
-   "situacao_codigo": 1,
-   "situacao": "Em aberto",
-   "vencimento": "2025-09-19",
-   "vencimento_original": "",
-   "data_emissao": "2025-09-12",
-   "data_pagamento": "",
-   "competencia": "",
-   "valor": "203,97",
-   "saldo": "",
-   "numero_documento": "",
-   "historico": "",
-   "contato_id": 16955970478,
-   "contato_nome": "MIR IMPORTACAO E EXPORTACAO LTDA",
-   "contato_documento": "03341024000100",
-   "categoria_id": "",
-   "categoria_descricao": "",
-   "categoria_tipo": "",
-   "portador_id": ""
-  },
   {
    "id": 25206426622,
    "situacao_codigo": 1,
