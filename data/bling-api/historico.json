@@ -1,12 +1,12 @@
 {
  "_meta": {
-  "gerado_em": "2026-09-13 21:24:50",
-  "snapshot_origem": "bling_data_2026-09-13.json",
+  "gerado_em": "2026-09-14 16:20:56",
+  "snapshot_origem": "bling_data_2026-09-14.json",
   "window_start": "2026-02-01",
   "totais": {
    "contas_pagar_pagas": 500,
    "contas_receber_recebidas": 76,
-   "contas_pagar_em_aberto": 112,
+   "contas_pagar_em_aberto": 113,
    "contas_receber_em_aberto": 17
   }
  },
@@ -12759,6 +12759,27 @@
    "contato_documento": "53113791000122",
    "categoria_id": 14665159865,
    "categoria_descricao": "Serviços de terceiros",
+   "categoria_tipo": 1,
+   "portador_id": 14892107625
+  },
+  {
+   "id": 26865661537,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-09-25",
+   "vencimento_original": "2026-09-25",
+   "data_emissao": "2026-09-14",
+   "data_pagamento": "",
+   "competencia": "2026-09-14",
+   "valor": "434,67",
+   "saldo": "434,67",
+   "numero_documento": "",
+   "historico": "REEMBOLSO ERP CONTA AZUL",
+   "contato_id": 18234904217,
+   "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
+   "contato_documento": "39741876000124",
+   "categoria_id": 14734483911,
+   "categoria_descricao": "2010000031 - REEMBOLSO LANCHES E REFEICOES",
    "categoria_tipo": 1,
    "portador_id": 14892107625
   },
