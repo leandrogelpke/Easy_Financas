@@ -1053,6 +1053,125 @@ def reconcile_em_aberto(
     return limpo, ajustes
 
 
+# ═══════════════════════════════════════════════════════════════
+# Projeções manuais (dashboard) — compromissos CONHECIDOS que ainda não
+# viraram previsão no Bling (ex.: Marcus 12K fatura via Alan até ter CNPJ;
+# Maickon 13K sem contato ainda; salário Isabel 8K; acordo Geremias até
+# ago/27 como rede de segurança contra a janela do fetch — §6.11).
+#
+# Contrato: `projecoes_manuais.json` (versionado) define os itens. A cada
+# mês futuro do horizonte, o item é injetado como lançamento sintético
+# ("PROJEÇÃO MANUAL" no histórico, numero_documento PROJ-*) SALVO se o
+# Bling já tiver, naquele mês, lançamento (pago ou em aberto) de um dos
+# `match_contatos` com valor dentro da tolerância (default ±15%). Ou seja:
+# lançou a previsão/NF no Bling → a injeção daquele mês desliga sozinha.
+# Sintéticos nunca são persistidos em snapshot — só existem no render.
+# ═══════════════════════════════════════════════════════════════
+
+def _load_projecoes_manuais() -> tuple[list[dict], int]:
+    try:
+        p = Path(__file__).resolve().parent / "projecoes_manuais.json"
+        d = json.loads(p.read_text(encoding="utf-8"))
+        itens = [e for e in d.get("itens", []) if e.get("id") and e.get("valor")]
+        return itens, int(d.get("horizonte_meses") or 12)
+    except Exception:
+        return [], 12
+
+
+def _br_money(v: float) -> str:
+    return f"{v:,.2f}".replace(",", "§").replace(".", ",").replace("§", ".")
+
+
+def injetar_projecoes_manuais(
+    em_aberto: list[dict],
+    pagas: list[dict],
+    today: date | None = None,
+    itens: list[dict] | None = None,
+    horizonte_meses: int | None = None,
+) -> tuple[list[dict], list[dict]]:
+    """Anexa lançamentos sintéticos dos compromissos conhecidos fora do Bling.
+
+    Retorna (em_aberto + sintéticos, trilha). Trilha: dicts com tipo
+    PROJECAO_INJETADA ou PROJECAO_SUPRIMIDA (Bling já cobre o mês).
+    Regras: nunca cria vencido (só vencimento > today); respeita
+    inicio/fim do item; não duplica sintético já presente na entrada
+    (idempotente). Pura — não muta as listas recebidas.
+    """
+    import calendar
+
+    today = today or date.today()
+    if itens is None:
+        itens, h = _load_projecoes_manuais()
+        if horizonte_meses is None:
+            horizonte_meses = h
+    horizonte_meses = horizonte_meses or 12
+    if not itens:
+        return list(em_aberto), []
+
+    exist: dict[str, list[tuple[str, float]]] = defaultdict(list)
+    ja_injetado: set[str] = set()
+    for src_rows in (em_aberto, pagas):
+        for r in src_rows:
+            ym = _recon_venc(r)[:7]
+            if r.get("_projecao_manual"):
+                ja_injetado.add(str(r.get("numero_documento") or ""))
+                continue
+            exist[ym].append((
+                _norm(r.get("contato_nome") or r.get("nomeContato") or ""),
+                round(_recon_money(r.get("valor") or r.get("saldo")), 2),
+            ))
+
+    novos: list[dict] = []
+    trilha: list[dict] = []
+    for it in itens:
+        val = float(_recon_money(it["valor"]))
+        dia = int(it.get("dia_venc") or 20)
+        ini = str(it.get("inicio") or today.strftime("%Y-%m"))
+        fim = it.get("fim")
+        pats = [_norm(p) for p in it.get("match_contatos", []) if p]
+        tol = float(it.get("tolerancia") if it.get("tolerancia") is not None else 0.15)
+        for k in range(horizonte_meses + 1):
+            yy = today.year + (today.month - 1 + k) // 12
+            mm = (today.month - 1 + k) % 12 + 1
+            ym = f"{yy:04d}-{mm:02d}"
+            if ym < ini or (fim and ym > str(fim)):
+                continue
+            d_dia = min(dia, calendar.monthrange(yy, mm)[1])
+            venc = f"{ym}-{d_dia:02d}"
+            if venc <= today.isoformat():
+                continue  # não fabricar vencido
+            doc = f"PROJ-{it['id'].upper()}-{ym.replace('-', '')}"
+            if doc in ja_injetado:
+                continue
+            coberto = any(
+                pats and any(p in nome for p in pats) and abs(v - val) <= val * tol
+                for nome, v in exist.get(ym, [])
+            )
+            if coberto:
+                trilha.append({"tipo": "PROJECAO_SUPRIMIDA", "id": it["id"],
+                               "mes": ym, "valor": val})
+                continue
+            novos.append({
+                "id": None, "situacao_codigo": 1, "situacao": "Em aberto",
+                "vencimento": venc, "vencimento_original": venc,
+                "data_emissao": today.isoformat(), "data_pagamento": "",
+                "competencia": venc, "valor": _br_money(val), "saldo": _br_money(val),
+                "numero_documento": doc,
+                "historico": f"PROJEÇÃO MANUAL (dashboard) — {it.get('label') or it['id']}"
+                             f" — migrar p/ previsão no Bling",
+                "contato_id": None,
+                "contato_nome": it.get("contato_display") or it["id"].upper(),
+                "contato_documento": "",
+                "categoria_id": None,
+                "categoria_descricao": it.get("categoria") or "",
+                "categoria_tipo": None, "portador_id": None,
+                "_projecao_manual": True,
+            })
+            trilha.append({"tipo": "PROJECAO_INJETADA", "id": it["id"],
+                           "mes": ym, "valor": val})
+    return list(em_aberto) + novos, trilha
+
+
 def dedupe_receber(rows: list[dict]) -> tuple[list[dict], list[dict]]:
     """Remove duplicatas EXATAS de contas a RECEBER (recebidas ou em aberto).
 

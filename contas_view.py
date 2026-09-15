@@ -492,8 +492,9 @@ def render_contas(bling_dir: Path, today: date | None = None,
     # provisões cobertas). Fonte única em audit.py — mantém esta aba alinhada
     # com Visão Geral / Caixa / DRE / Auditoria.
     try:
-        from audit import reconcile_em_aberto  # type: ignore
+        from audit import reconcile_em_aberto, injetar_projecoes_manuais  # type: ignore
         em_aberto_pagar, _ = reconcile_em_aberto(pagas, em_aberto_pagar, today)
+        em_aberto_pagar, _ = injetar_projecoes_manuais(em_aberto_pagar, pagas, today)
     except Exception:
         pass
 

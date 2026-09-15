@@ -1425,8 +1425,9 @@ def _load_bling_csvs(bling_dir: Path) -> tuple:
     # audit.py — evita dupla contagem na projeção e mantém DRE/P&L e a
     # auditoria alinhados com Visão Geral / Caixa.
     try:
-        from audit import reconcile_em_aberto  # type: ignore
+        from audit import reconcile_em_aberto, injetar_projecoes_manuais  # type: ignore
         em_aberto, _ = reconcile_em_aberto(pagas, em_aberto)
+        em_aberto, _ = injetar_projecoes_manuais(em_aberto, pagas)
     except Exception:
         pass
     # Deduplicação do a receber (recebíveis idênticos sem documento) — mantém

@@ -2509,8 +2509,14 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
     #    audit.py — mesma limpeza que a aba Auditoria e contas_view usam,
     #    pra Visão Geral / Caixa / DRE não inflarem "vencidos". ──
     try:
-        from audit import reconcile_em_aberto  # type: ignore
+        from audit import reconcile_em_aberto, injetar_projecoes_manuais  # type: ignore
         em_aberto, _recon_ajustes = reconcile_em_aberto(pagas, em_aberto, today)
+        em_aberto, _proj_trilha = injetar_projecoes_manuais(em_aberto, pagas, today)
+        _n_inj = sum(1 for t in _proj_trilha if t["tipo"] == "PROJECAO_INJETADA")
+        _n_sup = sum(1 for t in _proj_trilha if t["tipo"] == "PROJECAO_SUPRIMIDA")
+        if _n_inj or _n_sup:
+            print(f"[proj-manual] {_n_inj} mês(es) injetado(s), "
+                  f"{_n_sup} suprimido(s) por lançamento no Bling")
         if _recon_ajustes:
             _rt = sum(a["valor"] for a in _recon_ajustes)
             print(f"[recon] {len(_recon_ajustes)} lançamento(s) fantasma "

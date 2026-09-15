@@ -1,0 +1,34 @@
+{
+  "_nota": "Compromissos CONHECIDOS que ainda não viraram previsão no Bling. Cada item é injetado como lançamento sintético (PROJEÇÃO MANUAL, doc PROJ-*) nos meses futuros do horizonte, SALVO se o Bling já tiver no mês um lançamento de um dos match_contatos com valor dentro de ±15% (tolerancia). Migrou pro Bling → a injeção do mês desliga sozinha e este item pode ser removido daqui. Nunca cria vencido; nunca persiste em snapshot. Fonte: audit.py::injetar_projecoes_manuais.",
+  "horizonte_meses": 12,
+  "itens": [
+    {
+      "id": "marcus", "label": "Marcus Vinicius — 12K via Alan (sem CNPJ próprio ainda)",
+      "valor": 12000, "dia_venc": 25, "inicio": "2026-09", "fim": null,
+      "contato_display": "MARCUS VINICIUS",
+      "match_contatos": ["ALAN BARBOSA", "MARCUS"],
+      "categoria": "Salários Comercial"
+    },
+    {
+      "id": "maickon", "label": "Maickon (PJ) — 13K/mês",
+      "valor": 13000, "dia_venc": 20, "inicio": "2026-09", "fim": null,
+      "contato_display": "MAICKON",
+      "match_contatos": ["MAICKON"],
+      "categoria": "Salários Comercial"
+    },
+    {
+      "id": "isabel_salario", "label": "Isabel Felix — salário 8K (reembolsos/comissões fora do match)",
+      "valor": 8000, "dia_venc": 10, "inicio": "2026-09", "fim": null,
+      "contato_display": "ISABEL FELIX",
+      "match_contatos": ["ISABEL"],
+      "categoria": "Salários Comercial"
+    },
+    {
+      "id": "geremias_acordo", "label": "Acordo trabalhista Geremias — 10K/mês, termina ago/2027 (parc. 20/20)",
+      "valor": 10000, "dia_venc": 18, "inicio": "2026-09", "fim": "2027-08",
+      "contato_display": "GEREMIAS FERREIRA LIMA 37305076805",
+      "match_contatos": ["GEREMIAS"],
+      "categoria": ""
+    }
+  ]
+}

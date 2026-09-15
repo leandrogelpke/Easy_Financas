@@ -442,6 +442,69 @@ def test_reconcile_cobertura_consumida_nao_cobre_duas_previsoes() -> None:
     assert consumido == 22000.0, f"cobertura consumida deveria ser 22.000, veio {consumido}"
 
 
+_ITENS_PROJ = [
+    {"id": "marcus", "label": "Marcus 12K via Alan", "valor": 12000, "dia_venc": 25,
+     "inicio": "2026-09", "fim": None, "contato_display": "MARCUS VINICIUS",
+     "match_contatos": ["ALAN BARBOSA", "MARCUS"]},
+    {"id": "geremias_acordo", "valor": 10000, "dia_venc": 18, "inicio": "2026-09",
+     "fim": "2027-08", "contato_display": "GEREMIAS",
+     "match_contatos": ["GEREMIAS"]},
+]
+
+
+def test_projecao_manual_injeta_horizonte_e_fim() -> None:
+    """Sem nada no Bling: injeta cada mês do horizonte (sem criar vencido)
+    e respeita o mês de término (acordo Geremias para em ago/2027)."""
+    from datetime import date as _d
+    hoje = _d(2026, 9, 15)
+    rows, trilha = audit.injetar_projecoes_manuais(
+        [], [], today=hoje, itens=_ITENS_PROJ, horizonte_meses=12)
+    marcus = [r for r in rows if r["contato_nome"] == "MARCUS VINICIUS"]
+    gerem = [r for r in rows if "GEREMIAS" in r["contato_nome"]]
+    assert len(marcus) == 13, f"marcus: esperado 13 meses (set/26–set/27), veio {len(marcus)}"
+    assert all(r["vencimento"] > hoje.isoformat() for r in rows), "não pode criar vencido"
+    assert marcus[0]["vencimento"] == "2026-09-25"
+    assert max(r["vencimento"] for r in gerem)[:7] == "2027-08", "acordo tem que parar em ago/27"
+    assert all(r.get("_projecao_manual") for r in rows)
+    assert all("PROJEÇÃO MANUAL" in r["historico"] for r in rows)
+
+
+def test_projecao_manual_suprimida_por_bling() -> None:
+    """Mês com lançamento do contato-match e valor ±15% → não injeta
+    (previsão criada no Bling assume). Valor fora da tolerância (22K do
+    próprio Alan) NÃO suprime o item de 12K do Marcus."""
+    from datetime import date as _d
+    hoje = _d(2026, 9, 15)
+    em_aberto = [
+        # previsão do PRÓPRIO Alan (22K) — não pode suprimir o Marcus (12K)
+        {"contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
+         "vencimento": "2026-10-26", "valor": "22.000,00",
+         "historico": "PREVISÃO PRESTAÇÃO DE SERVIÇOS"},
+        # NF de 12K via Alan em novembro — suprime o Marcus de nov
+        {"contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
+         "vencimento": "2026-11-25", "valor": "12.000,00",
+         "historico": "Ref. a NF nº 000020 - MARCUS"},
+    ]
+    rows, trilha = audit.injetar_projecoes_manuais(
+        em_aberto, [], today=hoje, itens=[_ITENS_PROJ[0]], horizonte_meses=3)
+    marcus_meses = sorted(r["vencimento"][:7] for r in rows if r.get("_projecao_manual"))
+    assert "2026-10" in marcus_meses, "22K do Alan não pode suprimir o 12K do Marcus"
+    assert "2026-11" not in marcus_meses, "NF de 12K no Bling tem que suprimir a injeção"
+    sup = [t for t in trilha if t["tipo"] == "PROJECAO_SUPRIMIDA"]
+    assert len(sup) == 1 and sup[0]["mes"] == "2026-11"
+
+
+def test_projecao_manual_idempotente() -> None:
+    """Aplicar duas vezes não duplica os sintéticos."""
+    from datetime import date as _d
+    hoje = _d(2026, 9, 15)
+    r1, _ = audit.injetar_projecoes_manuais([], [], today=hoje,
+                                            itens=_ITENS_PROJ, horizonte_meses=6)
+    r2, _ = audit.injetar_projecoes_manuais(r1, [], today=hoje,
+                                            itens=_ITENS_PROJ, horizonte_meses=6)
+    assert len(r2) == len(r1), f"segunda passada duplicou: {len(r1)} → {len(r2)}"
+
+
 TESTS = [
     test_competencia_do_historico,
     test_trimestre_do_historico,
@@ -466,6 +529,9 @@ TESTS = [
     test_reconcile_previsao_coberta_por_nf_em_aberto,
     test_reconcile_previsao_futura_sem_nf_fica,
     test_reconcile_cobertura_consumida_nao_cobre_duas_previsoes,
+    test_projecao_manual_injeta_horizonte_e_fim,
+    test_projecao_manual_suprimida_por_bling,
+    test_projecao_manual_idempotente,
 ]
 
 
