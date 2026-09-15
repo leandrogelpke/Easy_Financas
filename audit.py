@@ -841,10 +841,13 @@ def check_retencao_credito_resumo(matriz: dict, cfg: dict = CONFIG) -> list[Audi
 #       nos dois buckets. Ex.: Rômulo PARC 17 (R$ 59.814, venc 25/05).
 #
 #   (B) PROVISAO_COBERTA — provisão genérica (histórico com PREVISÃO /
-#       PROVISÃO / placeholder "XX/AAAA") que já foi substituída pelas
-#       NFs reais pagas no mesmo mês de vencimento. Ex.: Efata
+#       PROVISÃO / placeholder "XX/AAAA") que já foi substituída por NFs
+#       reais do mesmo mês de vencimento — PAGAS ou EM ABERTO. Ex.: Efata
 #       "PRESTAÇÃO SERVIÇOS XX/2026" R$ 35.000 venc 20/05, coberta por
-#       2× NF de R$ 17.500 pagas em maio.
+#       2× NF de R$ 17.500 pagas em maio; Alan set/26, previsão R$ 22K
+#       coberta pela NF 000003 R$ 22K ainda em aberto (antes somava 44K).
+#       A cobertura é um pool consumível por contato×mês: uma NF não
+#       cobre duas previsões.
 #
 # `reconcile_em_aberto` é a fonte única dessa limpeza — build-html.py,
 # contas_view.py e dre_render.py importam daqui pra que TODAS as abas
@@ -940,6 +943,35 @@ def reconcile_em_aberto(
         paid_twins[(ck, vc, v)] += 1
         paid_by_cm[(ck, vc[:7])] += v
 
+    # NFs reais EM ABERTO por contato×mês-venc — cobertura de previsões que
+    # já viraram NF mas ainda aguardam pagamento (caso Alan set/26: previsão
+    # R$ 22K + NF real 000003 R$ 22K ambas em aberto → o mês somava R$ 44K).
+    # Exclui linhas que serão consumidas como DUPLICATA_PAGA, senão a
+    # cobertura contaria o mesmo dinheiro duas vezes (pago + gêmeo aberto).
+    aberto_real_by_cm: dict[tuple, float] = defaultdict(float)
+    _dup_sim: dict[tuple, int] = defaultdict(int)
+    for r in em_aberto:
+        v0 = round(_recon_money(r.get("saldo") or r.get("valor")), 2)
+        ck0 = _recon_contato(r)
+        vc0 = _recon_venc(r)
+        h0 = (r.get("historico") or r.get("historico_descricao") or "")
+        if v0 > 0 and paid_twins.get((ck0, vc0, v0), 0) - _dup_sim[(ck0, vc0, v0)] > 0:
+            _dup_sim[(ck0, vc0, v0)] += 1
+            continue
+        if not _RE_PROVISAO.search(_norm(h0)):
+            aberto_real_by_cm[(ck0, vc0[:7])] += v0
+
+    # Pool de cobertura CONSUMÍVEL por contato×mês: pago + NF real em aberto.
+    # O consumo impede que uma única NF cubra duas previsões distintas do
+    # mesmo mês (ex.: previsão 22K do Alan + previsão 12K do Marcus-via-Alan).
+    cobertura_left: dict[tuple, float] = {}
+
+    def _cobertura(ck_: str, mes_: str) -> float:
+        k = (ck_, mes_)
+        if k not in cobertura_left:
+            cobertura_left[k] = paid_by_cm.get(k, 0.0) + aberto_real_by_cm.get(k, 0.0)
+        return cobertura_left[k]
+
     limpo: list[dict] = []
     ajustes: list[dict] = []
     used: dict[tuple, int] = defaultdict(int)
@@ -984,16 +1016,23 @@ def reconcile_em_aberto(
         #     A flag _provisao_abatida garante idempotência: linha já abatida
         #     não é abatida de novo numa segunda passada.
         if v > 0 and _RE_PROVISAO.search(_norm(hist)) and not r.get("_provisao_abatida"):
-            realizado = paid_by_cm.get((ck, vc[:7]), 0.0)
-            if realizado >= v * 0.9:
+            mes = vc[:7]
+            realizado = paid_by_cm.get((ck, mes), 0.0)
+            aberto_real = aberto_real_by_cm.get((ck, mes), 0.0)
+            cobertura = _cobertura(ck, mes)
+            if cobertura >= v * 0.9:
+                cobertura_left[(ck, mes)] = max(0.0, round(cobertura - v, 2))
                 ajustes.append({
                     "tipo": "PROVISAO_COBERTA", "contato": r.get("contato_nome", ""),
                     "contato_id": r.get("contato_id"), "venc": vc, "valor": v,
                     "historico": hist[:80], "realizado_mes": round(realizado, 2),
+                    "aberto_mes": round(aberto_real, 2),
                 })
                 continue
-            if realizado > 0:
-                restante = round(v - realizado, 2)
+            if cobertura > 0:
+                restante = round(v - cobertura, 2)
+                abatido = round(cobertura, 2)
+                cobertura_left[(ck, mes)] = 0.0
                 r2 = dict(r)
                 r2["valor"] = f"{restante:.2f}".replace(".", ",")
                 r2["saldo"] = r2["valor"]
@@ -1001,8 +1040,9 @@ def reconcile_em_aberto(
                 ajustes.append({
                     "tipo": "PROVISAO_ABATIDA", "contato": r.get("contato_nome", ""),
                     "contato_id": r.get("contato_id"), "venc": vc,
-                    "valor": round(realizado, 2),  # quanto foi abatido
+                    "valor": abatido,  # quanto foi abatido
                     "historico": hist[:80], "realizado_mes": round(realizado, 2),
+                    "aberto_mes": round(aberto_real, 2),
                     "restante": restante,
                 })
                 limpo.append(r2)

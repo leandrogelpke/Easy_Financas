@@ -391,6 +391,57 @@ def test_sincronia_projecoes_multi_superficie() -> None:
     assert len(fs_ok) == 1 and fs_ok[0].status == "ok"
 
 
+def test_reconcile_previsao_coberta_por_nf_em_aberto() -> None:
+    """Previsão + NF real EM ABERTO no mesmo mês/contato → previsão sai,
+    NF real fica (caso Alan set/26: mês somava R$ 44K pra um custo de 22K)."""
+    pagas: list[dict] = []
+    em_aberto = [
+        {"contato_id": "7", "contato_nome": "ALAN BARBOSA", "vencimento": "2026-09-25",
+         "valor": "22.000,00", "historico": "PREVISÃO PRESTAÇÃO DE SERVIÇOS DE CONSULTORIA"},
+        {"contato_id": "7", "contato_nome": "ALAN BARBOSA", "vencimento": "2026-09-25",
+         "valor": "22.000,00", "historico": "Ref. a NF nº 000003"},
+    ]
+    limpo, aj = audit.reconcile_em_aberto(pagas, em_aberto, encerradas=[])
+    assert len(limpo) == 1, f"esperado só a NF real, veio {len(limpo)}"
+    assert "NF" in limpo[0]["historico"]
+    assert len(aj) == 1 and aj[0]["tipo"] == "PROVISAO_COBERTA"
+    assert round(aj[0]["aberto_mes"], 2) == 22000.0
+
+
+def test_reconcile_previsao_futura_sem_nf_fica() -> None:
+    """Previsão de mês futuro SEM NF real → intocada (regressão: as
+    previsões out–dez do Alan/Eduardo não podem sumir da projeção)."""
+    em_aberto = [
+        {"contato_id": "7", "contato_nome": "ALAN BARBOSA", "vencimento": "2026-11-25",
+         "valor": "22.000,00", "historico": "PREVISÃO PRESTAÇÃO DE SERVIÇOS"},
+        {"contato_id": "8", "contato_nome": "EDUARDO GODOY", "vencimento": "2026-11-20",
+         "valor": "6.500,00", "historico": "PREVISÃO"},
+    ]
+    limpo, aj = audit.reconcile_em_aberto([], em_aberto, encerradas=[])
+    assert len(limpo) == 2 and aj == []
+
+
+def test_reconcile_cobertura_consumida_nao_cobre_duas_previsoes() -> None:
+    """Uma NF real de 22K não pode cobrir a previsão de 22K E a de 12K do
+    mesmo mês (Marcus fatura via Alan até ter CNPJ). O pool é consumível:
+    o total em aberto do mês tem que fechar em NF 22K + 12K = 34K."""
+    em_aberto = [
+        {"contato_id": "7", "contato_nome": "ALAN BARBOSA", "vencimento": "2026-10-26",
+         "valor": "22.000,00", "historico": "PREVISÃO PRESTAÇÃO DE SERVIÇOS"},
+        {"contato_id": "7", "contato_nome": "ALAN BARBOSA", "vencimento": "2026-10-26",
+         "valor": "12.000,00", "historico": "PREVISÃO SERVIÇOS - MARCUS"},
+        {"contato_id": "7", "contato_nome": "ALAN BARBOSA", "vencimento": "2026-10-26",
+         "valor": "22.000,00", "historico": "Ref. a NF nº 000010"},
+    ]
+    def _money(v):
+        return float(str(v).replace(".", "").replace(",", "."))
+    limpo, aj = audit.reconcile_em_aberto([], em_aberto, encerradas=[])
+    total = round(sum(_money(r["valor"]) for r in limpo), 2)
+    assert total == 34000.0, f"total do mês deveria ser 34.000, veio {total}"
+    consumido = round(sum(a["valor"] for a in aj), 2)
+    assert consumido == 22000.0, f"cobertura consumida deveria ser 22.000, veio {consumido}"
+
+
 TESTS = [
     test_competencia_do_historico,
     test_trimestre_do_historico,
@@ -412,6 +463,9 @@ TESTS = [
     test_projecao_caixa_dre_divergencia_warn_error,
     test_projecao_caixa_dre_mes_zerado_dos_dois_lados,
     test_sincronia_projecoes_multi_superficie,
+    test_reconcile_previsao_coberta_por_nf_em_aberto,
+    test_reconcile_previsao_futura_sem_nf_fica,
+    test_reconcile_cobertura_consumida_nao_cobre_duas_previsoes,
 ]
 
 

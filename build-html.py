@@ -382,7 +382,7 @@ if _ks_json:
 STACK_GROUPS = [
     {"label": "Buy-out/Acordo", "ids": ["romulo", "geremias"]},
     {"label": "Pessoal",     "ids": ["alan", "isabel", "macedo", "efata",
-                                     "milajanu", "godoy"]},
+                                     "milajanu", "godoy", "marcus", "maickon"]},
     {"label": "Serv. PJ",    "ids": ["ep", "vtconn", "victor", "plentech",
                                      "cralus"]},
     {"label": "Tributos",    "ids": ["irpj", "csll", "serrano", "receita",
