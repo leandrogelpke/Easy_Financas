@@ -111,6 +111,10 @@ class BlingClient:
                 "Authorization": f"Basic {basic}",
                 "Content-Type": "application/x-www-form-urlencoded",
                 "Accept": "1.0",
+                # Migração JWT do Bling (developer.bling.com.br/migracao-jwt):
+                # sem este header o /oauth/token devolve token opaco, que será
+                # bloqueado. Manter na obtenção E na renovação.
+                "enable-jwt": "1",
             },
             method="POST",
         )
@@ -144,6 +148,9 @@ class BlingClient:
                 headers={
                     "Authorization": f"Bearer {self.access_token}",
                     "Accept": "application/json",
+                    # Migração JWT: a doc exige enable-jwt: 1 em TODAS as
+                    # requisições autenticadas, não só no /oauth/token.
+                    "enable-jwt": "1",
                 },
             )
             try:

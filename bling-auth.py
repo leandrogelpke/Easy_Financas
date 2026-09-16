@@ -128,6 +128,8 @@ def main():
             "Authorization": f"Basic {basic}",
             "Content-Type": "application/x-www-form-urlencoded",
             "Accept": "1.0",
+            # Migração JWT do Bling — ver developer.bling.com.br/migracao-jwt
+            "enable-jwt": "1",
         },
         method="POST",
     )
