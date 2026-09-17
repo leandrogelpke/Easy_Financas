@@ -494,6 +494,13 @@ def fetch_contas(
             for k, v in (item or {}).items():
                 d.setdefault(k, v)
         except RuntimeError as e:
+            if "HTTP 404" in str(e):
+                # Excluído na UI do Bling mas ainda devolvido pela LISTAGEM
+                # (vazamento de lixeira — caso NF 4581036, 17/09/26). O
+                # fallback antigo `d = item` era o que preservava o fantasma.
+                log(f"  [lixeira] id {item['id']} 404 no detalhe — descartado", client.quiet)
+                time.sleep(SLEEP_BETWEEN)
+                continue
             log(f"  ! id {item['id']}: {e}", client.quiet)
             d = item
         detailed.append(d)
@@ -505,6 +512,42 @@ def fetch_contas(
     if cache_path:
         atomic_write_text(cache_path, json.dumps(detailed, ensure_ascii=False))
     return detailed
+
+
+def probe_lixeira(client: "BlingClient", kind: str,
+                  rows: List[Dict[str, Any]], quiet: bool = False,
+                  sleep: Optional[float] = None) -> tuple:
+    """Reconfere no detalhe (GET /contas/<kind>/<id>, SEM cache) cada
+    lançamento em aberto. HTTP 404 = registro excluído na UI que a listagem
+    ainda devolve (vazamento de lixeira) → descarta. Necessário porque o
+    cache incremental nunca revisita item antigo. Fail-open: qualquer outra
+    resposta/erro mantém o lançamento. Custo ~SLEEP_BETWEEN/na rodada.
+    Retorna (mantidos, descartados)."""
+    _sleep = SLEEP_BETWEEN if sleep is None else sleep
+    keep: List[Dict[str, Any]] = []
+    dropped: List[Dict[str, Any]] = []
+    for r in rows:
+        rid = r.get("id")
+        if not rid:
+            keep.append(r)
+            continue
+        try:
+            client.get(f"/contas/{kind}/{rid}", retries=2)
+            keep.append(r)
+        except RuntimeError as e:
+            if "HTTP 404" in str(e):
+                dropped.append(r)
+                log(f"  [lixeira] {kind} id {rid} venc {r.get('vencimento')} "
+                    f"R$ {r.get('valor')} · {str(r.get('contato_nome') or '')[:30]} "
+                    f"— 404 no detalhe, descartado", quiet)
+            else:
+                keep.append(r)  # fail-open: na dúvida, o lançamento fica
+        if _sleep:
+            time.sleep(_sleep)
+    if dropped:
+        log(f"[lixeira] contas/{kind}: {len(dropped)} lançamento(s) excluído(s) "
+            f"na UI ainda vinham na listagem — removidos do snapshot", quiet)
+    return keep, dropped
 
 
 def _as_dict(v: Any) -> Dict[str, Any]:
@@ -591,6 +634,8 @@ def main() -> int:
                     help="pular GET /id para contas_pagar_em_aberto (ja tem vencimento+valor na lista, muito mais rapido)")
     ap.add_argument("--data-inicial", default=None,
                     help="filtra contas pagar/receber pelas datas de emissao a partir desta (YYYY-MM-DD)")
+    ap.add_argument("--no-probe-lixeira", action="store_true",
+                    help="pular a reconferencia por id dos em aberto (sonda de lixeira)")
     ap.add_argument("--data-final", default=None,
                     help="filtra contas pagar/receber pelas datas de emissao ate esta (YYYY-MM-DD)")
     args = ap.parse_args()
@@ -653,6 +698,25 @@ def main() -> int:
             data_final=args.data_final,
         )
 
+    # 2b) sonda de lixeira nos EM ABERTO: itens cacheados nunca são
+    #     redetalhados, então um lançamento excluído no Bling depois do 1º
+    #     fetch ficaria pra sempre (caso NF 4581036 TOTVS). Reconfere cada id
+    #     no detalhe; 404 = descarta. Desligável: --no-probe-lixeira ou env
+    #     EF_NO_PROBE_LIXEIRA=1.
+    lixeira_trilha: List[Dict[str, Any]] = []
+    if not args.no_probe_lixeira and not os.environ.get("EF_NO_PROBE_LIXEIRA"):
+        for kind in ("pagar", "receber"):
+            if (kind, 1) in fetched:
+                mantidos, fora = probe_lixeira(client, kind, fetched[(kind, 1)], quiet=args.quiet)
+                fetched[(kind, 1)] = mantidos
+                for r in fora:
+                    lixeira_trilha.append({
+                        "dataset": f"contas_{kind}_em_aberto", "id": r.get("id"),
+                        "vencimento": r.get("vencimento"), "valor": r.get("valor"),
+                        "contato": (_as_dict(r.get("contato")).get("nome")
+                                    or r.get("contato_nome") or ""),
+                    })
+
     # 3) coletar contato_ids de tudo e buscar detalhe (se ainda nao veio)
     contato_ids: set[int] = set()
     for items in fetched.values():
@@ -673,6 +737,7 @@ def main() -> int:
         "_metadata": {
             "fetched_at": datetime.now(timezone(timedelta(hours=-3))).strftime("%Y-%m-%d %H:%M:%S"),
             "today": today,
+            "lixeira_descartados": lixeira_trilha,
         },
         "categorias": categorias,
         "contatos": list(contatos_idx.values()),

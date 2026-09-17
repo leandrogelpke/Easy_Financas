@@ -521,6 +521,35 @@ def test_reconcile_lancamento_ignorado_por_id() -> None:
     assert aj[0]["motivo"] == "parcela fantasma"
 
 
+def test_probe_lixeira_404_descarta_resto_fica() -> None:
+    """Sonda de lixeira do fetch: 404 no detalhe → descarta; erro 5xx ou
+    sem id → mantém (fail-open). Caso NF 4581036 (17/09/26)."""
+    import importlib.util, pathlib
+    p = pathlib.Path(__file__).resolve().parent / "fetch-bling.py"
+    spec = importlib.util.spec_from_file_location("fetch_bling_mod", str(p))
+    fb = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(fb)
+
+    class FakeClient:
+        quiet = True
+        def get(self, path, retries=3):
+            if path.endswith("/666"):
+                raise RuntimeError(f"HTTP 404 em GET {path}: nao encontrado")
+            if path.endswith("/777"):
+                raise RuntimeError(f"HTTP 500 em GET {path}: instabilidade")
+            return {"data": {}}
+
+    rows = [
+        {"id": 555, "vencimento": "2026-10-26", "valor": "4.211,31"},
+        {"id": 666, "vencimento": "2026-01-26", "valor": "4.211,31"},  # lixeira
+        {"id": 777, "vencimento": "2026-11-25", "valor": "4.211,31"},  # 5xx
+        {"vencimento": "2026-12-28", "valor": "1,00"},                 # sem id
+    ]
+    keep, dropped = fb.probe_lixeira(FakeClient(), "pagar", rows, quiet=True, sleep=0)
+    assert [r.get("id") for r in keep] == [555, 777, None]
+    assert [r["id"] for r in dropped] == [666]
+
+
 TESTS = [
     test_competencia_do_historico,
     test_trimestre_do_historico,
@@ -549,6 +578,7 @@ TESTS = [
     test_projecao_manual_suprimida_por_bling,
     test_projecao_manual_idempotente,
     test_reconcile_lancamento_ignorado_por_id,
+    test_probe_lixeira_404_descarta_resto_fica,
 ]
 
 
