@@ -1,0 +1,10 @@
+{
+  "_nota": "Ids de lançamentos que a API v3 do Bling devolve como 'Em aberto' mas que NÃO existem mais na UI (excluídos na interface sem propagar pra API — confirmado por prints do financeiro em 17/09/2026). Remoção cirúrgica por id exato, com trilha LANCAMENTO_IGNORADO no card de reconciliação. Quando a API parar de devolver um id, a entrada vira inerte e pode ser removida daqui. NÃO usar pra 'esconder' dívida real — só pra vazamento de exclusão do Bling.",
+  "a_pagar": [
+    {"id": 26821083135, "motivo": "NF 4581036 TOTVS — série relançada; parcela com ano errado (venc 26/01/2026, R$ 4.211,31) excluída na UI"},
+    {"id": 26821083178, "motivo": "NF 4581036 TOTVS — série relançada; parcela com ano errado (venc 25/02/2026, R$ 4.211,20) excluída na UI"},
+    {"id": 26821083378, "motivo": "NF 4581036 TOTVS — duplicata de 26/10/2026 (R$ 4.211,31) da série substituída pela 26821163734"},
+    {"id": 26821083424, "motivo": "NF 4581036 TOTVS — duplicata de 25/11/2026 (R$ 4.211,31) da série substituída pela 26821163781"},
+    {"id": 26821083467, "motivo": "NF 4581036 TOTVS — duplicata de 28/12/2026 (R$ 4.211,31) da série substituída pela 26821163811"}
+  ]
+}

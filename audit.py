@@ -892,6 +892,18 @@ def _recon_venc(r: dict) -> str:
     return (r.get("vencimento") or r.get("dataVencimento") or "").strip()
 
 
+def _load_lancamentos_ignorados() -> dict[int, str]:
+    """lancamentos_ignorados.json — ids que a API do Bling devolve como em
+    aberto mas que foram excluídos na UI (exclusão não propagada). Remoção
+    por id EXATO, com motivo versionado. Arquivo ausente → vazio."""
+    try:
+        p = Path(__file__).resolve().parent / "lancamentos_ignorados.json"
+        d = json.loads(p.read_text(encoding="utf-8"))
+        return {int(e["id"]): e.get("motivo", "") for e in d.get("a_pagar", []) if e.get("id")}
+    except Exception:
+        return {}
+
+
 def _load_provisoes_encerradas() -> list[dict]:
     """Carrega provisoes_encerradas.json (decisões manuais do Leandro).
 
@@ -912,6 +924,7 @@ def reconcile_em_aberto(
     em_aberto: list[dict],
     today: date | None = None,
     encerradas: list[dict] | None = None,
+    ignorados: dict[int, str] | None = None,
 ) -> tuple[list[dict], list[dict]]:
     """Remove lançamentos fantasma de `em_aberto` (a pagar).
 
@@ -972,6 +985,8 @@ def reconcile_em_aberto(
             cobertura_left[k] = paid_by_cm.get(k, 0.0) + aberto_real_by_cm.get(k, 0.0)
         return cobertura_left[k]
 
+    _ignorados = _load_lancamentos_ignorados() if ignorados is None else ignorados
+
     limpo: list[dict] = []
     ajustes: list[dict] = []
     used: dict[tuple, int] = defaultdict(int)
@@ -982,6 +997,17 @@ def reconcile_em_aberto(
         vc = _recon_venc(r)
         hist = (r.get("historico") or r.get("historico_descricao") or "")
         key = (ck, vc, v)
+
+        # (-1) id excluído na UI do Bling mas ainda devolvido pela API
+        #      (lancamentos_ignorados.json — ex.: NF 4581036 TOTVS, série
+        #      relançada em 09/09/26). Match por id exato, nada de heurística.
+        if r.get("id") in _ignorados:
+            ajustes.append({
+                "tipo": "LANCAMENTO_IGNORADO", "contato": r.get("contato_nome", ""),
+                "contato_id": r.get("contato_id"), "venc": vc, "valor": v,
+                "historico": hist[:80], "motivo": _ignorados[r.get("id")][:120],
+            })
+            continue
 
         # (0) provisão de contrato encerrado (decisão manual versionada em
         #     provisoes_encerradas.json) — some por inteiro, com trilha.

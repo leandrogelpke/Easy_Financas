@@ -505,6 +505,22 @@ def test_projecao_manual_idempotente() -> None:
     assert len(r2) == len(r1), f"segunda passada duplicou: {len(r1)} → {len(r2)}"
 
 
+def test_reconcile_lancamento_ignorado_por_id() -> None:
+    """Id na lista de ignorados (excluído na UI do Bling, mas devolvido pela
+    API) sai com trilha LANCAMENTO_IGNORADO; os demais ficam intactos."""
+    em_aberto = [
+        {"id": 111, "contato_nome": "TOTVS S.A.", "vencimento": "2026-01-26",
+         "valor": "4.211,31", "historico": "Ref. a NF nº 4581036"},
+        {"id": 222, "contato_nome": "TOTVS S.A.", "vencimento": "2026-09-25",
+         "valor": "3.813,81", "historico": "Ref. a NF nº 4581036"},
+    ]
+    limpo, aj = audit.reconcile_em_aberto([], em_aberto, encerradas=[],
+                                          ignorados={111: "parcela fantasma"})
+    assert len(limpo) == 1 and limpo[0]["id"] == 222
+    assert len(aj) == 1 and aj[0]["tipo"] == "LANCAMENTO_IGNORADO"
+    assert aj[0]["motivo"] == "parcela fantasma"
+
+
 TESTS = [
     test_competencia_do_historico,
     test_trimestre_do_historico,
@@ -532,6 +548,7 @@ TESTS = [
     test_projecao_manual_injeta_horizonte_e_fim,
     test_projecao_manual_suprimida_por_bling,
     test_projecao_manual_idempotente,
+    test_reconcile_lancamento_ignorado_por_id,
 ]
 
 
