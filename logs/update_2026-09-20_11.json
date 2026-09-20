@@ -1,0 +1,45 @@
+{
+  "run": {
+    "workflow": "update",
+    "agente": "principal",
+    "trigger": "schedule",
+    "run_id": "35515708553",
+    "run_number": "387",
+    "run_url": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/35515708553",
+    "started_at_utc": "2026-09-20 14:11:20",
+    "ended_at_utc": "2026-09-20 14:12:01",
+    "ended_at_brt": "2026-09-20 11:12:01",
+    "duration_s": 41
+  },
+  "steps": {
+    "fetch": "failure",
+    "merge_historico": "skipped",
+    "token_refresh": "rotated_saved",
+    "build": "success",
+    "gate_test_audit": "success",
+    "gate_test_build": "success",
+    "gate_test_merge": "success",
+    "gate_test_projecao": "skipped",
+    "precommit": "success",
+    "push": "skipped"
+  },
+  "records": {
+    "snapshot_file": "bling_data_2026-09-19.json",
+    "fetched_at": "2026-09-19 18:28:18",
+    "total": 704,
+    "contas_pagar_em_aberto": 104,
+    "contas_pagar_pagas": 508,
+    "contas_receber_em_aberto": 14,
+    "contas_receber_recebidas": 78,
+    "categorias": 219,
+    "contatos": 87
+  },
+  "commit_hash": null,
+  "warnings": [
+    "Publicação bloqueada pelo gate — última versão boa mantida no ar."
+  ],
+  "errors": [
+    "Fetch do Bling não concluiu com sucesso. Últimas linhas: File \"/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/urllib/request.py\", line 536, in _open | result = self._call_chain(self.handle_open, protocol, protocol + | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | File \"/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/urllib/request.py\", line 496, in _call_chain | result = func(*args) | ^^^^^^^^^^^ | File \"/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/urllib/request.py\", line 1391, in https_open | return self.do_open(http.client.HTTPSConnection, req, | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | File \"/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/urllib/request.py\", line 1351, in do_open | raise URLError(err) | urllib.error.URLError: <urlopen error [Errno 104] Connection reset by peer>"
+  ],
+  "ok": false
+}
