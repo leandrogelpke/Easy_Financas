@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-09-21 13:28:42",
+    "fetched_at": "2026-09-21 16:58:55",
     "today": "2026-09-21",
     "lixeira_descartados": [
       {
@@ -4447,7 +4447,7 @@
       "id": 25270087952,
       "situacao_codigo": 1,
       "situacao": "Em aberto",
-      "vencimento": "2026-10-17",
+      "vencimento": "2026-10-21",
       "vencimento_original": "",
       "data_emissao": "2026-03-09",
       "data_pagamento": "",
