@@ -1,12 +1,12 @@
 {
  "_meta": {
-  "gerado_em": "2026-09-22 14:49:51",
+  "gerado_em": "2026-09-22 18:50:10",
   "snapshot_origem": "bling_data_2026-09-22.json",
   "window_start": "2026-02-01",
   "totais": {
    "contas_pagar_pagas": 511,
    "contas_receber_recebidas": 78,
-   "contas_pagar_em_aberto": 122,
+   "contas_pagar_em_aberto": 125,
    "contas_receber_em_aberto": 14
   }
  },
@@ -13183,6 +13183,27 @@
    "portador_id": 14892107625
   },
   {
+   "id": 26938886486,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-10-21",
+   "vencimento_original": "2026-10-21",
+   "data_emissao": "2026-09-22",
+   "data_pagamento": "",
+   "competencia": "2026-09-21",
+   "valor": "1188,86",
+   "saldo": "1188,86",
+   "numero_documento": "002870/01",
+   "historico": "Ref. a NF nº 002870",
+   "contato_id": 18407090116,
+   "contato_nome": "DUOTEXTIL UNIFORMES",
+   "contato_documento": "19651191000180",
+   "categoria_id": 0,
+   "categoria_descricao": "",
+   "categoria_tipo": "",
+   "portador_id": 14892107625
+  },
+  {
    "id": 26245670751,
    "situacao_codigo": 1,
    "situacao": "Em aberto",
@@ -13435,6 +13456,27 @@
    "portador_id": 14892107625
   },
   {
+   "id": 26938886513,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-11-21",
+   "vencimento_original": "2026-11-21",
+   "data_emissao": "2026-09-22",
+   "data_pagamento": "",
+   "competencia": "2026-09-21",
+   "valor": "1188,85",
+   "saldo": "1188,85",
+   "numero_documento": "002870/02",
+   "historico": "Ref. a NF nº 002870",
+   "contato_id": 18407090116,
+   "contato_nome": "DUOTEXTIL UNIFORMES",
+   "contato_documento": "19651191000180",
+   "categoria_id": 0,
+   "categoria_descricao": "",
+   "categoria_tipo": "",
+   "portador_id": 14892107625
+  },
+  {
    "id": 26245670762,
    "situacao_codigo": 1,
    "situacao": "Em aberto",
@@ -13642,6 +13684,27 @@
    "categoria_id": 14665159865,
    "categoria_descricao": "Serviços de terceiros",
    "categoria_tipo": 1,
+   "portador_id": 14892107625
+  },
+  {
+   "id": 26938886540,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-12-21",
+   "vencimento_original": "2026-12-21",
+   "data_emissao": "2026-09-22",
+   "data_pagamento": "",
+   "competencia": "2026-09-21",
+   "valor": "1188,85",
+   "saldo": "1188,85",
+   "numero_documento": "002870/03",
+   "historico": "Ref. a NF nº 002870",
+   "contato_id": 18407090116,
+   "contato_nome": "DUOTEXTIL UNIFORMES",
+   "contato_documento": "19651191000180",
+   "categoria_id": 0,
+   "categoria_descricao": "",
+   "categoria_tipo": "",
    "portador_id": 14892107625
   },
   {
