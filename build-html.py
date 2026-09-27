@@ -2898,6 +2898,25 @@ def render(data: dict, snapshot: Path, template: Path, today: date) -> str:
         html = html.replace("@@PL_PG@@",     "")
         html = html.replace("@@DRE_PG@@",    "")
 
+    # ── Aba Simulador de Cenários (simulador.py) — base = matriz do DRE
+    #    (fonte única dre_render); choques ±% receita/gastos recalculados no JS.
+    try:
+        from simulador import render_simulador  # type: ignore
+        _totvs_snap = _resolve_totvs_snap()
+        _s = render_simulador(_totvs_snap.parent, _totvs_snap, today,
+                              saldo_caixa, saldo_fonte)
+        html = html.replace("@@SIM_NTAB@@",   _s["ntab"])
+        html = html.replace("@@SIM_MOBTAB@@", _s["mobtab"])
+        html = html.replace("@@SIM_PG@@",     _s["pg"])
+        print(f"[simulador] {_s['n_rows']} linhas de detalhe · {_s['n_months']} meses", file=_sys.stderr)
+    except Exception as _e:
+        import traceback
+        print(f"[simulador] erro (degrada para vazio): {_e}", file=_sys.stderr)
+        traceback.print_exc(file=_sys.stderr)
+        html = html.replace("@@SIM_NTAB@@",   "")
+        html = html.replace("@@SIM_MOBTAB@@", "")
+        html = html.replace("@@SIM_PG@@",     "")
+
     # ── Aba A Pagar / A Receber (contas_view) — lançado + previsto pelo histórico
     try:
         from contas_view import render_contas, write_contas_snapshot  # type: ignore
@@ -3116,6 +3135,7 @@ def main() -> int:
                               "@@DRE_DATA@@", "@@DRE_DETAIL@@",
                               "@@TOTVS_NTAB@@", "@@TOTVS_MOBTAB@@", "@@TOTVS_PG@@",
                               "@@PL_NTAB@@", "@@PL_MOBTAB@@", "@@PL_PG@@", "@@DRE_PG@@",
+                              "@@SIM_NTAB@@", "@@SIM_MOBTAB@@", "@@SIM_PG@@",
                               "@@CONTAS_NTAB@@", "@@CONTAS_MOBTAB@@", "@@CONTAS_PG@@",
                               "@@AUDIT_NTAB@@", "@@AUDIT_MOBTAB@@", "@@AUDIT_PG@@"]
                  if m in html_out]

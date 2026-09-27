@@ -411,6 +411,7 @@ def receita_sintetica_por_mes(
     totvs_por_mes: dict | None = None,
     ate: str | None = None,
     pagas: list[dict] | None = None,
+    media_meses: int | None = None,
 ) -> dict[str, list[tuple[str, float, str]]]:
     """
     Lançamentos SINTÉTICOS de receita, a somar aos dados Bling, por mês:
@@ -435,6 +436,8 @@ def receita_sintetica_por_mes(
     """
     cutoff = today.strftime("%Y-%m")
     cfg = _load_receitas_cfg()
+    if media_meses:  # override só p/ o Simulador (janela alternativa); default = config
+        cfg["media_meses"] = int(media_meses)
     media, meses_media = _media_recorrente(recebidas, cfg, cutoff)
     classes_ab = _receita_classes(receber_em_aberto, cfg)
 
@@ -480,6 +483,7 @@ def despesa_projetada_por_mes(
     em_aberto: list[dict],
     today: date,
     ate: str,
+    n_meses: int = 3,
 ) -> dict[str, dict[str, float]]:
     """FONTE ÚNICA da despesa projetada (espelho de receita_sintetica_por_mes).
 
@@ -522,7 +526,7 @@ def despesa_projetada_por_mes(
         if ym and ym < cutoff and _grupo(r) not in ("aporte_socio", "nao_recorrente"):
             desp_pm[ym] += _parse_money(r.get("valor", 0))
     ult3, y, m = [], today.year, today.month
-    for _ in range(3):
+    for _ in range(max(1, int(n_meses or 3))):  # n_meses≠3 só no Simulador
         m -= 1
         if m == 0:
             y, m = y - 1, 12
@@ -737,6 +741,8 @@ def _build_matriz_2y(
     start_year: int = 2025,
     end_year: int = 2026,
     totvs_por_mes: dict | None = None,
+    media_rec_meses: int | None = None,
+    media_desp_meses: int | None = None,
 ) -> dict[str, Any]:
     """
     Retorna matriz cobrindo jan/start_year a dez/end_year (24 meses por padrão).
@@ -944,7 +950,8 @@ def _build_matriz_2y(
     # média-por-grupo enquanto DRE/Caixa/Projeção usavam a média 3m — quarta
     # fórmula divergente (sincronia de 11/09/2026). A proporção entre grupos
     # é mantida; só a escala muda.
-    _dp2 = despesa_projetada_por_mes(pagas, em_aberto, today, months[-1])
+    _dp2 = despesa_projetada_por_mes(pagas, em_aberto, today, months[-1],
+                                     n_meses=media_desp_meses or 3)
     for ym, fills in fills_futuros.items():
         if ym not in _dp2:
             continue
@@ -969,7 +976,8 @@ def _build_matriz_2y(
     #     "projetado". Ver receitas_classificacao.json.
     _sint = receita_sintetica_por_mes(recebidas, receber_em_aberto, today,
                                       totvs_por_mes=totvs_por_mes,
-                                      ate=f"{end_year:04d}-12", pagas=pagas)
+                                      ate=f"{end_year:04d}-12", pagas=pagas,
+                                      media_meses=media_rec_meses)
     for ym, partes in sorted(_sint.items()):
         if ym not in months_set:
             continue

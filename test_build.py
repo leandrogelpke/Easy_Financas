@@ -315,6 +315,96 @@ def test_pl_janela_ano_completo() -> None:
             f"P&L devia projetar até dez/{today.year}, parou em {ms[-1]}"
 
 
+def test_simulador_base_igual_dre() -> None:
+    """Aba Simulador: a BASE tem que ser a matriz do DRE, sem fórmula própria.
+
+    (a) Python: as linhas de detalhe somam, grupo a grupo e mês a mês,
+        exatamente os `grupos` da _build_matriz_2y (dado sintético).
+    (b) JS (node, contra o index.html): choque zero ⇒ cenário == base;
+        choque de receita só mexe em meses FUTUROS e na proporção exata;
+        tributos acompanham a receita. Protege a regra "nenhum módulo
+        recalcula projeção própria" (sincronia de 11/09/2026).
+    """
+    import json
+    import shutil
+    import sys
+    from datetime import date
+
+    sys.path.insert(0, str(HERE))
+    import dre_render as dr  # type: ignore
+    import simulador as sim  # type: ignore
+
+    today = date(2026, 9, 20)
+    pagas = [
+        {"contato_nome": "ALAN BARBOSA", "historico": "NF", "valor": "10000,00", "vencimento": f"2026-{m:02d}-10"}
+        for m in range(1, 9)
+    ] + [
+        {"contato_nome": "SERRANO CONTABILIDADE", "historico": "hon", "valor": "1500,00", "vencimento": f"2026-{m:02d}-05"}
+        for m in range(1, 9)
+    ]
+    recebidas = [
+        {"contato_nome": "TOTVS S.A.", "historico": "comissao", "valor": "30000,00", "vencimento": f"2026-{m:02d}-15"}
+        for m in range(1, 9)
+    ]
+    em_aberto = [{"contato_nome": "ROMULO FERREIRA LIMA", "historico": "PARC", "valor": "5000,00",
+                  "saldo": "5000,00", "vencimento": "2026-11-25"}]
+    receber = [{"contato_nome": "TOTVS S.A.", "historico": "x", "valor": "31000,00", "vencimento": "2026-10-15"}]
+    mz = dr._build_matriz_2y(pagas, recebidas, em_aberto, receber, today,
+                             start_year=2026, end_year=2027)
+    months = mz["months"]
+    rows = sim._rows_da_matriz(mz, months, today.strftime("%Y-%m"), 3)
+    tot = {}
+    for r in rows:
+        for i, v in enumerate(r["v"]):
+            tot[(r["g"], i)] = tot.get((r["g"], i), 0.0) + v
+    for dg, mvals in mz["grupos"].items():
+        sg = sim._GMAP.get(dg, "adm")
+        for i, ym in enumerate(months):
+            esperado = sum(mz["grupos"][g].get(ym, 0.0) for g in mz["grupos"]
+                           if sim._GMAP.get(g, "adm") == sg)
+            got = tot.get((sg, i), 0.0)
+            assert abs(esperado - got) < 1.0, \
+                f"simulador {sg} {ym}: detalhe {got:.2f} != matriz {esperado:.2f}"
+
+    # (b) motor JS
+    if not shutil.which("node"):
+        print("      (node ausente — parte JS pulada)")
+        return
+    import subprocess
+    import tempfile
+    html = _ler_index()
+    m = re.search(r"<script>(window\.SIMX_DATA=.*?)</script>", html, re.DOTALL)
+    assert m, "script do Simulador ausente no index.html"
+    harness = m.group(1) + """
+;(function(){
+  var X=window.__simx, D=X.D, N=D.months.length, CI=D.months.indexOf(D.cutoff);
+  function st(o){var s=JSON.parse(JSON.stringify(X.S));s.rec=0;s.desp=0;s.pes=0;s.adm=0;s.addRec=0;s.addDesp=0;s.recMode='nivel';for(var k in o)s[k]=o[k];return s;}
+  var out={};
+  var R0=X.compute(st({}));
+  var d0=0;['rec','tv','pes','adm','tl','est','lcx'].forEach(function(k){for(var i=0;i<N;i++)d0=Math.max(d0,Math.abs(R0.sim[k][i]-R0.base[k][i]));});
+  out.zero=d0;
+  var R1=X.compute(st({rec:-10}));
+  var past=0,fut=0,tax=0;
+  for(var i=0;i<N;i++){
+    if(i<=CI)past=Math.max(past,Math.abs(R1.sim.rec[i]-R1.base.rec[i]));
+    else{fut=Math.max(fut,Math.abs(R1.sim.rec[i]-0.9*R1.base.rec[i]));
+         tax=Math.max(tax,Math.abs(R1.sim.tv[i]-0.9*R1.base.tv[i]));}
+  }
+  out.past=past;out.fut=fut;out.tax=tax;
+  console.log(JSON.stringify(out));
+})();"""
+    with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False, encoding="utf-8") as fh:
+        fh.write("var window={};var document={documentElement:{}};var MutationObserver=undefined;\n" + harness)
+        path = fh.name
+    r = subprocess.run(["node", path], capture_output=True, text=True, timeout=30)
+    assert r.returncode == 0, f"motor do simulador quebrou no node: {r.stderr[:300]}"
+    res = json.loads(r.stdout.strip().splitlines()[-1])
+    assert res["zero"] < 0.01, f"choque zero alterou o cenário (Δ máx {res['zero']})"
+    assert res["past"] < 0.01, f"choque de receita mexeu em mês realizado (Δ {res['past']})"
+    assert res["fut"] < 0.01, f"choque −10% não escalou a receita futura exatamente (Δ {res['fut']})"
+    assert res["tax"] < 0.01, f"tributos não acompanharam a receita (Δ {res['tax']})"
+
+
 TESTS = [
     test_sem_marcadores_pendentes,
     test_pgs_balanceadas,
@@ -327,6 +417,7 @@ TESTS = [
     test_cashflow_projeta_receita_igual_dre,
     test_proj_cfg_fonte_unica_despesa,
     test_pl_janela_ano_completo,
+    test_simulador_base_igual_dre,
 ]
 
 

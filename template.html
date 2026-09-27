@@ -248,6 +248,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
   @@TOTVS_MOBTAB@@
   <button class="mobtab" onclick="sp('pipeline',this,1)">Pipeline</button>
   <button class="mobtab" onclick="sp('projecao',this,1)">Projeção</button>
+  @@SIM_MOBTAB@@
   <button class="mobtab" onclick="sp('financeiro',this,1)">Financeiro</button>
   @@PL_MOBTAB@@
   <button class="mobtab" onclick="sp('dre',this,1)">DRE</button>
@@ -268,6 +269,7 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
     @@TOTVS_NTAB@@
     <button class="ntab" onclick="sp('pipeline',this)">Pipeline</button>
     <button class="ntab" onclick="sp('projecao',this)">Projeção</button>
+    @@SIM_NTAB@@
     <button class="ntab" onclick="sp('financeiro',this)">Financeiro</button>
     @@PL_NTAB@@
     <button class="ntab" onclick="sp('dre',this)">DRE</button>
@@ -710,6 +712,8 @@ footer{margin-top:2.5rem;padding:1.25rem 1.5rem;border-top:1px solid var(--bd);t
 </div>
 </div>
 
+@@SIM_PG@@
+
 <footer>easy analytics · dashboard executivo · @@UPDATED_AT@@ · dados: bling erp + relatório pagamentos + pipeline + base clientes · confidencial</footer>
 
 <script>
@@ -764,7 +768,7 @@ if(HAS_CHART){
 
 var fBR=function(v){return v===0?'—':'R$\u00a0'+Math.round(v).toLocaleString('pt-BR');};
 var fK=function(v){return (v>=0?'':'-')+'R$\u00a0'+Math.abs(Math.round(v/1000))+'K';};
-var PAGES=['overview','gastos','cashflow','cartao','clientes','totvs','pipeline','projecao','financeiro','pl','dre','contas','audit'];
+var PAGES=['overview','gastos','cashflow','cartao','clientes','totvs','pipeline','projecao','simulador','financeiro','pl','dre','contas','audit'];
 
 // ── NAV ──
 function sp(id,btn,mob){
@@ -779,6 +783,7 @@ function sp(id,btn,mob){
   window.scrollTo({top:0,behavior:'smooth'});
   if(id==='projecao'){updProj();projDreRender();}
   if(id==='dre')dreRender();
+  if(id==='simulador'&&window.simRender)simRender();
 }
 function tmob(){document.getElementById('mmenu').classList.toggle('open');document.getElementById('hbtn').classList.toggle('open');}
 
