@@ -149,7 +149,7 @@ def _rows_da_matriz(mz: dict, months: list[str], cutoff: str,
             if dg in _RESID_LABEL:
                 lab, sub = _RESID_LABEL[dg], "Impostos sobre vendas"
             elif ym >= cutoff:
-                lab = f"Projeção despesa recorrente (média {desp_n}m)"
+                lab = "Outros (projeção sem fornecedor)"
                 sub = "Projeção"
             else:
                 lab, sub = "Outros (sem lançamento detalhado)", "Outros"
@@ -199,9 +199,12 @@ def compute_simulador_data(bling_dir: Path, totvs_snap: Path, today: date,
         c2 = dict(cfg)
         c2["media_meses"] = rn
         media_rec, meses_rec = _dr._media_recorrente(recebidas, c2, cutoff)
-        dp = _dr.despesa_projetada_por_mes(pagas, em_aberto, today,
-                                           _dr._next_month(cutoff), n_meses=dn)
-        media_desp = next(iter(dp.values()))["media_op"] if dp else 0.0
+        ate12 = cutoff
+        for _ in range(12):
+            ate12 = _dr._next_month(ate12)
+        dp = _dr.despesa_projetada_por_mes(pagas, em_aberto, today, ate12, n_meses=dn)
+        fut = [d["total_op"] for ym, d in dp.items() if ym > cutoff]
+        media_desp = sum(fut) / len(fut) if fut else 0.0
         y, m = today.year, today.month
         meses_desp = []
         for _ in range(dn):
@@ -467,7 +470,7 @@ _PG_HTML = r"""<!-- ═══ SIMULADOR DE CENÁRIOS ═══ -->
     </span>
   </div>
   <div class="simx-wrap"><table class="simx-tbl" id="simxDet"></table></div>
-  <div class="simx-note" style="margin-top:8px">Clique no grupo para abrir os lançamentos agregados por cliente/fornecedor. Em meses projetados, "Projeção recorrente/despesa recorrente" é o complemento da média — o restante são lançamentos já agendados no Bling. Passe o mouse para ver o valor base.</div>
+  <div class="simx-note" style="margin-top:8px">Clique no grupo para abrir os lançamentos agregados por cliente/fornecedor. Valores em itálico = projeção: na receita, "Projeção recorrente" é o complemento da média; na despesa, cada fornecedor recorrente segue a previsão do Bling e, depois da última previsão, a média dos seus últimos 3 meses. Passe o mouse para ver o valor base.</div>
 </div>
 
 <div class="sl">Comparação de cenários fixados</div>
@@ -694,7 +697,7 @@ _JS = r"""
     var rb=sum(Z.R.base.rec,fa,p.b), rs=sum(Z.R.sim.rec,fa,p.b);
     document.getElementById('simxRecNote').textContent='Base '+B.rec_n+'m ('+B.meses_rec.join('+')+'): '+kbrl(B.media_rec)+'/mês recorrente · projeção no período: '+kbrl(rb)+' → '+kbrl(rs);
     var db=sum(Z.R.base.pes,fa,p.b)+sum(Z.R.base.adm,fa,p.b), ds=sum(Z.R.sim.pes,fa,p.b)+sum(Z.R.sim.adm,fa,p.b);
-    document.getElementById('simxDespNote').textContent='Base '+B.desp_n+'m ('+B.meses_desp[0]+'–'+B.meses_desp[B.meses_desp.length-1]+'): '+kbrl(B.media_desp)+'/mês op. · projeção no período: '+kbrl(db)+' → '+kbrl(ds)+' · tributos acompanham a receita';
+    document.getElementById('simxDespNote').textContent='Base fornecedor a fornecedor (previsão Bling → média '+B.desp_n+'m do fornecedor): '+kbrl(B.media_desp)+'/mês op. · projeção no período: '+kbrl(db)+' → '+kbrl(ds)+' · tributos acompanham a receita';
     document.getElementById('simxChartTag').textContent=L[p.a]+' → '+L[p.b];
   }
 

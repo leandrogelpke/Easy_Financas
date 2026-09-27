@@ -405,6 +405,40 @@ def test_simulador_base_igual_dre() -> None:
     assert res["tax"] < 0.01, f"tributos não acompanharam a receita (Δ {res['tax']})"
 
 
+def test_despesa_projetada_fornecedor_a_fornecedor() -> None:
+    """Fornecedor recorrente NÃO some quando a previsão do Bling acaba
+    (reportado 27/09/2026: Eduardo/Serrano sumiam em fev/27, Macedo/Alan em
+    set/27). Depois da última previsão, projeta a média dos últimos 3 meses
+    do fornecedor; fornecedor encerrado (sem pagamento no último mês
+    fechado e sem previsão) não é projetado."""
+    import sys
+    from datetime import date
+    sys.path.insert(0, str(HERE))
+    from dre_render import despesa_projetada_por_mes  # type: ignore
+
+    today = date(2026, 9, 15)
+    pagas = []
+    for m in (4, 5, 6, 7, 8):
+        pagas.append({"contato_nome": "SERRANO CONTABILIDADE", "historico": "hon",
+                      "valor": "800,00", "vencimento": f"2026-{m:02d}-10"})
+    for m in (4, 5, 6, 7):   # encerrado em jul → não projeta
+        pagas.append({"contato_nome": "EFATA TREINAMENTO", "historico": "nf",
+                      "valor": "30000,00", "vencimento": f"2026-{m:02d}-10"})
+    em_aberto = [{"contato_nome": "SERRANO CONTABILIDADE", "historico": "PREVISÃO",
+                  "valor": "1000,00", "saldo": "1000,00", "vencimento": f"2026-{m:02d}-20"}
+                 for m in (9, 10, 11, 12)]
+    dp = despesa_projetada_por_mes(pagas, em_aberto, today, "2027-03")
+    # set–dez: previsão do Bling vale, sem fill
+    for ym in ("2026-10", "2026-11", "2026-12"):
+        assert dp[ym]["complemento"] == 0, f"{ym}: não devia completar ({dp[ym]['fills']})"
+    # jan–mar/27: cauda = média de out/nov/dez previstos = 1000
+    for ym in ("2027-01", "2027-02", "2027-03"):
+        labs = {f["label"]: f["valor"] for f in dp[ym]["fills"]}
+        assert abs(labs.get("Serrano (contabilidade)", 0) - 1000) < 0.01, \
+            f"{ym}: Serrano devia seguir projetado a 1000, veio {labs}"
+        assert not any("Efata" in k for k in labs), f"{ym}: Efata encerrada projetada"
+
+
 TESTS = [
     test_sem_marcadores_pendentes,
     test_pgs_balanceadas,
@@ -418,6 +452,7 @@ TESTS = [
     test_proj_cfg_fonte_unica_despesa,
     test_pl_janela_ano_completo,
     test_simulador_base_igual_dre,
+    test_despesa_projetada_fornecedor_a_fornecedor,
 ]
 
 

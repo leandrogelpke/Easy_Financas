@@ -478,89 +478,140 @@ def receita_sintetica_por_mes(
     return dict(out)
 
 
+def _ym_add(ym: str, k: int) -> str:
+    y, m = int(ym[:4]), int(ym[5:7]) - 1 + k
+    y += m // 12
+    return f"{y:04d}-{m % 12 + 1:02d}"
+
+
 def despesa_projetada_por_mes(
     pagas: list[dict],
     em_aberto: list[dict],
     today: date,
     ate: str,
     n_meses: int = 3,
-) -> dict[str, dict[str, float]]:
+) -> dict[str, dict[str, Any]]:
     """FONTE ÚNICA da despesa projetada (espelho de receita_sintetica_por_mes).
 
     Regra da sincronia entre abas (11/09/2026): toda superfície que mostra
     despesa futura — DRE, P&L 2 anos, gráfico Receita×Despesas, fluxo da
-    Caixa, aba Projeção, card Runway — deriva DESTA função. Nenhum módulo
-    recalcula média por conta própria.
+    Caixa, aba Projeção, card Runway, Simulador — deriva DESTA função.
+    Nenhum módulo recalcula média por conta própria.
+
+    MÉTODO FORNECEDOR A FORNECEDOR (27/09/2026, reportado pelo Leandro):
+    a regra antiga era agregada — complemento = max(0, média 3m op −
+    agendado). Quando o agendado do mês (previsões no Bling + projeções
+    manuais) passava da média, o complemento zerava e fornecedores cuja
+    previsão no Bling acabava (Eduardo e Serrano em fev/27, Macedo e Alan
+    em ago/27, LWSA, Cralus…) simplesmente sumiam da projeção. Agora:
+
+      1. Fornecedor RECORRENTE (chave = rótulo do _classify, só grupos
+         operacionais) = pago em ≥3 dos últimos 6 meses (fechados + o
+         corrente) OU com previsão em ≥6 meses futuros (ex.: projeções
+         manuais de novos PJ);
+         e ATIVO = pago no último mês fechado ou no corrente, ou com
+         previsão futura. (Efata/Milajanu encerrados ficam de fora.)
+      2. Enquanto houver previsão no Bling, vale a previsão (buracos
+         dentro da série agendada são respeitados).
+      3. Depois da ÚLTIMA previsão do fornecedor (ou a partir do mês
+         corrente, se ele não tem previsão), projeta a média dos últimos
+         `n_meses` meses conhecidos dele (pago ou previsto; meses vazios
+         dentro da janela contam zero). No mês corrente o complemento é
+         max(0, média − pago − previsto no mês).
 
     Por mês (mês corrente → `ate`):
-      {"media_op":      média dos últimos 3 meses FECHADOS de pagas
-                        OPERACIONAIS (exclui aporte_socio e nao_recorrente,
-                        via _classify — mesma classificação do DRE),
+      {"media_op":      média agregada 3m fechados op (informativo/rótulos),
        "realizado_op":  pago no próprio mês (só relevante no corrente),
        "agendado_op":   em aberto op do mês (saldo, fallback valor),
        "estrutural":    em aberto nao_recorrente do mês (parcelas reais),
-       "complemento":   max(0, media_op − realizado_op − agendado_op),
-       "total_op":      realizado_op + agendado_op + complemento}
-
-    3 meses (e não 6/12): mesma janela que a aba Projeção usava — reage
-    rápido a cortes reais (ex.: fim da Efata). O complemento representa a
-    despesa recorrente que TODO mês tem mas cujas NFs ainda não foram
-    lançadas no Bling — sem ele, meses futuros pareciam ter só as parcelas
-    agendadas e o resultado projetado saía otimista (o espelho exato do bug
-    de receita corrigido em 11/09).
+       "complemento":   soma dos fills por fornecedor,
+       "total_op":      realizado_op + agendado_op + complemento,
+       "fills":         [{contato, historico, label, grupo, sub, valor}]}
     """
     cutoff = today.strftime("%Y-%m")
-
-    def _grupo(r: dict) -> str:
-        return _classify(r.get("contato_nome", "") or "",
-                         r.get("historico", "") or "")[0]
+    n_meses = max(1, int(n_meses or 3))
+    _EXC = ("aporte_socio", "nao_recorrente")
 
     def _val_aberto(r: dict) -> float:
         v = _parse_money(r.get("saldo"))
         return v if v != 0 else _parse_money(r.get("valor", 0))
 
-    # média 3m fechados operacionais
+    # média agregada (informativa) — janela n_meses fechados
     desp_pm: dict[str, float] = defaultdict(float)
+    paid: dict[str, dict[str, float]] = defaultdict(lambda: defaultdict(float))
+    sched: dict[str, dict[str, float]] = defaultdict(lambda: defaultdict(float))
+    meta: dict[str, tuple] = {}
     for r in pagas:
         ym = (r.get("vencimento") or "")[:7]
-        if ym and ym < cutoff and _grupo(r) not in ("aporte_socio", "nao_recorrente"):
-            desp_pm[ym] += _parse_money(r.get("valor", 0))
-    ult3, y, m = [], today.year, today.month
-    for _ in range(max(1, int(n_meses or 3))):  # n_meses≠3 só no Simulador
-        m -= 1
-        if m == 0:
-            y, m = y - 1, 12
-        ult3.append(f"{y:04d}-{m:02d}")
-    media_op = round(sum(desp_pm.get(x, 0) for x in ult3) / (len(ult3) or 1), 2)
+        if not ym or ym > cutoff:
+            continue
+        g, sub, lab = _classify(r.get("contato_nome", "") or "", r.get("historico", "") or "")
+        if g in _EXC:
+            continue
+        v = _parse_money(r.get("valor", 0))
+        if ym < cutoff:
+            desp_pm[ym] += v
+        paid[lab][ym] += v
+        meta.setdefault(lab, (g, sub, r.get("contato_nome", "") or "", r.get("historico", "") or ""))
+    ult = [_ym_add(cutoff, -k) for k in range(1, n_meses + 1)]
+    media_op = round(sum(desp_pm.get(x, 0) for x in ult) / len(ult), 2)
 
-    # buckets por mês
-    out: dict[str, dict[str, float]] = {}
+    out: dict[str, dict[str, Any]] = {}
     ym = cutoff
     while ym <= ate:
         out[ym] = {"media_op": media_op, "realizado_op": 0.0,
-                   "agendado_op": 0.0, "estrutural": 0.0}
-        y2, m2 = int(ym[:4]), int(ym[5:7]) + 1
-        if m2 > 12:
-            y2, m2 = y2 + 1, 1
-        ym = f"{y2:04d}-{m2:02d}"
+                   "agendado_op": 0.0, "estrutural": 0.0, "fills": []}
+        ym = _ym_add(ym, 1)
 
-    for r in pagas:  # realizado do mês corrente
-        ym = (r.get("vencimento") or "")[:7]
-        if ym in out and _grupo(r) not in ("aporte_socio", "nao_recorrente"):
-            out[ym]["realizado_op"] += _parse_money(r.get("valor", 0))
+    for lab, pm in paid.items():
+        if cutoff in out:
+            out[cutoff]["realizado_op"] += pm.get(cutoff, 0.0)
     for r in em_aberto:
         ym = (r.get("vencimento") or "")[:7]
         if ym not in out:
             continue
-        g = _grupo(r)
+        g, sub, lab = _classify(r.get("contato_nome", "") or "", r.get("historico", "") or "")
+        v = _val_aberto(r)
         if g == "nao_recorrente":
-            out[ym]["estrutural"] += _val_aberto(r)
+            out[ym]["estrutural"] += v
         elif g != "aporte_socio":
-            out[ym]["agendado_op"] += _val_aberto(r)
+            out[ym]["agendado_op"] += v
+            sched[lab][ym] += v
+            meta[lab] = (g, sub, r.get("contato_nome", "") or "", r.get("historico", "") or "")
+
+    # ── fills fornecedor a fornecedor ──
+    janela6 = [_ym_add(cutoff, -k) for k in range(0, 6)]   # corrente + 5 fechados
+    ult_fechado = _ym_add(cutoff, -1)
+    for lab in set(paid) | set(sched):
+        pm, sm = paid.get(lab, {}), sched.get(lab, {})
+        n_pagos = sum(1 for x in janela6 if pm.get(x, 0) > 0)
+        n_prev = sum(1 for x, v in sm.items() if x > cutoff and v > 0)
+        recorrente = n_pagos >= 3 or n_prev >= 6
+        ativo = pm.get(ult_fechado, 0) > 0 or pm.get(cutoff, 0) > 0 or n_prev > 0
+        if not (recorrente and ativo):
+            continue
+        ult_prev = max((x for x, v in sm.items() if v > 0), default=None)
+        inicio_cauda = _ym_add(ult_prev, 1) if ult_prev and ult_prev >= cutoff else cutoff
+        # média dos últimos n_meses conhecidos antes da cauda (pago ou previsto)
+        ref = [_ym_add(inicio_cauda, -k) for k in range(1, n_meses + 1)]
+        serie = {x: (sm.get(x, 0.0) if x >= cutoff else 0.0) + pm.get(x, 0.0) for x in ref}
+        rr = sum(serie.values()) / n_meses
+        if rr <= 0.5:
+            continue
+        g, sub, contato, hist = meta[lab]
+        for ym in out:
+            if ym < inicio_cauda:
+                continue
+            ja = pm.get(ym, 0.0) + sm.get(ym, 0.0) if ym == cutoff else sm.get(ym, 0.0)
+            v = round(max(0.0, rr - ja), 2)
+            if v > 0.5:
+                out[ym]["fills"].append({"contato": contato, "historico": hist,
+                                         "label": lab, "grupo": g, "sub": sub,
+                                         "valor": v})
 
     for ym, d in out.items():
-        d["complemento"] = round(
-            max(0.0, media_op - d["realizado_op"] - d["agendado_op"]), 2)
+        d["fills"].sort(key=lambda f: -f["valor"])
+        d["complemento"] = round(sum(f["valor"] for f in d["fills"]), 2)
         d["total_op"] = round(
             d["realizado_op"] + d["agendado_op"] + d["complemento"], 2)
         for k in ("realizado_op", "agendado_op", "estrutural"):
@@ -711,15 +762,10 @@ def _build_matriz(
     for ym in months:
         if ym < cutoff or ym not in _dp:
             continue
-        esperado_ym = (grupos.get("deducoes_pis_esperado", {}).get(ym, 0)
-                       + grupos.get("deducoes_cofins_esperado", {}).get(ym, 0))
-        comp = round(max(0.0, _dp[ym]["complemento"] - esperado_ym), 2)
-        if comp <= 0.005:
-            continue
-        add_desp({"contato_nome": "Projeção despesa recorrente (média 3m)",
-                  "historico": "Projeção automática — fonte única "
-                               "despesa_projetada_por_mes",
-                  "vencimento": f"{ym}-28", "valor": comp}, ym, "projetado")
+        for f in _dp[ym]["fills"]:
+            add_desp({"contato_nome": f["contato"],
+                      "historico": f["historico"],
+                      "vencimento": f"{ym}-28", "valor": f["valor"]}, ym, "projetado")
 
     return {
         "months": months,
@@ -920,8 +966,10 @@ def _build_matriz_2y(
             continue
         year = int(ym[:4])
         for gkey in all_grupo_keys:
-            if gkey == "receita_servicos" and ym >= cutoff:
-                continue  # receita futura tem projeção própria (média recorrente)
+            if ym >= cutoff:
+                # mês corrente/futuro: receita tem projeção própria (média
+                # recorrente) e despesa vem fornecedor a fornecedor (passo 3b)
+                continue
             if gkey in ("aporte_socio", "nao_recorrente"):
                 # Estrutural/patrimonial NUNCA vira média: aporte é decisão
                 # pontual do sócio e buy-out são parcelas reais agendadas —
@@ -944,24 +992,28 @@ def _build_matriz_2y(
                 if ym >= cutoff:
                     fills_futuros[ym][gkey] = grupos[gkey][ym]
 
-    # 3b. NORMALIZAÇÃO à fonte única (despesa_projetada_por_mes): a soma dos
-    # fills de um mês futuro tem que bater com o complemento canônico (média
-    # 3m op − pago − agendado). Sem isso o P&L 2 anos projetava despesa por
-    # média-por-grupo enquanto DRE/Caixa/Projeção usavam a média 3m — quarta
-    # fórmula divergente (sincronia de 11/09/2026). A proporção entre grupos
-    # é mantida; só a escala muda.
+    # 3b. DESPESA FUTURA (ym >= corrente) — fonte única, FORNECEDOR A
+    # FORNECEDOR (despesa_projetada_por_mes, 27/09/2026). O fill por média de
+    # grupo acima NÃO roda para meses >= corrente (ver `continue` no passo 3);
+    # aqui cada fornecedor recorrente cuja previsão no Bling acabou ganha a
+    # própria média, com item nomeado (drill/simulador mostram "Eduardo",
+    # "Serrano"… em vez de um bloco anônimo "média 3m").
     _dp2 = despesa_projetada_por_mes(pagas, em_aberto, today, months[-1],
                                      n_meses=media_desp_meses or 3)
-    for ym, fills in fills_futuros.items():
-        if ym not in _dp2:
+    for ym, d in _dp2.items():
+        if ym not in months_set:
             continue
-        alvo = _dp2[ym]["complemento"]
-        soma = sum(fills.values())
-        if soma <= 0.005:
-            continue
-        fator = alvo / soma
-        for gkey, v in fills.items():
-            grupos[gkey][ym] = round(v * fator, 2)
+        for f in d["fills"]:
+            g, sub = f["grupo"], f["sub"]
+            v = f["valor"]
+            grupos[g][ym] = round(grupos[g].get(ym, 0) + v, 2)
+            subgrupos[g][sub][ym] += v
+            items[g][sub].append({
+                "ym": ym, "venc": f"{ym}-28", "contato": f["contato"],
+                "historico": f["historico"], "valor": round(v, 2), "doc": "",
+                "cat_bling": "", "kind": "projetado",
+            })
+            cell_kinds[g].setdefault(ym, "projetado")
 
     # 4. Receita por mês
     receita_kinds: dict[str, str] = {}
