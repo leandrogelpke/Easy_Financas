@@ -1,13 +1,13 @@
 {
  "_meta": {
-  "gerado_em": "2026-09-27 22:06:34",
-  "snapshot_origem": "bling_data_2026-09-27.json",
+  "gerado_em": "2026-09-28 18:10:06",
+  "snapshot_origem": "bling_data_2026-09-28.json",
   "window_start": "2026-02-01",
   "totais": {
    "contas_pagar_pagas": 519,
-   "contas_receber_recebidas": 80,
+   "contas_receber_recebidas": 81,
    "contas_pagar_em_aberto": 125,
-   "contas_receber_em_aberto": 12
+   "contas_receber_em_aberto": 11
   }
  },
  "contas_pagar_pagas": [
@@ -12551,6 +12551,27 @@
    "portador_id": ""
   },
   {
+   "id": 26982324182,
+   "situacao_codigo": 2,
+   "situacao": "Recebida",
+   "vencimento": "2026-09-21",
+   "vencimento_original": "",
+   "data_emissao": "2026-09-28",
+   "data_pagamento": "",
+   "competencia": "",
+   "valor": "9365,29",
+   "saldo": "",
+   "numero_documento": "",
+   "historico": "",
+   "contato_id": 16547090829,
+   "contato_nome": "TOTVS S.A. SANTA CATARINA",
+   "contato_documento": "53113791001790",
+   "categoria_id": "",
+   "categoria_descricao": "",
+   "categoria_tipo": "",
+   "portador_id": ""
+  },
+  {
    "id": 26883375195,
    "situacao_codigo": 2,
    "situacao": "Recebida",
@@ -15225,7 +15246,7 @@
    "id": 26438068520,
    "situacao_codigo": 1,
    "situacao": "Em aberto",
-   "vencimento": "2026-09-25",
+   "vencimento": "2026-09-30",
    "vencimento_original": "",
    "data_emissao": "2026-07-27",
    "data_pagamento": "",
@@ -15237,27 +15258,6 @@
    "contato_id": 18288350760,
    "contato_nome": "Atlantis Distribuidora de Produtos de Higiene Ltda",
    "contato_documento": "55633304000188",
-   "categoria_id": "",
-   "categoria_descricao": "",
-   "categoria_tipo": "",
-   "portador_id": ""
-  },
-  {
-   "id": 26883293679,
-   "situacao_codigo": 1,
-   "situacao": "Em aberto",
-   "vencimento": "2026-09-25",
-   "vencimento_original": "",
-   "data_emissao": "2026-09-15",
-   "data_pagamento": "",
-   "competencia": "",
-   "valor": "8789,33",
-   "saldo": "",
-   "numero_documento": "",
-   "historico": "",
-   "contato_id": 16547090829,
-   "contato_nome": "TOTVS S.A. SANTA CATARINA",
-   "contato_documento": "53113791001790",
    "categoria_id": "",
    "categoria_descricao": "",
    "categoria_tipo": "",
