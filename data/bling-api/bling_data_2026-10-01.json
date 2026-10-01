@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-10-01 14:01:45",
+    "fetched_at": "2026-10-01 17:20:49",
     "today": "2026-10-01",
     "lixeira_descartados": [
       {
@@ -2778,6 +2778,27 @@
       "contato_documento": "",
       "categoria_id": 14665159886,
       "categoria_descricao": "Contribuição social sobre lucro líquido",
+      "categoria_tipo": 1,
+      "portador_id": 14892107625
+    },
+    {
+      "id": 27015860027,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-10-01",
+      "vencimento_original": "2026-10-01",
+      "data_emissao": "2026-10-01",
+      "data_pagamento": "",
+      "competencia": "2026-10-01",
+      "valor": "1000,00",
+      "saldo": "1000,00",
+      "numero_documento": "",
+      "historico": "ADIANTAMENTO - DESPESAS COM REFEIÇÃO E DESLOCAMENTO PARA FLORAL ATLANTA 01.10 A 05.10",
+      "contato_id": 17358962597,
+      "contato_nome": "Eduardo Faria de Godoy 29853590824",
+      "contato_documento": "31968032000109",
+      "categoria_id": 14734483911,
+      "categoria_descricao": "2010000031 - REEMBOLSO LANCHES E REFEICOES",
       "categoria_tipo": 1,
       "portador_id": 14892107625
     },
