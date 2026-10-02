@@ -1,11 +1,11 @@
 {
  "_meta": {
-  "gerado_em": "2026-10-01 23:10:14",
-  "snapshot_origem": "bling_data_2026-10-01.json",
+  "gerado_em": "2026-10-02 16:16:19",
+  "snapshot_origem": "bling_data_2026-10-02.json",
   "window_start": "2026-03-01",
   "totais": {
    "contas_pagar_pagas": 522,
-   "contas_receber_recebidas": 81,
+   "contas_receber_recebidas": 82,
    "contas_pagar_em_aberto": 126,
    "contas_receber_em_aberto": 12
   }
@@ -12675,6 +12675,27 @@
    "categoria_descricao": "",
    "categoria_tipo": "",
    "portador_id": ""
+  },
+  {
+   "id": 26438068520,
+   "situacao_codigo": 2,
+   "situacao": "Recebida",
+   "vencimento": "2026-09-30",
+   "vencimento_original": "",
+   "data_emissao": "2026-07-27",
+   "data_pagamento": "",
+   "competencia": "",
+   "valor": "4082,00",
+   "saldo": "",
+   "numero_documento": "",
+   "historico": "",
+   "contato_id": 18288350760,
+   "contato_nome": "Atlantis Distribuidora de Produtos de Higiene Ltda",
+   "contato_documento": "55633304000188",
+   "categoria_id": "",
+   "categoria_descricao": "",
+   "categoria_tipo": "",
+   "portador_id": ""
   }
  ],
  "contas_pagar_em_aberto": [
@@ -15327,27 +15348,6 @@
  ],
  "contas_receber_em_aberto": [
   {
-   "id": 26438068520,
-   "situacao_codigo": 1,
-   "situacao": "Em aberto",
-   "vencimento": "2026-09-30",
-   "vencimento_original": "",
-   "data_emissao": "2026-07-27",
-   "data_pagamento": "",
-   "competencia": "",
-   "valor": "4080,84",
-   "saldo": "",
-   "numero_documento": "",
-   "historico": "",
-   "contato_id": 18288350760,
-   "contato_nome": "Atlantis Distribuidora de Produtos de Higiene Ltda",
-   "contato_documento": "55633304000188",
-   "categoria_id": "",
-   "categoria_descricao": "",
-   "categoria_tipo": "",
-   "portador_id": ""
-  },
-  {
    "id": 25206426639,
    "situacao_codigo": 1,
    "situacao": "Em aberto",
@@ -15405,6 +15405,27 @@
    "contato_id": 18005142574,
    "contato_nome": "Usina São Francisco S/A",
    "contato_documento": "71324792000106",
+   "categoria_id": "",
+   "categoria_descricao": "",
+   "categoria_tipo": "",
+   "portador_id": ""
+  },
+  {
+   "id": 27023390311,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-10-31",
+   "vencimento_original": "",
+   "data_emissao": "2026-10-02",
+   "data_pagamento": "",
+   "competencia": "",
+   "valor": "10000,00",
+   "saldo": "",
+   "numero_documento": "",
+   "historico": "",
+   "contato_id": 18425185692,
+   "contato_nome": "MUSEU DE ARTE DE SÃO PAULO ASSIS CHATEAUBRIAND - MASP",
+   "contato_documento": "60664745000187",
    "categoria_id": "",
    "categoria_descricao": "",
    "categoria_tipo": "",
