@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-10-04 12:22:29",
+    "fetched_at": "2026-10-04 15:38:34",
     "today": "2026-10-04",
     "lixeira_descartados": [
       {
@@ -124,7 +124,7 @@
       }
     ],
     "merged_historico": true,
-    "window_start": "2024-10-01",
+    "window_start": "2026-03-01",
     "preservados_do_historico": 0
   },
   "categorias": [
