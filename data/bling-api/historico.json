@@ -1,12 +1,12 @@
 {
  "_meta": {
-  "gerado_em": "2026-10-06 20:13:32",
+  "gerado_em": "2026-10-06 23:01:34",
   "snapshot_origem": "bling_data_2026-10-06.json",
   "window_start": "2026-03-01",
   "totais": {
    "contas_pagar_pagas": 523,
    "contas_receber_recebidas": 68,
-   "contas_pagar_em_aberto": 128,
+   "contas_pagar_em_aberto": 129,
    "contas_receber_em_aberto": 15
   }
  },
@@ -13159,6 +13159,27 @@
    "categoria_id": 0,
    "categoria_descricao": "",
    "categoria_tipo": "",
+   "portador_id": 14892107625
+  },
+  {
+   "id": 27060560848,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-10-15",
+   "vencimento_original": "2026-10-15",
+   "data_emissao": "2026-10-06",
+   "data_pagamento": "",
+   "competencia": "2026-10-06",
+   "valor": "26,50",
+   "saldo": "26,50",
+   "numero_documento": "",
+   "historico": "CUSTOS TRANS. EXTERIOR - IOF 10/2026",
+   "contato_id": 16596986114,
+   "contato_nome": "CARTAO DE CREDITO",
+   "contato_documento": "",
+   "categoria_id": 14672839295,
+   "categoria_descricao": "IOF",
+   "categoria_tipo": 1,
    "portador_id": 14892107625
   },
   {
