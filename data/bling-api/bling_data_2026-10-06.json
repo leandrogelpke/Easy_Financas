@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-10-05 21:47:39",
+    "fetched_at": "2026-10-06 13:46:52",
     "today": "2026-10-06",
     "lixeira_descartados": [
       {
@@ -70,6 +70,13 @@
         "dataset": "contas_pagar_em_aberto",
         "id": 26245670742,
         "vencimento": "2026-09-25",
+        "valor": 22000,
+        "contato": ""
+      },
+      {
+        "dataset": "contas_pagar_em_aberto",
+        "id": 26245670751,
+        "vencimento": "2026-10-26",
         "valor": 22000,
         "contato": ""
       },
@@ -2914,6 +2921,27 @@
       "portador_id": 14892107625
     },
     {
+      "id": 27054216182,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-10-15",
+      "vencimento_original": "2026-10-15",
+      "data_emissao": "2026-10-06",
+      "data_pagamento": "",
+      "competencia": "2026-10-01",
+      "valor": "1200,00",
+      "saldo": "1200,00",
+      "numero_documento": "001238/01",
+      "historico": "Ref. a NF nº 001238",
+      "contato_id": 17883209125,
+      "contato_nome": "EP SERVIÇOS DE TECNOLOGIA LTDA",
+      "contato_documento": "07635863000184",
+      "categoria_id": 0,
+      "categoria_descricao": "",
+      "categoria_tipo": "",
+      "portador_id": 14892107625
+    },
+    {
       "id": 24868807282,
       "situacao_codigo": 1,
       "situacao": "Em aberto",
@@ -3079,27 +3107,6 @@
       "categoria_id": 0,
       "categoria_descricao": "",
       "categoria_tipo": "",
-      "portador_id": 14892107625
-    },
-    {
-      "id": 26245670751,
-      "situacao_codigo": 1,
-      "situacao": "Em aberto",
-      "vencimento": "2026-10-26",
-      "vencimento_original": "2026-10-20",
-      "data_emissao": "2026-07-01",
-      "data_pagamento": "",
-      "competencia": "2026-10-20",
-      "valor": "22000,00",
-      "saldo": "22000,00",
-      "numero_documento": "",
-      "historico": "PREVISÃO PRESTAÇÃO DE SERVIÇOS DE CONSULTORIA",
-      "contato_id": 18234904217,
-      "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
-      "contato_documento": "39741876000124",
-      "categoria_id": 14737459171,
-      "categoria_descricao": "Salários Comercial",
-      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
