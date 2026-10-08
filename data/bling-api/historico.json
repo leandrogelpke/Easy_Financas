@@ -1,12 +1,12 @@
 {
  "_meta": {
-  "gerado_em": "2026-10-08 17:24:24",
+  "gerado_em": "2026-10-08 20:41:34",
   "snapshot_origem": "bling_data_2026-10-08.json",
   "window_start": "2026-03-01",
   "totais": {
    "contas_pagar_pagas": 523,
    "contas_receber_recebidas": 68,
-   "contas_pagar_em_aberto": 131,
+   "contas_pagar_em_aberto": 132,
    "contas_receber_em_aberto": 16
   }
  },
@@ -13306,6 +13306,27 @@
    "categoria_id": 14665159865,
    "categoria_descricao": "Serviços de terceiros",
    "categoria_tipo": 1,
+   "portador_id": 14892107625
+  },
+  {
+   "id": 27081991029,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-10-20",
+   "vencimento_original": "2026-10-20",
+   "data_emissao": "2026-10-08",
+   "data_pagamento": "",
+   "competencia": "2026-10-07",
+   "valor": "12000,00",
+   "saldo": "12000,00",
+   "numero_documento": "000001/01",
+   "historico": "Ref. a NF nº 000001",
+   "contato_id": 18440362665,
+   "contato_nome": "MEVOLUTION GESTAO & TECNOLOGIA LTDA",
+   "contato_documento": "69428071000196",
+   "categoria_id": 0,
+   "categoria_descricao": "",
+   "categoria_tipo": "",
    "portador_id": 14892107625
   },
   {
