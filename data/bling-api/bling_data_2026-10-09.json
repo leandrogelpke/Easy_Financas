@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-10-09 13:59:55",
+    "fetched_at": "2026-10-09 17:06:18",
     "today": "2026-10-09",
     "lixeira_descartados": [
       {
@@ -3116,6 +3116,27 @@
       "portador_id": 14892107625
     },
     {
+      "id": 27090267223,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-10-20",
+      "vencimento_original": "2026-10-20",
+      "data_emissao": "2026-10-09",
+      "data_pagamento": "",
+      "competencia": "2026-10-02",
+      "valor": "785,00",
+      "saldo": "785,00",
+      "numero_documento": "011680/01",
+      "historico": "Ref. a NF nº 011680",
+      "contato_id": 16547098383,
+      "contato_nome": "SERRANO CONTABILIDADE LIMITADA",
+      "contato_documento": "11048310000100",
+      "categoria_id": 14734483903,
+      "categoria_descricao": "2010000023 - HONORARIOS CONTABEIS",
+      "categoria_tipo": 1,
+      "portador_id": 14892107625
+    },
+    {
       "id": 26938886486,
       "situacao_codigo": 1,
       "situacao": "Em aberto",
@@ -3197,6 +3218,27 @@
       "categoria_id": 0,
       "categoria_descricao": "",
       "categoria_tipo": "",
+      "portador_id": 14892107625
+    },
+    {
+      "id": 27091159008,
+      "situacao_codigo": 1,
+      "situacao": "Em aberto",
+      "vencimento": "2026-10-26",
+      "vencimento_original": "2026-10-26",
+      "data_emissao": "2026-10-09",
+      "data_pagamento": "",
+      "competencia": "2026-10-09",
+      "valor": "5234,50",
+      "saldo": "5234,50",
+      "numero_documento": "",
+      "historico": "Ressarcimento Cliente - LORD",
+      "contato_id": 16605292185,
+      "contato_nome": "TOTVS S.A.",
+      "contato_documento": "53113791000122",
+      "categoria_id": 14665159846,
+      "categoria_descricao": "Custo dos serviços prestados",
+      "categoria_tipo": 1,
       "portador_id": 14892107625
     },
     {
