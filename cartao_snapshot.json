@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "generated_at": "2026-10-09 12:16:36",
+    "generated_at": "2026-10-12 06:10:57",
     "input_dir": "cartao/raw",
-    "n_pdfs": 22,
+    "n_pdfs": 32,
     "n_faturas": 20,
     "n_transacoes": 78,
     "tool": "fetch-cartao.py"
@@ -321,7 +321,7 @@
       "total_brl": 12908.44,
       "total_usd": 2219.66,
       "n_itens": 7,
-      "source": "Cartão Banco Bradesco 07.2026.pdf"
+      "source": "Cartão Banco Bradesco 07.2026.pdf"
     },
     {
       "comp": "2026-07",
@@ -331,7 +331,7 @@
       "total_brl": 443.07,
       "total_usd": 0.0,
       "n_itens": 2,
-      "source": "IOF CARTÃO BRADESCO 07.2026.PDF"
+      "source": "Bradesco_IOF 07.2026.PDF"
     },
     {
       "comp": "2026-08",
@@ -341,7 +341,7 @@
       "total_brl": 1016.29,
       "total_usd": 25.24,
       "n_itens": 5,
-      "source": "FATURA CARTÃO DE CRÉDITO BRADESCO 08.2026.PDF"
+      "source": "FATURA CARTÃO DE CRÉDITO BRADESCO.PDF"
     },
     {
       "comp": "2026-08",
@@ -351,7 +351,7 @@
       "total_brl": 22.95,
       "total_usd": 0.0,
       "n_itens": 2,
-      "source": "IOF CARTÃO BRADESCO 08.2026.PDF"
+      "source": "IOF CARTÃO BRADESCO.PDF"
     },
     {
       "comp": "2026-09",
@@ -361,7 +361,7 @@
       "total_brl": 13324.45,
       "total_usd": 25.24,
       "n_itens": 7,
-      "source": "FATURA CARTÃO DE CRÉDITO BRADESCO 09.2026.PDF"
+      "source": "FATURA CARTÃO DE CRÉDITO BRADESCO 09.2026.PDF"
     },
     {
       "comp": "2026-09",
@@ -371,7 +371,7 @@
       "total_brl": 26.47,
       "total_usd": 0.0,
       "n_itens": 2,
-      "source": "IOF CARTÃO BRADESCO 09.2026.PDF"
+      "source": "IOF CARTÃO BRADESCO 09.2026.PDF"
     },
     {
       "comp": "2026-10",
