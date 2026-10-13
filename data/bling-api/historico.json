@@ -1,12 +1,12 @@
 {
  "_meta": {
-  "gerado_em": "2026-10-13 01:20:01",
+  "gerado_em": "2026-10-13 17:35:33",
   "snapshot_origem": "bling_data_2026-10-13.json",
   "window_start": "2026-03-01",
   "totais": {
    "contas_pagar_pagas": 523,
    "contas_receber_recebidas": 68,
-   "contas_pagar_em_aberto": 134,
+   "contas_pagar_em_aberto": 135,
    "contas_receber_em_aberto": 16
   }
  },
@@ -13347,6 +13347,27 @@
    "contato_documento": "11048310000100",
    "categoria_id": 14734483903,
    "categoria_descricao": "2010000023 - HONORARIOS CONTABEIS",
+   "categoria_tipo": 1,
+   "portador_id": 14892107625
+  },
+  {
+   "id": 27115050230,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-10-20",
+   "vencimento_original": "2026-10-20",
+   "data_emissao": "2026-10-13",
+   "data_pagamento": "",
+   "competencia": "2026-10-09",
+   "valor": "6500,00",
+   "saldo": "6500,00",
+   "numero_documento": "000062/01",
+   "historico": "Ref. a NF nº 000062",
+   "contato_id": 17358962597,
+   "contato_nome": "Eduardo Faria de Godoy 29853590824",
+   "contato_documento": "31968032000109",
+   "categoria_id": 14665159865,
+   "categoria_descricao": "Serviços de terceiros",
    "categoria_tipo": 1,
    "portador_id": 14892107625
   },
