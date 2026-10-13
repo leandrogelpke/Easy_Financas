@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-10-13 14:35:33",
+    "fetched_at": "2026-10-13 17:39:42",
     "today": "2026-10-13",
     "lixeira_descartados": [
       {
@@ -16367,6 +16367,27 @@
       "contato_documento": "04262870000190",
       "categoria_id": 14734483945,
       "categoria_descricao": "2040000001 - APORTE",
+      "categoria_tipo": 1,
+      "portador_id": 14892107625
+    },
+    {
+      "id": 27044132671,
+      "situacao_codigo": 2,
+      "situacao": "Paga",
+      "vencimento": "2026-10-13",
+      "vencimento_original": "2026-10-13",
+      "data_emissao": "2026-10-05",
+      "data_pagamento": "",
+      "competencia": "2026-10-05",
+      "valor": "757,64",
+      "saldo": "0,00",
+      "numero_documento": "",
+      "historico": "REEMBOLSO DE DESPESA 09/2026",
+      "contato_id": 18069802589,
+      "contato_nome": "ISABEL FELIX",
+      "contato_documento": "24728788857",
+      "categoria_id": 14734483888,
+      "categoria_descricao": "2010000008 - REEMBOLSOS KM",
       "categoria_tipo": 1,
       "portador_id": 14892107625
     }
