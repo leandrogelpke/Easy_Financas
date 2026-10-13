@@ -1,0 +1,93 @@
+{
+  "generated_at_brt": "2026-10-13 17:40:16",
+  "auditor": "ci_auditor.py",
+  "target_update_log": "update_2026-10-13_17.json",
+  "upstream_conclusion": "success",
+  "summary": {
+    "error": 0,
+    "warn": 0,
+    "info": 0,
+    "ok": 12
+  },
+  "ok": true,
+  "findings": [
+    {
+      "check": "fetch_bling",
+      "severity": "ok",
+      "detail": "Fetch do Bling concluído com sucesso.",
+      "recommendation": ""
+    },
+    {
+      "check": "registros_completos",
+      "severity": "ok",
+      "detail": "743 registros em 4 datasets (contas_pagar_em_aberto=135, contas_pagar_pagas=524, contas_receber_em_aberto=16, contas_receber_recebidas=68).",
+      "recommendation": ""
+    },
+    {
+      "check": "build_html",
+      "severity": "ok",
+      "detail": "index.html gerado sem erros.",
+      "recommendation": ""
+    },
+    {
+      "check": "gate_test_audit",
+      "severity": "ok",
+      "detail": "Gate test_audit verde.",
+      "recommendation": ""
+    },
+    {
+      "check": "gate_test_build",
+      "severity": "ok",
+      "detail": "Gate test_build verde.",
+      "recommendation": ""
+    },
+    {
+      "check": "precommit_gate",
+      "severity": "ok",
+      "detail": "Auditor pré-commit liberou a publicação.",
+      "recommendation": ""
+    },
+    {
+      "check": "push_pages",
+      "severity": "ok",
+      "detail": "Publicado. Commit a86d309cce947f35ede9012272362f46b8d9c023.",
+      "recommendation": ""
+    },
+    {
+      "check": "dados_nome_vazio",
+      "severity": "ok",
+      "detail": "Nomes de contato preenchidos (743/743).",
+      "recommendation": ""
+    },
+    {
+      "check": "dados_valor_vazio",
+      "severity": "ok",
+      "detail": "Todos os lançamentos têm valor.",
+      "recommendation": ""
+    },
+    {
+      "check": "dados_datas",
+      "severity": "ok",
+      "detail": "Datas de vencimento consistentes.",
+      "recommendation": ""
+    },
+    {
+      "check": "volume_anomalo",
+      "severity": "ok",
+      "detail": "Volume estável (743 vs 742 anterior).",
+      "recommendation": ""
+    },
+    {
+      "check": "falha_recorrente",
+      "severity": "ok",
+      "detail": "Sem padrões de falha recorrente em 22 execuções nos últimos 7 dias.",
+      "recommendation": ""
+    }
+  ],
+  "recommendations": [],
+  "links": {
+    "dashboard": "https://leandrogelpke.github.io/Easy_Financas/",
+    "audit_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/38464651793",
+    "update_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/38464207628"
+  }
+}
