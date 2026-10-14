@@ -1,0 +1,45 @@
+{
+  "run": {
+    "workflow": "update",
+    "agente": "principal",
+    "trigger": "schedule",
+    "run_id": "38646337331",
+    "run_number": "462",
+    "run_url": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/38646337331",
+    "started_at_utc": "2026-10-14 22:15:23",
+    "ended_at_utc": "2026-10-14 22:15:36",
+    "ended_at_brt": "2026-10-14 19:15:36",
+    "duration_s": 13
+  },
+  "steps": {
+    "fetch": "failure",
+    "merge_historico": "skipped",
+    "token_refresh": "unchanged",
+    "build": "success",
+    "gate_test_audit": "success",
+    "gate_test_build": "success",
+    "gate_test_merge": "success",
+    "gate_test_projecao": "skipped",
+    "precommit": "success",
+    "push": "skipped"
+  },
+  "records": {
+    "snapshot_file": "bling_data_2026-10-14.json",
+    "fetched_at": "2026-10-14 16:20:13",
+    "total": 745,
+    "contas_pagar_em_aberto": 137,
+    "contas_pagar_pagas": 524,
+    "contas_receber_em_aberto": 16,
+    "contas_receber_recebidas": 68,
+    "categorias": 219,
+    "contatos": 90
+  },
+  "commit_hash": null,
+  "warnings": [
+    "Publicação bloqueada pelo gate — última versão boa mantida no ar."
+  ],
+  "errors": [
+    "Fetch do Bling não concluiu com sucesso. Últimas linhas: File \"/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/urllib/request.py\", line 634, in http_response | response = self.parent.error( | ^^^^^^^^^^^^^^^^^^ | File \"/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/urllib/request.py\", line 563, in error | return self._call_chain(*args) | ^^^^^^^^^^^^^^^^^^^^^^^ | File \"/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/urllib/request.py\", line 496, in _call_chain | result = func(*args) | ^^^^^^^^^^^ | File \"/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/urllib/request.py\", line 643, in http_error_default | raise HTTPError(req.full_url, code, msg, hdrs, fp) | urllib.error.HTTPError: HTTP Error 403: Forbidden"
+  ],
+  "ok": false
+}
