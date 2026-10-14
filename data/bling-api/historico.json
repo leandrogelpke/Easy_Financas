@@ -1,12 +1,12 @@
 {
  "_meta": {
-  "gerado_em": "2026-10-13 23:17:14",
-  "snapshot_origem": "bling_data_2026-10-13.json",
+  "gerado_em": "2026-10-14 15:05:49",
+  "snapshot_origem": "bling_data_2026-10-14.json",
   "window_start": "2026-03-01",
   "totais": {
    "contas_pagar_pagas": 524,
    "contas_receber_recebidas": 68,
-   "contas_pagar_em_aberto": 135,
+   "contas_pagar_em_aberto": 137,
    "contas_receber_em_aberto": 16
   }
  },
@@ -13225,6 +13225,27 @@
    "portador_id": 14892107625
   },
   {
+   "id": 27125258733,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-10-19",
+   "vencimento_original": "2026-10-19",
+   "data_emissao": "2026-10-14",
+   "data_pagamento": "",
+   "competencia": "2026-10-05",
+   "valor": "1000,00",
+   "saldo": "1000,00",
+   "numero_documento": "000732/01",
+   "historico": "Ref. a NF nº 000732",
+   "contato_id": 17144642941,
+   "contato_nome": "CRALUS INFORMATICA LTDA",
+   "contato_documento": "13211001000127",
+   "categoria_id": 0,
+   "categoria_descricao": "",
+   "categoria_tipo": "",
+   "portador_id": 14892107625
+  },
+  {
    "id": 24240931234,
    "situacao_codigo": 1,
    "situacao": "Em aberto",
@@ -13387,6 +13408,27 @@
    "contato_id": 17358962597,
    "contato_nome": "Eduardo Faria de Godoy 29853590824",
    "contato_documento": "31968032000109",
+   "categoria_id": 14665159865,
+   "categoria_descricao": "Serviços de terceiros",
+   "categoria_tipo": 1,
+   "portador_id": 14892107625
+  },
+  {
+   "id": 27125453917,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-10-20",
+   "vencimento_original": "2026-10-20",
+   "data_emissao": "2026-10-14",
+   "data_pagamento": "",
+   "competencia": "2026-10-06",
+   "valor": "13000,00",
+   "saldo": "13000,00",
+   "numero_documento": "000302/01",
+   "historico": "Ref. a NF nº 000302",
+   "contato_id": 16593154786,
+   "contato_nome": "M. DE Q. MACEDO - EPP",
+   "contato_documento": "29137740000156",
    "categoria_id": 14665159865,
    "categoria_descricao": "Serviços de terceiros",
    "categoria_tipo": 1,
