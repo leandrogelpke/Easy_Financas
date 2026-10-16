@@ -249,6 +249,32 @@ def resolver_liquidados(
     return baixas
 
 
+def remover_baixados_fora_janela(
+    merged: dict[str, list[dict]],
+    snap: dict[str, Any],
+) -> dict[str, int]:
+    """
+    O fetch reconsulta os em aberto antigos (emissão antes da janela) que só
+    existem no histórico e lista em `_metadata.baixados_fora_janela` os que o
+    Bling já baixou/excluiu. Sem isto eles eram preservados congelados pra
+    sempre (regra 2) — caso 15/10/26.
+    """
+    out: dict[str, int] = {}
+    alvo: dict[str, set] = {}
+    for b in (snap.get("_metadata") or {}).get("baixados_fora_janela", []) or []:
+        if b.get("id") is not None and b.get("dataset"):
+            alvo.setdefault(b["dataset"], set()).add(str(b["id"]))
+    for bucket, ids in alvo.items():
+        if bucket not in merged:
+            continue
+        antes = len(merged[bucket])
+        merged[bucket] = [r for r in merged[bucket] if _rid(r) not in ids]
+        n = antes - len(merged[bucket])
+        if n:
+            out[bucket] = n
+    return out
+
+
 def escrever_csvs(dir_: Path, merged: dict[str, list[dict]], stem: str) -> None:
     """Reescreve os CSVs que o dre_render.py consome (_load_bling_csvs)."""
     for bucket, rows in merged.items():
@@ -310,6 +336,8 @@ def main() -> int:
         )
 
     baixas = resolver_liquidados(merged, snap)
+    for bucket, n in remover_baixados_fora_janela(merged, snap).items():
+        baixas[bucket] = baixas.get(bucket, 0) + n
     for bucket, n in baixas.items():
         log(f"  [baixa] {bucket}: -{n} já liquidado(s), removido(s) do em aberto")
 

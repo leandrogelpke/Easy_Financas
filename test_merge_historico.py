@@ -230,6 +230,22 @@ def test_sem_id_nao_acumula() -> None:
           len(l1) == 1 and len(l2) == 1, f"(l1={len(l1)} l2={len(l2)})")
 
 
+def test_baixado_fora_da_janela_sai_do_em_aberto() -> None:
+    """Caso 15/10/26: em aberto antigo (emissão antes da janela) preservado
+    do histórico, mas o fetch reconsultou e viu que foi baixado."""
+    from ci.merge_historico import remover_baixados_fora_janela
+    merged = {"contas_pagar_em_aberto": [rec(1, "2025-11-04", "2026-10-15"),
+                                         rec(2, "2026-01-07", "2026-11-15")]}
+    snap = {"_metadata": {"baixados_fora_janela": [
+        {"dataset": "contas_pagar_em_aberto", "id": 1, "motivo": "situacao 2"}]}}
+    n = remover_baixados_fora_janela(merged, snap)
+    ids = [r["id"] for r in merged["contas_pagar_em_aberto"]]
+    check("baixado fora da janela sai; o resto fica",
+          ids == [2] and n == {"contas_pagar_em_aberto": 1}, f"(ids={ids} n={n})")
+    n2 = remover_baixados_fora_janela(merged, {"_metadata": {}})
+    check("sem metadado não remove nada", n2 == {} and len(merged["contas_pagar_em_aberto"]) == 1)
+
+
 def main() -> int:
     print("── test_merge_historico ──")
     for fn in (
@@ -244,6 +260,7 @@ def main() -> int:
         test_sem_id_nao_acumula,
         test_fatiar_janela_emissao,
         test_enrich_defensivo_dados_antigos,
+        test_baixado_fora_da_janela_sai_do_em_aberto,
     ):
         fn()
     print()

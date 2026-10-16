@@ -681,7 +681,9 @@ def main() -> int:
         out_dir = DEFAULT_OUT if DEFAULT_OUT.exists() else FALLBACK_OUT
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    today = date.today().isoformat()
+    # Data de HOJE no fuso de Brasília: o runner do CI roda em UTC e a rodada
+    # das 21h BRT já caía no dia seguinte (venc. de hoje virava "vencido").
+    today = datetime.now(timezone(timedelta(hours=-3))).date().isoformat()
     oauth_cfg = json.loads(OAUTH_FILE.read_text())
     tokens = json.loads(TOKENS_FILE.read_text())
     client = BlingClient(oauth_cfg, tokens, quiet=args.quiet)
@@ -746,6 +748,55 @@ def main() -> int:
                                     or r.get("contato_nome") or ""),
                     })
 
+    # 2c) em aberto ANTIGOS (emissão antes da janela): não vêm na listagem da
+    #     rodada normal e o merge os preserva do histórico congelados — a baixa
+    #     nunca chegava (caso 15/10/26: ISS, Cartão e Bling já pagos seguiam
+    #     "vencidos"). Reconsulta cada id no detalhe: baixado/excluído → vai
+    #     pra baixados_fora_janela (o merge tira do em aberto); a pagar ainda
+    #     aberto → entra no snapshot com o dado fresco.
+    baixados_fora_janela: List[Dict[str, Any]] = []
+    hist_path = out_dir / "historico.json"
+    if (args.data_inicial and hist_path.exists() and not args.no_probe_lixeira
+            and not os.environ.get("EF_NO_PROBE_LIXEIRA")):
+        try:
+            hist = json.loads(hist_path.read_text(encoding="utf-8"))
+        except Exception as e:  # histórico ilegível não derruba o fetch
+            log(f"[fora-janela] histórico ilegível ({e}) — pulando", args.quiet)
+            hist = {}
+        for kind in ("pagar", "receber"):
+            if (kind, 1) not in fetched:
+                continue
+            ja = {str(x.get("id")) for x in fetched[(kind, 1)] if x.get("id")}
+            cand = [r for r in hist.get(f"contas_{kind}_em_aberto", []) or []
+                    if r.get("id") and str(r["id"]) not in ja
+                    and (r.get("data_emissao") or "") < args.data_inicial]
+            if cand:
+                log(f"[fora-janela] contas/{kind}: reconsultando {len(cand)} em aberto antigo(s)", args.quiet)
+            for r in cand:
+                rid = r["id"]
+                motivo = None
+                try:
+                    det = client.get(f"/contas/{kind}/{rid}", retries=2)
+                    data = (det or {}).get("data") or {}
+                    sit = data.get("situacao")
+                    if sit is not None and str(sit) != "1":
+                        motivo = f"situacao {sit}"
+                    elif kind == "pagar" and data.get("id"):
+                        fetched[(kind, 1)].append(data)
+                except RuntimeError as e:
+                    if "HTTP 404" in str(e):
+                        motivo = "404 (excluído)"
+                    # outro erro: fail-open, fica a versão do histórico
+                if motivo:
+                    baixados_fora_janela.append({
+                        "dataset": f"contas_{kind}_em_aberto", "id": rid,
+                        "vencimento": r.get("vencimento"), "valor": r.get("valor"),
+                        "contato": r.get("contato_nome") or "", "motivo": motivo,
+                    })
+                    log(f"  [fora-janela] {kind} id {rid} venc {r.get('vencimento')} "
+                        f"{str(r.get('contato_nome') or '')[:30]} — {motivo}, sai do em aberto", args.quiet)
+                time.sleep(SLEEP_BETWEEN)
+
     # 3) coletar contato_ids de tudo e buscar detalhe (se ainda nao veio)
     contato_ids: set[int] = set()
     for items in fetched.values():
@@ -767,6 +818,7 @@ def main() -> int:
             "fetched_at": datetime.now(timezone(timedelta(hours=-3))).strftime("%Y-%m-%d %H:%M:%S"),
             "today": today,
             "lixeira_descartados": lixeira_trilha,
+            "baixados_fora_janela": baixados_fora_janela,
         },
         "categorias": categorias,
         "contatos": list(contatos_idx.values()),
