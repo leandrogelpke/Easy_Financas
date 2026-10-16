@@ -949,12 +949,20 @@ def reconcile_em_aberto(
     # índice de gêmeos pagos (consumíveis) + realizado por contato×mês-venc
     paid_twins: dict[tuple, int] = defaultdict(int)
     paid_by_cm: dict[tuple, float] = defaultdict(float)
+    # id -> chave do gêmeo pago. O MESMO id em pagas e em aberto é o mesmo
+    # lançamento: a cópia "em aberto" é versão velha (cache do fetch) de algo
+    # já baixado. A baixa costuma mudar valor/vencimento (ISS R$ 1.326 → 1.318,
+    # venc 20/09 → 21/09), então a chave contato×venc×valor não casava e o
+    # fantasma sobrevivia (caso 15/10/26: R$ 33.514 "vencidos" já pagos).
+    paid_key_by_id: dict = {}
     for p in pagas:
         v = round(_recon_money(p.get("valor") or p.get("saldo")), 2)
         ck = _recon_contato(p)
         vc = _recon_venc(p)
         paid_twins[(ck, vc, v)] += 1
         paid_by_cm[(ck, vc[:7])] += v
+        if p.get("id") is not None:
+            paid_key_by_id[p.get("id")] = (ck, vc, v)
 
     # NFs reais EM ABERTO por contato×mês-venc — cobertura de previsões que
     # já viraram NF mas ainda aguardam pagamento (caso Alan set/26: previsão
@@ -968,6 +976,9 @@ def reconcile_em_aberto(
         ck0 = _recon_contato(r)
         vc0 = _recon_venc(r)
         h0 = (r.get("historico") or r.get("historico_descricao") or "")
+        if r.get("id") is not None and r.get("id") in paid_key_by_id:
+            _dup_sim[paid_key_by_id[r.get("id")]] += 1
+            continue
         if v0 > 0 and paid_twins.get((ck0, vc0, v0), 0) - _dup_sim[(ck0, vc0, v0)] > 0:
             _dup_sim[(ck0, vc0, v0)] += 1
             continue
@@ -1022,6 +1033,18 @@ def reconcile_em_aberto(
                     "historico": hist[:80], "motivo": _enc[:120],
                 })
                 continue
+
+        # (-0.5) mesmo id já consta como pago → versão velha do lançamento.
+        #       Match por id exato; consome o próprio gêmeo pago pra ele não
+        #       apagar outro lançamento aberto por heurística.
+        if r.get("id") is not None and r.get("id") in paid_key_by_id:
+            used[paid_key_by_id[r.get("id")]] += 1
+            ajustes.append({
+                "tipo": "DUPLICATA_PAGA", "contato": r.get("contato_nome", ""),
+                "contato_id": r.get("contato_id"), "venc": vc, "valor": v,
+                "historico": hist[:80], "motivo": "mesmo id já baixado no Bling",
+            })
+            continue
 
         # (A) duplicata de algo já pago — consome um gêmeo
         if v > 0 and paid_twins.get(key, 0) - used[key] > 0:

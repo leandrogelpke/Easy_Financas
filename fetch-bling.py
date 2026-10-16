@@ -482,6 +482,18 @@ def fetch_contas(
         except Exception:
             pass
 
+    # Poda o cache: item que a listagem desta situação já não devolve (foi
+    # baixado, excluído ou mudou de situação) NÃO pode voltar do cache. Antes
+    # o cache era devolvido inteiro e lançamento pago ficava "em aberto" pra
+    # sempre (caso 15/10/26: 7 contas a pagar já baixadas, R$ 33.514).
+    if detailed and max_items is None:
+        listed_ids = {int(x["id"]) for x in listed if x.get("id")}
+        antes = len(detailed)
+        detailed = [x for x in detailed if int(x.get("id", -1)) in listed_ids]
+        done_ids = {int(x["id"]) for x in detailed if x.get("id")}
+        if antes != len(detailed):
+            log(f"  [cache] {antes - len(detailed)} item(ns) fora da listagem atual — podados", client.quiet)
+
     todo = [x for x in listed if int(x.get("id", -1)) not in done_ids]
     if not todo:
         log(f"  [resume] tudo ja completo (cache hit)", client.quiet)
@@ -532,8 +544,25 @@ def probe_lixeira(client: "BlingClient", kind: str,
             keep.append(r)
             continue
         try:
-            client.get(f"/contas/{kind}/{rid}", retries=2)
-            keep.append(r)
+            det = client.get(f"/contas/{kind}/{rid}", retries=2)
+            sit = (det or {}).get("data", {}).get("situacao") if isinstance(det, dict) else None
+            if sit is not None and sit != 1 and str(sit) != "1":
+                # Detalhe fresco diz que não está mais em aberto (baixado).
+                dropped.append(r)
+                log(f"  [baixado] {kind} id {rid} venc {r.get('vencimento')} "
+                    f"situação {sit} no detalhe — removido do em aberto", quiet)
+            else:
+                # Atualiza com o detalhe fresco: o cache incremental nunca
+                # redetalha item aberto, e valor/vencimento/histórico mudam
+                # (caso 15/10/26: Eduardo 6.500 → 6.433,97 no Bling).
+                fresh = (det or {}).get("data") if isinstance(det, dict) else None
+                if kind == "pagar" and isinstance(fresh, dict) and fresh.get("id"):  # receber não usa cache
+                    novo = dict(fresh)
+                    for k, v in r.items():
+                        novo.setdefault(k, v)
+                    keep.append(novo)
+                else:
+                    keep.append(r)
         except RuntimeError as e:
             if "HTTP 404" in str(e):
                 dropped.append(r)

@@ -550,6 +550,64 @@ def test_probe_lixeira_404_descarta_resto_fica() -> None:
     assert [r["id"] for r in dropped] == [666]
 
 
+def test_reconcile_mesmo_id_pago_sai_mesmo_com_valor_e_venc_diferentes() -> None:
+    """Caso 15/10/26: a cópia em aberto é versão velha de um lançamento já
+    baixado — na baixa o valor/vencimento mudaram, então a chave
+    contato×venc×valor não casava. Match por id tem que remover; outro
+    lançamento do mesmo contato (id diferente) fica."""
+    pagas = [
+        {"id": 900, "contato_nome": "PREFEITURA", "vencimento": "2026-09-15",
+         "valor": "1.318,29", "historico": "ISS - 09/2026"},
+        {"id": 901, "contato_nome": "M. DE Q. MACEDO - EPP", "vencimento": "2026-09-21",
+         "valor": "13.000,00", "historico": "Ref. a NF nº 000292"},
+    ]
+    em_aberto = [
+        {"id": 900, "contato_nome": "PREFEITURA", "vencimento": "2026-09-15",
+         "valor": "1.326,26", "historico": "ISS - 05/2026"},
+        {"id": 901, "contato_nome": "M. DE Q. MACEDO - EPP", "vencimento": "2026-09-20",
+         "valor": "13.000,00", "historico": "Ref. a NF nº 000292"},
+        {"id": 902, "contato_nome": "M. DE Q. MACEDO - EPP", "vencimento": "2026-10-20",
+         "valor": "13.000,00", "historico": "Ref. a NF nº 000302"},
+    ]
+    limpo, aj = audit.reconcile_em_aberto(pagas, em_aberto, encerradas=[], ignorados={})
+    assert [r["id"] for r in limpo] == [902], limpo
+    assert [a["tipo"] for a in aj] == ["DUPLICATA_PAGA", "DUPLICATA_PAGA"]
+
+
+def test_probe_detalhe_baixado_sai_do_em_aberto() -> None:
+    """Sonda do fetch: detalhe fresco com situação != 1 (paga) → sai do em
+    aberto; situação 1 ou ausente → fica."""
+    import importlib.util, pathlib
+    p = pathlib.Path(__file__).resolve().parent / "fetch-bling.py"
+    spec = importlib.util.spec_from_file_location("fetch_bling_mod2", str(p))
+    fb = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(fb)
+
+    class FakeClient:
+        quiet = True
+        def get(self, path, retries=3):
+            if path.endswith("/2"):
+                return {"data": {"id": 2, "situacao": 2}}
+            if path.endswith("/1"):
+                return {"data": {"id": 1, "situacao": 1}}
+            return {"data": {}}
+
+    rows = [{"id": 1}, {"id": 2}, {"id": 3}]
+    keep, dropped = fb.probe_lixeira(FakeClient(), "pagar", rows, quiet=True, sleep=0)
+    assert [r["id"] for r in keep] == [1, 3]
+    assert [r["id"] for r in dropped] == [2]
+
+    class FakeClient2:
+        quiet = True
+        def get(self, path, retries=3):
+            return {"data": {"id": 5, "situacao": 1, "valor": 6433.97, "vencimento": "2026-10-20"}}
+    keep, _ = fb.probe_lixeira(FakeClient2(), "pagar",
+                               [{"id": 5, "valor": 6500.0, "vencimento": "2026-09-20", "extra": "x"}],
+                               quiet=True, sleep=0)
+    assert keep[0]["valor"] == 6433.97 and keep[0]["vencimento"] == "2026-10-20"
+    assert keep[0]["extra"] == "x"
+
+
 TESTS = [
     test_competencia_do_historico,
     test_trimestre_do_historico,
@@ -579,6 +637,8 @@ TESTS = [
     test_projecao_manual_idempotente,
     test_reconcile_lancamento_ignorado_por_id,
     test_probe_lixeira_404_descarta_resto_fica,
+    test_reconcile_mesmo_id_pago_sai_mesmo_com_valor_e_venc_diferentes,
+    test_probe_detalhe_baixado_sai_do_em_aberto,
 ]
 
 
