@@ -1,5 +1,5 @@
 {
-  "generated_at_brt": "2026-10-15 21:55:32",
+  "generated_at_brt": "2026-10-15 21:58:18",
   "auditor": "ci_auditor.py",
   "target_update_log": "update_2026-10-15_21.json",
   "upstream_conclusion": "success",
@@ -20,7 +20,7 @@
     {
       "check": "registros_completos",
       "severity": "ok",
-      "detail": "712 registros em 4 datasets (contas_pagar_em_aberto=102, contas_pagar_pagas=526, contas_receber_em_aberto=16, contas_receber_recebidas=68).",
+      "detail": "709 registros em 4 datasets (contas_pagar_em_aberto=99, contas_pagar_pagas=526, contas_receber_em_aberto=16, contas_receber_recebidas=68).",
       "recommendation": ""
     },
     {
@@ -50,13 +50,13 @@
     {
       "check": "push_pages",
       "severity": "ok",
-      "detail": "Publicado. Commit 59a62dd1f6aef6ba82487249783a2df3dce878d4.",
+      "detail": "Publicado. Commit 0ac2149018d61a24d4c41da3f5d567af8c945dde.",
       "recommendation": ""
     },
     {
       "check": "dados_nome_vazio",
       "severity": "ok",
-      "detail": "Nomes de contato preenchidos (712/712).",
+      "detail": "Nomes de contato preenchidos (709/709).",
       "recommendation": ""
     },
     {
@@ -74,7 +74,7 @@
     {
       "check": "volume_anomalo",
       "severity": "ok",
-      "detail": "Volume estável (712 vs 744 anterior).",
+      "detail": "Volume estável (709 vs 744 anterior).",
       "recommendation": ""
     },
     {
@@ -87,7 +87,7 @@
   "recommendations": [],
   "links": {
     "dashboard": "https://leandrogelpke.github.io/Easy_Financas/",
-    "audit_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/38832244126",
-    "update_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/38832064977"
+    "audit_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/38832503031",
+    "update_run": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/38832306161"
   }
 }
