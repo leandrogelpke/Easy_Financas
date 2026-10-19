@@ -1,12 +1,12 @@
 {
  "_meta": {
-  "gerado_em": "2026-10-19 16:58:43",
+  "gerado_em": "2026-10-19 22:54:29",
   "snapshot_origem": "bling_data_2026-10-19.json",
   "window_start": "2026-03-01",
   "totais": {
-   "contas_pagar_pagas": 529,
+   "contas_pagar_pagas": 530,
    "contas_receber_recebidas": 73,
-   "contas_pagar_em_aberto": 101,
+   "contas_pagar_em_aberto": 99,
    "contas_receber_em_aberto": 11
   }
  },
@@ -11119,6 +11119,27 @@
    "categoria_descricao": "IOF",
    "categoria_tipo": 1,
    "portador_id": 14892107625
+  },
+  {
+   "id": 27125258733,
+   "situacao_codigo": 2,
+   "situacao": "Paga",
+   "vencimento": "2026-10-19",
+   "vencimento_original": "2026-10-19",
+   "data_emissao": "2026-10-14",
+   "data_pagamento": "",
+   "competencia": "2026-10-05",
+   "valor": "938,50",
+   "saldo": "0,00",
+   "numero_documento": "000732/01",
+   "historico": "Ref. a NF nº 000732",
+   "contato_id": 17144642941,
+   "contato_nome": "CRALUS INFORMATICA LTDA",
+   "contato_documento": "13211001000127",
+   "categoria_id": 14737459393,
+   "categoria_descricao": "Hosting/Sistemas",
+   "categoria_tipo": 1,
+   "portador_id": 14892107625
   }
  ],
  "contas_receber_recebidas": [
@@ -12657,48 +12678,6 @@
   }
  ],
  "contas_pagar_em_aberto": [
-  {
-   "id": 24868807282,
-   "situacao_codigo": 1,
-   "situacao": "Em aberto",
-   "vencimento": "2026-10-19",
-   "vencimento_original": "2026-10-20",
-   "data_emissao": "2026-01-19",
-   "data_pagamento": "",
-   "competencia": "2026-10-19",
-   "valor": "10000,00",
-   "saldo": "10000,00",
-   "numero_documento": "401/10",
-   "historico": "ACORDO TRABALHISTA - PARC. 10/20",
-   "contato_id": 16593169188,
-   "contato_nome": "GEREMIAS FERREIRA LIMA 37305076805",
-   "contato_documento": "38625826000119",
-   "categoria_id": 14665159865,
-   "categoria_descricao": "Serviços de terceiros",
-   "categoria_tipo": 1,
-   "portador_id": 14892107625
-  },
-  {
-   "id": 27125258733,
-   "situacao_codigo": 1,
-   "situacao": "Em aberto",
-   "vencimento": "2026-10-19",
-   "vencimento_original": "2026-10-19",
-   "data_emissao": "2026-10-14",
-   "data_pagamento": "",
-   "competencia": "2026-10-05",
-   "valor": "938,50",
-   "saldo": "938,50",
-   "numero_documento": "000732/01",
-   "historico": "Ref. a NF nº 000732",
-   "contato_id": 17144642941,
-   "contato_nome": "CRALUS INFORMATICA LTDA",
-   "contato_documento": "13211001000127",
-   "categoria_id": 14737459393,
-   "categoria_descricao": "Hosting/Sistemas",
-   "categoria_tipo": 1,
-   "portador_id": 14892107625
-  },
   {
    "id": 24240931234,
    "situacao_codigo": 1,
