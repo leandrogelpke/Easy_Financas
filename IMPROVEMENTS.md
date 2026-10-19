@@ -2,7 +2,7 @@
 
 > Arquivo mantido **automaticamente** pelo agente auditor (`ci/ci_auditor.py`). Lista recomendações que apareceram em **2 ou mais** auditorias nos últimos **7 dias**, para realimentar o agente principal. Não editar à mão — será sobrescrito.
 
-_Última atualização: 2026-10-19 17:33 BRT · base: 23 relatório(s) de auditoria na janela._
+_Última atualização: 2026-10-19 19:55 BRT · base: 23 relatório(s) de auditoria na janela._
 
 ## Recomendações recorrentes
 
@@ -10,3 +10,7 @@ _Última atualização: 2026-10-19 17:33 BRT · base: 23 relatório(s) de audito
   - _checks:_ `fetch_bling`
 - 🔴 **(2x)** Conferir permissão contents:write e conflito de push.
   - _checks:_ `push_pages`
+- 🔴 **(2x)** Falha recorrente em 'fetch' — priorizar correção de causa-raiz.
+  - _checks:_ `falha_recorrente`
+- 🔴 **(2x)** Falha recorrente em 'push' — priorizar correção de causa-raiz.
+  - _checks:_ `falha_recorrente`
