@@ -1,0 +1,45 @@
+{
+  "run": {
+    "workflow": "update",
+    "agente": "principal",
+    "trigger": "schedule",
+    "run_id": "39320177032",
+    "run_number": "479",
+    "run_url": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/39320177032",
+    "started_at_utc": "2026-10-19 20:32:43",
+    "ended_at_utc": "2026-10-19 20:33:14",
+    "ended_at_brt": "2026-10-19 17:33:14",
+    "duration_s": 31
+  },
+  "steps": {
+    "fetch": "failure",
+    "merge_historico": "skipped",
+    "token_refresh": "unchanged",
+    "build": "success",
+    "gate_test_audit": "success",
+    "gate_test_build": "success",
+    "gate_test_merge": "success",
+    "gate_test_projecao": "skipped",
+    "precommit": "success",
+    "push": "skipped"
+  },
+  "records": {
+    "snapshot_file": "bling_data_2026-10-19.json",
+    "fetched_at": "2026-10-19 13:58:43",
+    "total": 714,
+    "contas_pagar_em_aberto": 101,
+    "contas_pagar_pagas": 529,
+    "contas_receber_em_aberto": 11,
+    "contas_receber_recebidas": 73,
+    "categorias": 220,
+    "contatos": 90
+  },
+  "commit_hash": null,
+  "warnings": [
+    "Publicação bloqueada pelo gate — última versão boa mantida no ar."
+  ],
+  "errors": [
+    "Fetch do Bling não concluiu com sucesso. Últimas linhas: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | File \"/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/urllib/request.py\", line 1365, in do_open | r = h.getresponse() | ^^^^^^^^^^^^^^^ | File \"/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/http/client.py\", line 1443, in getresponse | response.begin() | File \"/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/http/client.py\", line 337, in begin | version, status, reason = self._read_status() | ^^^^^^^^^^^^^^^^^^^ | File \"/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/http/client.py\", line 306, in _read_status | raise RemoteDisconnected(\"Remote end closed connection without\" | http.client.RemoteDisconnected: Remote end closed connection without response"
+  ],
+  "ok": false
+}
