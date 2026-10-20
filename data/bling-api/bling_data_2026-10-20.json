@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "fetched_at": "2026-10-20 16:10:59",
+    "fetched_at": "2026-10-20 19:16:18",
     "today": "2026-10-20",
     "lixeira_descartados": [],
     "baixados_fora_janela": [],
@@ -2130,8 +2130,8 @@
       "contato_id": 18234904217,
       "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
       "contato_documento": "39741876000124",
-      "categoria_id": 14665159865,
-      "categoria_descricao": "Serviços de terceiros",
+      "categoria_id": 14737459171,
+      "categoria_descricao": "Salários Comercial",
       "categoria_tipo": 1,
       "portador_id": 14892107625
     },
@@ -2445,8 +2445,8 @@
       "contato_id": 16593154786,
       "contato_nome": "M. DE Q. MACEDO - EPP",
       "contato_documento": "29137740000156",
-      "categoria_id": 14665159865,
-      "categoria_descricao": "Serviços de terceiros",
+      "categoria_id": 14737459294,
+      "categoria_descricao": "Salários Operação",
       "categoria_tipo": 1,
       "portador_id": 14892107625
     },
