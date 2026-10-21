@@ -1,0 +1,45 @@
+{
+  "run": {
+    "workflow": "update",
+    "agente": "principal",
+    "trigger": "schedule",
+    "run_id": "39660023544",
+    "run_number": "485",
+    "run_url": "https://github.com/leandrogelpke/Easy_Financas/actions/runs/39660023544",
+    "started_at_utc": "2026-10-21 19:15:33",
+    "ended_at_utc": "2026-10-21 19:15:54",
+    "ended_at_brt": "2026-10-21 16:15:54",
+    "duration_s": 21
+  },
+  "steps": {
+    "fetch": "failure",
+    "merge_historico": "skipped",
+    "token_refresh": "unchanged",
+    "build": "success",
+    "gate_test_audit": "success",
+    "gate_test_build": "success",
+    "gate_test_merge": "success",
+    "gate_test_projecao": "skipped",
+    "precommit": "success",
+    "push": "skipped"
+  },
+  "records": {
+    "snapshot_file": "bling_data_2026-10-21.json",
+    "fetched_at": "2026-10-21 12:12:17",
+    "total": 714,
+    "contas_pagar_em_aberto": 95,
+    "contas_pagar_pagas": 535,
+    "contas_receber_em_aberto": 11,
+    "contas_receber_recebidas": 73,
+    "categorias": 220,
+    "contatos": 90
+  },
+  "commit_hash": null,
+  "warnings": [
+    "Publicação bloqueada pelo gate — última versão boa mantida no ar."
+  ],
+  "errors": [
+    "Fetch do Bling não concluiu com sucesso. Últimas linhas: File \"/home/runner/work/Easy_Financas/Easy_Financas/fetch-bling.py\", line 692, in main | categorias = fetch_categorias(client) | ^^^^^^^^^^^^^^^^^^^^^^^^ | File \"/home/runner/work/Easy_Financas/Easy_Financas/fetch-bling.py\", line 235, in fetch_categorias | items = client.list_all(\"/categorias/receitas-despesas\") | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | File \"/home/runner/work/Easy_Financas/Easy_Financas/fetch-bling.py\", line 192, in list_all | data = self.get(path, params) | ^^^^^^^^^^^^^^^^^^^^^^ | File \"/home/runner/work/Easy_Financas/Easy_Financas/fetch-bling.py\", line 182, in get | raise RuntimeError(f\"HTTP {e.code} em GET {path}: {body}\") from e | RuntimeError: HTTP 500 em GET /categorias/receitas-despesas:"
+  ],
+  "ok": false
+}
