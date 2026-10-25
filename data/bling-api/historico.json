@@ -1,10 +1,10 @@
 {
  "_meta": {
-  "gerado_em": "2026-10-24 21:35:48",
-  "snapshot_origem": "bling_data_2026-10-24.json",
-  "window_start": "2026-03-01",
+  "gerado_em": "2026-10-25 14:25:44",
+  "snapshot_origem": "bling_data_2026-10-25.json",
+  "window_start": "2024-10-01",
   "totais": {
-   "contas_pagar_pagas": 538,
+   "contas_pagar_pagas": 540,
    "contas_receber_recebidas": 73,
    "contas_pagar_em_aberto": 92,
    "contas_receber_em_aberto": 11
@@ -11121,6 +11121,27 @@
    "portador_id": 14892107625
   },
   {
+   "id": 24868807282,
+   "situacao_codigo": 2,
+   "situacao": "Paga",
+   "vencimento": "2026-10-19",
+   "vencimento_original": "2026-10-20",
+   "data_emissao": "2026-01-19",
+   "data_pagamento": "",
+   "competencia": "2026-10-19",
+   "valor": "10000,00",
+   "saldo": "0,00",
+   "numero_documento": "401/10",
+   "historico": "ACORDO TRABALHISTA - PARC. 10/20",
+   "contato_id": 16593169188,
+   "contato_nome": "GEREMIAS FERREIRA LIMA 37305076805",
+   "contato_documento": "38625826000119",
+   "categoria_id": 14665159865,
+   "categoria_descricao": "Serviços de terceiros",
+   "categoria_tipo": 1,
+   "portador_id": 14892107625
+  },
+  {
    "id": 27125258733,
    "situacao_codigo": 2,
    "situacao": "Paga",
@@ -11138,6 +11159,27 @@
    "contato_documento": "13211001000127",
    "categoria_id": 14737459393,
    "categoria_descricao": "Hosting/Sistemas",
+   "categoria_tipo": 1,
+   "portador_id": 14892107625
+  },
+  {
+   "id": 24240931234,
+   "situacao_codigo": 2,
+   "situacao": "Paga",
+   "vencimento": "2026-10-20",
+   "vencimento_original": "2026-10-20",
+   "data_emissao": "2025-11-04",
+   "data_pagamento": "",
+   "competencia": "2026-10-30",
+   "valor": "61,50",
+   "saldo": "0,00",
+   "numero_documento": "",
+   "historico": "DCTFWEB - SETEMBRO/2026",
+   "contato_id": 16925497223,
+   "contato_nome": "RECEITA FEDERAL",
+   "contato_documento": "",
+   "categoria_id": 14665159843,
+   "categoria_descricao": "Impostos sobre vendas",
    "categoria_tipo": 1,
    "portador_id": 14892107625
   },
