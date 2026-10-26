@@ -1,7 +1,7 @@
 {
  "_meta": {
-  "gerado_em": "2026-10-25 21:43:38",
-  "snapshot_origem": "bling_data_2026-10-25.json",
+  "gerado_em": "2026-10-26 16:47:10",
+  "snapshot_origem": "bling_data_2026-10-26.json",
   "window_start": "2026-03-01",
   "totais": {
    "contas_pagar_pagas": 540,
@@ -12900,7 +12900,7 @@
    "valor": "4211,31",
    "saldo": "4211,31",
    "numero_documento": "4581036/04",
-   "historico": "Ref. a NF nº 4581036",
+   "historico": "Ref. a NF nº 4581036 -  Patrocínio Universo Totvs 2026",
    "contato_id": 16547075394,
    "contato_nome": "TOTVS S.A.",
    "contato_documento": "53113791000122",
