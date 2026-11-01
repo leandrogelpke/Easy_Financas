@@ -1,8 +1,8 @@
 {
  "_meta": {
-  "gerado_em": "2026-11-01 16:51:53",
+  "gerado_em": "2026-11-01 19:35:16",
   "snapshot_origem": "bling_data_2026-11-01.json",
-  "window_start": "2024-11-01",
+  "window_start": "2026-04-01",
   "totais": {
    "contas_pagar_pagas": 546,
    "contas_receber_recebidas": 73,
