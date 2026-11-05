@@ -1,12 +1,12 @@
 {
  "_meta": {
-  "gerado_em": "2026-11-05 00:21:03",
-  "snapshot_origem": "bling_data_2026-11-04.json",
+  "gerado_em": "2026-11-05 17:59:32",
+  "snapshot_origem": "bling_data_2026-11-05.json",
   "window_start": "2026-04-01",
   "totais": {
    "contas_pagar_pagas": 546,
    "contas_receber_recebidas": 73,
-   "contas_pagar_em_aberto": 89,
+   "contas_pagar_em_aberto": 91,
    "contas_receber_em_aberto": 14
   }
  },
@@ -13285,6 +13285,48 @@
    "categoria_id": 0,
    "categoria_descricao": "",
    "categoria_tipo": "",
+   "portador_id": 14892107625
+  },
+  {
+   "id": 27316595424,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-11-25",
+   "vencimento_original": "2026-11-25",
+   "data_emissao": "2026-11-05",
+   "data_pagamento": "",
+   "competencia": "2026-11-03",
+   "valor": "22000,00",
+   "saldo": "22000,00",
+   "numero_documento": "000006/01",
+   "historico": "Ref. a NF nº 000006",
+   "contato_id": 18234904217,
+   "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
+   "contato_documento": "39741876000124",
+   "categoria_id": 0,
+   "categoria_descricao": "",
+   "categoria_tipo": "",
+   "portador_id": 14892107625
+  },
+  {
+   "id": 27316615423,
+   "situacao_codigo": 1,
+   "situacao": "Em aberto",
+   "vencimento": "2026-11-25",
+   "vencimento_original": "2026-11-25",
+   "data_emissao": "2026-11-05",
+   "data_pagamento": "",
+   "competencia": "2026-11-03",
+   "valor": "22000,00",
+   "saldo": "22000,00",
+   "numero_documento": "000006/01",
+   "historico": "Ref. a NF nº 000006",
+   "contato_id": 18234904217,
+   "contato_nome": "ALAN BARBOSA RAMOS GESTAO EMPRESARIAL",
+   "contato_documento": "39741876000124",
+   "categoria_id": 14734483897,
+   "categoria_descricao": "2010000017 - ASSESSORIA/CONSULTORIA ADM",
+   "categoria_tipo": 1,
    "portador_id": 14892107625
   },
   {
