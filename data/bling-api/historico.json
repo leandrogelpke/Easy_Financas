@@ -1,12 +1,12 @@
 {
  "_meta": {
-  "gerado_em": "2026-11-10 02:02:31",
-  "snapshot_origem": "bling_data_2026-11-09.json",
+  "gerado_em": "2026-11-10 17:45:49",
+  "snapshot_origem": "bling_data_2026-11-10.json",
   "window_start": "2026-04-01",
   "totais": {
-   "contas_pagar_pagas": 546,
+   "contas_pagar_pagas": 547,
    "contas_receber_recebidas": 69,
-   "contas_pagar_em_aberto": 93,
+   "contas_pagar_em_aberto": 92,
    "contas_receber_em_aberto": 13
   }
  },
@@ -11476,6 +11476,27 @@
    "categoria_descricao": "Serviços de terceiros",
    "categoria_tipo": 1,
    "portador_id": 14892107625
+  },
+  {
+   "id": 27306101927,
+   "situacao_codigo": 2,
+   "situacao": "Paga",
+   "vencimento": "2026-11-10",
+   "vencimento_original": "2026-11-10",
+   "data_emissao": "2026-11-04",
+   "data_pagamento": "",
+   "competencia": "2026-11-04",
+   "valor": "1014,40",
+   "saldo": "0,00",
+   "numero_documento": "",
+   "historico": "REEMBOLSO DE DESPESA 10/2026",
+   "contato_id": 18069802589,
+   "contato_nome": "ISABEL FELIX",
+   "contato_documento": "24728788857",
+   "categoria_id": 14734483888,
+   "categoria_descricao": "2010000008 - REEMBOLSOS KM",
+   "categoria_tipo": 1,
+   "portador_id": 14892107625
   }
  ],
  "contas_receber_recebidas": [
@@ -12930,27 +12951,6 @@
   }
  ],
  "contas_pagar_em_aberto": [
-  {
-   "id": 27306101927,
-   "situacao_codigo": 1,
-   "situacao": "Em aberto",
-   "vencimento": "2026-11-10",
-   "vencimento_original": "2026-11-10",
-   "data_emissao": "2026-11-04",
-   "data_pagamento": "",
-   "competencia": "2026-11-04",
-   "valor": "1014,40",
-   "saldo": "1014,40",
-   "numero_documento": "",
-   "historico": "REEMBOLSO DE DESPESA 10/2026",
-   "contato_id": 18069802589,
-   "contato_nome": "ISABEL FELIX",
-   "contato_documento": "24728788857",
-   "categoria_id": 14734483888,
-   "categoria_descricao": "2010000008 - REEMBOLSOS KM",
-   "categoria_tipo": 1,
-   "portador_id": 14892107625
-  },
   {
    "id": 24771251880,
    "situacao_codigo": 1,
