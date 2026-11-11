@@ -1,6 +1,6 @@
 {
  "_meta": {
-  "gerado_em": "2026-11-11 17:52:40",
+  "gerado_em": "2026-11-11 21:53:19",
   "snapshot_origem": "bling_data_2026-11-11.json",
   "window_start": "2026-04-01",
   "totais": {
@@ -12955,7 +12955,7 @@
    "id": 24771251880,
    "situacao_codigo": 1,
    "situacao": "Em aberto",
-   "vencimento": "2026-11-15",
+   "vencimento": "2026-11-16",
    "vencimento_original": "2026-11-15",
    "data_emissao": "2026-01-07",
    "data_pagamento": "",
@@ -12994,24 +12994,24 @@
    "portador_id": 14892107625
   },
   {
-   "id": 25929002069,
+   "id": 27378935140,
    "situacao_codigo": 1,
    "situacao": "Em aberto",
    "vencimento": "2026-11-16",
    "vencimento_original": "2026-11-16",
-   "data_emissao": "2026-06-01",
+   "data_emissao": "2026-11-11",
    "data_pagamento": "",
-   "competencia": "2026-10-31",
+   "competencia": "2026-11-02",
    "valor": "938,50",
    "saldo": "938,50",
-   "numero_documento": "",
-   "historico": "PREVISÃO SUPORTE - AMAZON e APP",
+   "numero_documento": "000737/01",
+   "historico": "Ref. a NF nº 000737",
    "contato_id": 17144642941,
    "contato_nome": "CRALUS INFORMATICA LTDA",
    "contato_documento": "13211001000127",
-   "categoria_id": 14734483996,
-   "categoria_descricao": "2060000003 - DESENVOLVIMENTO PREST. SERVICO",
-   "categoria_tipo": 1,
+   "categoria_id": 0,
+   "categoria_descricao": "",
+   "categoria_tipo": "",
    "portador_id": 14892107625
   },
   {
