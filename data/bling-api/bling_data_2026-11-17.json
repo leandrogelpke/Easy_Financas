@@ -1,29 +1,12 @@
 {
   "_metadata": {
-    "fetched_at": "2026-11-17 16:09:46",
+    "fetched_at": "2026-11-17 19:52:13",
     "today": "2026-11-17",
     "lixeira_descartados": [],
-    "baixados_fora_janela": [
-      {
-        "dataset": "contas_pagar_em_aberto",
-        "id": 24771251880,
-        "vencimento": "2026-11-16",
-        "valor": "9155,84",
-        "contato": "CARTAO DE CREDITO",
-        "motivo": "situacao 2"
-      },
-      {
-        "dataset": "contas_pagar_em_aberto",
-        "id": 25067222459,
-        "vencimento": "2026-11-16",
-        "valor": "120,00",
-        "contato": "LWSA S/A",
-        "motivo": "situacao 2"
-      }
-    ],
+    "baixados_fora_janela": [],
     "merged_historico": true,
     "window_start": "2026-04-01",
-    "preservados_do_historico": 434
+    "preservados_do_historico": 432
   },
   "categorias": [
     {
