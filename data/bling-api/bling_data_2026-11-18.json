@@ -1,21 +1,12 @@
 {
   "_metadata": {
-    "fetched_at": "2026-11-18 15:50:06",
+    "fetched_at": "2026-11-18 19:34:23",
     "today": "2026-11-18",
     "lixeira_descartados": [],
-    "baixados_fora_janela": [
-      {
-        "dataset": "contas_receber_em_aberto",
-        "id": 25270087952,
-        "vencimento": "2026-11-16",
-        "valor": "5631,00",
-        "contato": "Usina São Francisco S/A",
-        "motivo": "situacao 2"
-      }
-    ],
+    "baixados_fora_janela": [],
     "merged_historico": true,
     "window_start": "2026-04-01",
-    "preservados_do_historico": 433
+    "preservados_do_historico": 432
   },
   "categorias": [
     {
