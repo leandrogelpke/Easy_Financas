@@ -1,13 +1,13 @@
 {
  "_meta": {
-  "gerado_em": "2026-11-18 01:36:06",
-  "snapshot_origem": "bling_data_2026-11-17.json",
+  "gerado_em": "2026-11-18 18:50:06",
+  "snapshot_origem": "bling_data_2026-11-18.json",
   "window_start": "2026-04-01",
   "totais": {
    "contas_pagar_pagas": 549,
-   "contas_receber_recebidas": 69,
+   "contas_receber_recebidas": 70,
    "contas_pagar_em_aberto": 88,
-   "contas_receber_em_aberto": 16
+   "contas_receber_em_aberto": 15
   }
  },
  "contas_pagar_pagas": [
@@ -12990,6 +12990,27 @@
    "categoria_descricao": "",
    "categoria_tipo": "",
    "portador_id": ""
+  },
+  {
+   "id": 25270087952,
+   "situacao_codigo": 2,
+   "situacao": "Recebida",
+   "vencimento": "2026-11-16",
+   "vencimento_original": "",
+   "data_emissao": "2026-03-09",
+   "data_pagamento": "",
+   "competencia": "",
+   "valor": "5631,00",
+   "saldo": "",
+   "numero_documento": "",
+   "historico": "",
+   "contato_id": 18005142574,
+   "contato_nome": "Usina São Francisco S/A",
+   "contato_documento": "71324792000106",
+   "categoria_id": "",
+   "categoria_descricao": "",
+   "categoria_tipo": "",
+   "portador_id": ""
   }
  ],
  "contas_pagar_em_aberto": [
@@ -14843,27 +14864,6 @@
   }
  ],
  "contas_receber_em_aberto": [
-  {
-   "id": 25270087952,
-   "situacao_codigo": 1,
-   "situacao": "Em aberto",
-   "vencimento": "2026-11-16",
-   "vencimento_original": "",
-   "data_emissao": "2026-03-09",
-   "data_pagamento": "",
-   "competencia": "",
-   "valor": "5631,00",
-   "saldo": "",
-   "numero_documento": "",
-   "historico": "",
-   "contato_id": 18005142574,
-   "contato_nome": "Usina São Francisco S/A",
-   "contato_documento": "71324792000106",
-   "categoria_id": "",
-   "categoria_descricao": "",
-   "categoria_tipo": "",
-   "portador_id": ""
-  },
   {
    "id": 27392830407,
    "situacao_codigo": 1,
