@@ -1,21 +1,12 @@
 {
   "_metadata": {
-    "fetched_at": "2026-11-19 19:39:49",
+    "fetched_at": "2026-11-19 22:14:40",
     "today": "2026-11-19",
     "lixeira_descartados": [],
-    "baixados_fora_janela": [
-      {
-        "dataset": "contas_pagar_em_aberto",
-        "id": 24496748655,
-        "vencimento": "2026-11-19",
-        "valor": "61,50",
-        "contato": "RECEITA FEDERAL",
-        "motivo": "situacao 2"
-      }
-    ],
+    "baixados_fora_janela": [],
     "merged_historico": true,
     "window_start": "2026-04-01",
-    "preservados_do_historico": 433
+    "preservados_do_historico": 432
   },
   "categorias": [
     {
