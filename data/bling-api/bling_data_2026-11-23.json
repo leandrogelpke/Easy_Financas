@@ -1,21 +1,12 @@
 {
   "_metadata": {
-    "fetched_at": "2026-11-23 19:01:32",
+    "fetched_at": "2026-11-23 23:09:33",
     "today": "2026-11-23",
     "lixeira_descartados": [],
-    "baixados_fora_janela": [
-      {
-        "dataset": "contas_pagar_em_aberto",
-        "id": 24868807308,
-        "vencimento": "2026-11-18",
-        "valor": "10000,00",
-        "contato": "GEREMIAS FERREIRA LIMA 37305076805",
-        "motivo": "situacao 2"
-      }
-    ],
+    "baixados_fora_janela": [],
     "merged_historico": true,
     "window_start": "2026-04-01",
-    "preservados_do_historico": 436
+    "preservados_do_historico": 435
   },
   "categorias": [
     {
